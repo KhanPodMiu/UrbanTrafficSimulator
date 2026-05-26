@@ -1,0 +1,66 @@
+# =========================
+# Build
+# =========================
+
+bin/
+build/
+cmake-build-debug/
+cmake-build-release/
+
+*.o
+*.obj
+*.exe
+*.out
+*.d
+
+# =========================
+# macOS
+# =========================
+
+.DS_Store
+
+# =========================
+# Windows
+# =========================
+
+Thumbs.db
+Desktop.ini
+
+# =========================
+# VSCode
+# =========================
+
+.vscode/
+
+# BUT keep shared config
+!.vscode/c_cpp_properties.json
+!.vscode/tasks.json
+!.vscode/settings.json
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+# =========================
+# Temporary files
+# =========================
+
+*.tmp
+*.temp
+
+# =========================
+# SFML / assets cache
+# =========================
+
+.cache/
+
+# =========================
+# Testing
+# =========================
+
+coverage/
+*.gcda
+*.gcno
+*.gcov
