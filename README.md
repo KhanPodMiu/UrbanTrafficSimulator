@@ -213,11 +213,16 @@ private:
 
 class Road {
 private:
-    int id;
-    int sourceId;
-    int destinationId;
+    int roadId;
+
+    int sourceIntersectionId;
+    int destinationIntersectionId;
+
     double distance;
     double speedLimit;
+
+    double congestionLevel;
+    double travelCost;
 };
 
 {
