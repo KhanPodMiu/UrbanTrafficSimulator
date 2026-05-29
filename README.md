@@ -198,3 +198,44 @@ UrbanTrafficSimulator/
 │
 └── .gitignore
 ```
+
+---
+
+# Class attributes
+
+```
+class Intersection {
+private:
+    int id;
+    float x;
+    float y;
+};
+
+class Road {
+private:
+    int id;
+    int sourceId;
+    int destinationId;
+    double distance;
+    double speedLimit;
+};
+
+{
+  "intersections": [
+    {
+      "id": 1,
+      "x": 100,
+      "y": 200
+    }
+  ],
+  "roads": [
+    {
+      "id": 1,
+      "source": 1,
+      "destination": 2,
+      "distance": 50,
+      "speedLimit": 60
+    }
+  ]
+}
+```
