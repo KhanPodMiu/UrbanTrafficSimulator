@@ -19,6 +19,8 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
+message(STATUS "SDL2 include dirs: ${SDL2_INCLUDE_DIRS}")
+
 # --------------------------------
 # Source files
 # --------------------------------
@@ -41,6 +43,11 @@ add_library(traffic_lib
     ${PROJECT_SOURCES}
 )
 
+target_include_directories(traffic_lib PUBLIC
+    include
+    /opt/homebrew/include
+)
+
 target_link_libraries(traffic_lib
     SDL2::SDL2
     SDL2_image::SDL2_image
@@ -57,6 +64,9 @@ add_executable(main
 
 target_link_libraries(main
     traffic_lib
+    SDL2::SDL2
+    SDL2_image::SDL2_image
+    SDL2_ttf::SDL2_ttf
 )
 
 # --------------------------------
