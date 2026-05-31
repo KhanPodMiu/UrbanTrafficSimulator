@@ -1,34 +1,116 @@
 # Urban Traffic Simulator 🚗
 
-An object-oriented traffic simulation system built with C++ and SDL2.
+# Island Tourist Transportation Simulator
 
-The project simulates:
+## Project Overview
 
-* road networks,
-* vehicle movement,
-* traffic congestion,
-* pathfinding algorithms,
-* and dynamic traffic events
-  inside a virtual urban environment.
+The Island Tourist Transportation Simulator is a graph-based urban traffic simulation system developed using Object-Oriented Programming principles.
 
+The simulator models a tourist island as a road network consisting of intersections and roads loaded dynamically from JSON map files. Traffic conditions continuously evolve through random vehicle generation, congestion, accidents, and road events.
+
+The main goal of the simulation is to assist a tourist bus that starts from the island's Bus Terminal and must visit all major attractions and districts across the island while minimizing travel time and transportation cost.
+
+To achieve this objective, the routing system must continuously analyze current traffic conditions and dynamically select the most efficient route. When congestion increases, accidents occur, or roads become unavailable, the system automatically recalculates the route using pathfinding algorithms.
+
+---
+
+## Scenario
+
+A group of tourists arrives on the island and begins their journey from the Bus Terminal.
+
+Their objective is to explore the entire island by visiting all major attractions and districts, including beaches, parks, museums, markets, downtown areas, and other points of interest.
+
+Meanwhile, the island's traffic network is constantly changing:
+
+* Vehicles are generated dynamically.
+* Traffic congestion may increase or decrease.
+* Accidents may occur unexpectedly.
+* Roads may become temporarily blocked.
+
+The tourist bus must adapt to these changing conditions and find the most efficient route to complete the tour.
 
 ---
 
-# 🧠 Architecture Overview
+## Features
 
-The project is divided into several independent modules:
+### Road Network System
 
-| Module           | Responsibility                                       |
-| ---------------- | ---------------------------------------------------- |
-| `algorithms/`    | Pathfinding algorithms such as BFS, Dijkstra, and A* |
-| `graph/`         | Road network representation using graph structures   |
-| `simulation/`    | Traffic simulation engine and event system           |
-| `vehicle/`       | Vehicle entities and movement logic                  |
-| `visualization/` | SDL2 rendering system and UI                         |
-| `core/`          | Main application loop, timing, and engine systems    |
-| `utils/`         | Utility helpers and file loading                     |
+* Graph-based road network
+* Intersections and roads as OOP entities
+* Dynamic road condition updates
+* JSON map loading
+* Support for custom island maps
+
+### Traffic Simulation
+
+* Random vehicle generation
+* Dynamic congestion system
+* Accident events
+* Road closure events
+* Real-time traffic updates
+
+### Routing System
+
+* Breadth-First Search (BFS)
+* Dijkstra Algorithm
+* A* Search Algorithm
+* Congestion-aware routing
+* Dynamic route recalculation
+
+### Visualization
+
+* SDL2-based rendering
+* Road and intersection visualization
+* Vehicle movement animation
+* Congestion indicators
+* Simulation statistics panel
+
+### Statistics
+
+* Total travel time
+* Total travel cost
+* Number of route recalculations
+* Congestion metrics
+* Roads visited
+* Simulation performance metrics
 
 ---
+
+## Simulation Objective
+
+The tourist bus must:
+
+1. Start from the Bus Terminal.
+2. Visit all major attractions and districts on the island.
+3. Respond to changing traffic conditions.
+4. Avoid heavily congested or blocked roads when possible.
+5. Complete the entire tour with the lowest travel time and cost.
+
+---
+
+## Technologies
+
+* C++
+* SDL2
+* JSON
+* Graph Data Structures
+* Object-Oriented Programming
+* Design Patterns
+* Git & GitHub
+
+---
+
+## Educational Objectives
+
+This project demonstrates:
+
+* Graph modeling of transportation networks
+* Dynamic pathfinding algorithms
+* Traffic simulation systems
+* Event-driven architecture
+* Object-Oriented Software Design
+* Real-time visualization techniques
+
 
 # 🎮 Technologies
 
@@ -79,127 +161,11 @@ make clean
 * Header files are stored inside `include/`.
 * Source files are stored inside `src/`.
 
----
 
-# 🚀 Future Features
-
-* Dynamic congestion system
-* Traffic light simulation
-* Real-time route recalculation
-* Zoomable map camera
-* Statistics dashboard
-* Heatmap visualization
-* Multi-vehicle simulation
-* Event-driven traffic system
 
 ---
 
 
-# 📁 Project Structure
-
-```text
-UrbanTrafficSimulator/
-│
-├── assets/
-│   ├── fonts/
-│   ├── textures/
-│   ├── icons/
-│   └── maps/
-│
-├── bin/
-│
-├── config/
-│   ├── settings.json
-│   └── simulation.json
-│
-├── docs/
-│
-├── include/
-│
-│   ├── algorithms/
-│   │   ├── PathFindingStrategy.hpp
-│   │   ├── Dijkstra.hpp
-│   │   ├── AStar.hpp
-│   │   └── BFS.hpp
-│   │
-│   ├── core/
-│   │   ├── Application.hpp
-│   │   ├── Engine.hpp
-│   │   ├── Time.hpp
-│   │   └── Logger.hpp
-│   │
-│   ├── graph/
-│   │   ├── Graph.hpp
-│   │   ├── Node.hpp
-│   │   ├── Edge.hpp
-│   │   ├── Road.hpp
-│   │   └── Intersection.hpp
-│   │
-│   ├── simulation/
-│   │   ├── TrafficSimulator.hpp
-│   │   ├── TrafficController.hpp
-│   │   ├── TrafficEvent.hpp
-│   │   └── CongestionManager.hpp
-│   │
-│   ├── vehicle/
-│   │   ├── Vehicle.hpp
-│   │   ├── Car.hpp
-│   │   ├── Bus.hpp
-│   │   └── EmergencyVehicle.hpp
-│   │
-│   ├── visualization/
-│   │   ├── Window.hpp
-│   │   ├── Renderer.hpp
-│   │   ├── Camera.hpp
-│   │   ├── TextureManager.hpp
-│   │   ├── FontManager.hpp
-│   │   ├── Color.hpp
-│   │   │
-│   │   ├── renderers/
-│   │   │   ├── GraphRenderer.hpp
-│   │   │   ├── VehicleRenderer.hpp
-│   │   │   ├── RoadRenderer.hpp
-│   │   │   ├── TrafficRenderer.hpp
-│   │   │   └── UIOverlayRenderer.hpp
-│   │   │
-│   │   └── ui/
-│   │       ├── Button.hpp
-│   │       ├── Panel.hpp
-│   │       ├── Label.hpp
-│   │       └── StatisticsPanel.hpp
-│   │
-│   └── utils/
-│       ├── FileLoader.hpp
-│       ├── JsonLoader.hpp
-│       └── MathUtils.hpp
-│
-├── src/
-│
-│   ├── algorithms/
-│   ├── core/
-│   ├── graph/
-│   ├── simulation/
-│   ├── vehicle/
-│   ├── visualization/
-│   │
-│   └── main.cpp
-│
-├── tests/
-│   ├── graph/
-│   ├── algorithms/
-│   ├── simulation/
-│   └── vehicle/
-│
-├── .vscode/
-│
-├── Makefile
-│
-├── README.md
-│
-└── .gitignore
-```
-
----
 
 # Class attributes
 
