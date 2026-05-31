@@ -1,40 +1,39 @@
-#include <SDL2/SDL.h>
 #include <iostream>
+#include <fstream>
+#include <json/json.h>
+
 
 int main() {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << '\n';
+    std::string file_path = "assets/maps/data.json";
+    std::ifstream file(file_path, std::ifstream::binary);
+
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file " << file_path << std::endl;
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow(
-        "SDL2 Test",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        800,
-        600,
-        SDL_WINDOW_SHOWN
-    );
+    Json::Value data;
+    Json::CharReaderBuilder readerBuilder;
+    std::string errs;
 
-    if (!window) {
-        std::cerr << "Window Error: " << SDL_GetError() << '\n';
-        SDL_Quit();
+    if (!Json::parseFromStream(readerBuilder, file, &data, &errs)) {
+        std::cerr << "Error parsing JSON: " << errs << std::endl;
         return 1;
     }
+    
+    std::string school_name = data["name"].asString();
+    std::cout << "School Name: " << school_name << std::endl;
+    
+    std::string city = data["location"]["city"].asString();
+    std::cout << "City: " << city << std::endl;
 
-    bool running = true;
-    SDL_Event event;
+    std::string first_student_name = data["students"][0]["name"].asString();
+    std::cout << "First Student's Name: " << first_student_name << std::endl;
 
-    while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;
-            }
-        }
+    const Json::Value& students = data["students"];
+    for(const auto& student : students){
+        std::cout << student["name"].asString() << std::endl;
     }
-
-    SDL_DestroyWindow(window);
-    SDL_Quit();
 
     return 0;
 }

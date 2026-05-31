@@ -1,0 +1,11 @@
+{
+    "name": "Greenwood High",
+    "location": {
+        "city": "New York",
+        "state": "NY"
+    },
+    "students": [
+        {"name": "Emma", "age": 15},
+        {"name": "Liam", "age": 14}
+    ]
+}
