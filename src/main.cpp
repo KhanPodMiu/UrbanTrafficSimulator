@@ -17,6 +17,13 @@ int main(int argc, char* args[]) {
 
     RenderWindow* window = new RenderWindow("Urban Traffic", 1600, 900);
 
+    SDL_Texture* MapBackground = window -> loadTexture("assets/maps/background.png");
+
+    if(MapBackground == nullptr){
+        std::cerr << "Hey.. recheck the IMG PATH" << SDL_GetError();
+        return 1;
+    }
+
     bool is_game_running = true;
 
     SDL_Event event;
@@ -27,10 +34,16 @@ int main(int argc, char* args[]) {
                 is_game_running = false;
             }
         }
+
+        window -> clear();
+        window -> render(MapBackground);
+        window -> display();
     }
 
     window -> cleanUp();
+
     delete window;
+    delete MapBackground;
 
     SDL_Quit();
     return 0;
