@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(UrbanTrafficSimulator)
 
@@ -16,6 +17,8 @@ include_directories(include)
 # --------------------------------
 
 find_package(SDL2 REQUIRED)
+
+
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
@@ -82,7 +85,14 @@ target_link_libraries(main PRIVATE
 
 enable_testing()
 
-find_package(GTest REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+)
+
+FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE TEST_SOURCES
     tests/*.cpp
