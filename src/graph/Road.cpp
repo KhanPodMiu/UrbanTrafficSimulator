@@ -1,160 +1,167 @@
-// =============================================================================
-// Road.cpp
-// Project : UrbanTrafficSimulator
-// Purpose : Implements the Road class declared in Road.hpp.
-// =============================================================================
+#include "graph/Road.hpp"
+#include "graph/Intersection.hpp"
 
-#include "Road.hpp"
+#include <algorithm> // std::clamp, std::max
 
-#include <iomanip>
-#include <sstream>
-
-
-// =============================================================================
-// Private static validation helpers
-// =============================================================================
-
-void Road::validateId(const std::string& id, const std::string& fieldName) {
-    if (id.empty()) {
-        throw RoadException(fieldName + " must not be empty.");
-    }
-}
-
-void Road::validatePositive(double value, const std::string& fieldName) {
-    if (value <= 0.0) {
-        std::ostringstream oss;
-        oss << fieldName << " must be positive (received "
-            << std::fixed << std::setprecision(6) << value << ").";
-        throw RoadException(oss.str());
-    }
-}
-
-void Road::validateCongestion(double level) {
-    if (level < 0.0 || level > 1.0) {
-        std::ostringstream oss;
-        oss << "Congestion level must be in [0.0, 1.0] (received "
-            << std::fixed << std::setprecision(6) << level << ").";
-        throw RoadException(oss.str());
-    }
-}
-
-
-// =============================================================================
-// Constructor
-// =============================================================================
-
-/*
- * Design note on member initializer list vs. body validation
- * ----------------------------------------------------------
- * Members are initialised in the initializer list for efficiency (single
- * construction, no double-assignment).  Validation is performed in the body
- * immediately after.  If validation throws, the constructor never completes,
- * so the object is never observable in an invalid state.  All member types
- * (std::string, double) are safely destructible even with empty/zero values,
- * so the throw-during-construction unwind is clean.
- */
-Road::Road(const std::string& roadId,
-           const std::string& sourceIntersection,
-           const std::string& destIntersection,
-           double             distance,
-           double             speedLimit,
-           double             congestionLevel)
-    : m_roadId(roadId)
-    , m_sourceIntersection(sourceIntersection)
-    , m_destIntersection(destIntersection)
-    , m_distance(distance)
-    , m_speedLimit(speedLimit)
-    , m_congestionLevel(congestionLevel)
-    , m_travelCost(0.0)   // computed by calculateTravelCost() below
+// ─────────────────────────────────────────────────────────────────────────────
+//  Constructor
+//
+//  Out-of-range distance / speedLimit values are *clamped* here rather than
+//  rejected.  Rationale: the object must always be in a consistent state
+//  after construction; the caller can fix values via setters afterwards.
+//  nullptr intersections are accepted – Road is not the owner.
+// ─────────────────────────────────────────────────────────────────────────────
+Road::Road(
+    const std::string& id,
+    Intersection*      source,
+    Intersection*      destination,
+    int                distance,
+    int                speedLimit)
+    :
+    roadId(id),
+    sourceIntersection(source),
+    destinationIntersection(destination),
+    distance(std::clamp(distance,   MIN_DISTANCE,    MAX_DISTANCE)),
+    speedLimit(std::clamp(speedLimit, MIN_SPEED_LIMIT, MAX_SPEED_LIMIT)),
+    congestionLevel(MIN_CONGESTION),
+    travelCost(0)
 {
-    validateId(roadId,             "Road ID");
-    validateId(sourceIntersection, "Source intersection ID");
-    validateId(destIntersection,   "Destination intersection ID");
-    validatePositive(distance,     "Distance");
-    validatePositive(speedLimit,   "Speed limit");
-    validateCongestion(congestionLevel);
-
-    calculateTravelCost();   // sets m_travelCost
-}
-
-
-// =============================================================================
-// Getters
-// =============================================================================
-
-const std::string& Road::getRoadId()             const noexcept { return m_roadId; }
-const std::string& Road::getSourceIntersection() const noexcept { return m_sourceIntersection; }
-const std::string& Road::getDestIntersection()   const noexcept { return m_destIntersection; }
-double             Road::getDistance()           const noexcept { return m_distance; }
-double             Road::getSpeedLimit()         const noexcept { return m_speedLimit; }
-double             Road::getCongestionLevel()    const noexcept { return m_congestionLevel; }
-double             Road::getTravelCost()         const noexcept { return m_travelCost; }
-
-
-// =============================================================================
-// Setters
-// =============================================================================
-
-void Road::setDistance(double distance) {
-    validatePositive(distance, "Distance");
-    m_distance = distance;
     calculateTravelCost();
 }
 
-void Road::setSpeedLimit(double speedLimit) {
-    validatePositive(speedLimit, "Speed limit");
-    m_speedLimit = speedLimit;
-    calculateTravelCost();
+Road::~Road()
+{
 }
 
-void Road::setCongestionLevel(double level) {
-    validateCongestion(level);
-    m_congestionLevel = level;
-    calculateTravelCost();
+// ─────────────────────────────────────────────────────────────────────────────
+//  Getters
+// ─────────────────────────────────────────────────────────────────────────────
+
+const std::string& Road::getRoadId() const
+{
+    return roadId;
 }
 
-
-// =============================================================================
-// Core domain operations
-// =============================================================================
-
-void Road::updateCongestion(double newLevel) {
-    validateCongestion(newLevel);
-    m_congestionLevel = newLevel;
-    calculateTravelCost();
+Intersection* Road::getSourceIntersection() const
+{
+    return sourceIntersection;
 }
 
-void Road::calculateTravelCost() {
-    // -----------------------------------------------------------------
-    // Linear congestion model
+Intersection* Road::getDestinationIntersection() const
+{
+    return destinationIntersection;
+}
+
+int Road::getDistance() const
+{
+    return distance;
+}
+
+int Road::getSpeedLimit() const
+{
+    return speedLimit;
+}
+
+int Road::getCongestionLevel() const
+{
+    return congestionLevel;
+}
+
+int Road::getTravelCost() const
+{
+    return travelCost;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Setters
+// ─────────────────────────────────────────────────────────────────────────────
+
+bool Road::setSourceIntersection(Intersection* source)
+{
+    if (source == nullptr)
+    {
+        return false;
+    }
+
+    sourceIntersection = source;
+    return true;
+}
+
+bool Road::setDestinationIntersection(Intersection* destination)
+{
+    if (destination == nullptr)
+    {
+        return false;
+    }
+
+    destinationIntersection = destination;
+    return true;
+}
+
+bool Road::setDistance(int distance)
+{
+    if (distance < MIN_DISTANCE || distance > MAX_DISTANCE)
+    {
+        return false;
+    }
+
+    this->distance = distance;
+    calculateTravelCost();
+    return true;
+}
+
+bool Road::setSpeedLimit(int speedLimit)
+{
+    if (speedLimit < MIN_SPEED_LIMIT || speedLimit > MAX_SPEED_LIMIT)
+    {
+        return false;
+    }
+
+    this->speedLimit = speedLimit;
+    calculateTravelCost();
+    return true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Road operations
+// ─────────────────────────────────────────────────────────────────────────────
+
+bool Road::updateCongestion(int newCongestionLevel)
+{
+    if (newCongestionLevel < MIN_CONGESTION || newCongestionLevel > MAX_CONGESTION)
+    {
+        return false;
+    }
+
+    congestionLevel = newCongestionLevel;
+    calculateTravelCost();
+    return true;
+}
+
+bool Road::calculateTravelCost()
+{
+    if (speedLimit <= 0)
+    {
+        // Guard against division by zero; should never happen in normal use
+        // because setSpeedLimit and the constructor both enforce MIN_SPEED_LIMIT.
+        return false;
+    }
+
+    // ── Formula ──────────────────────────────────────────────────────────────
     //
-    //   travelCost [h] = freeFlowTime [h] × congestionMultiplier
+    //   travelCost = distance × (100 + congestionLevel) / speedLimit
     //
-    // where:
-    //   freeFlowTime        = distance / speedLimit
-    //   congestionMultiplier = 1.0 + congestionLevel
+    //   Why integers only?
+    //   • SDL2 works in integer coordinates; mixing floats risks accumulation
+    //     errors when costs are summed over many edges.
+    //   • On a 4 000×4 000 map the maximum numerator is 8 000 × 200 = 1 600 000,
+    //     safely within int32.
+    //   By the way, I(Kevin) guessed this formula will slightly increase our compile and execute our project a little bit. 
     //
-    // Examples (distance = 100 km, speedLimit = 50 km/h):
-    //   congestion 0.0  →  (100/50) × 1.0  = 2.00 h
-    //   congestion 0.5  →  (100/50) × 1.5  = 3.00 h
-    //   congestion 1.0  →  (100/50) × 2.0  = 4.00 h
-    // -----------------------------------------------------------------
-    m_travelCost = (m_distance / m_speedLimit) * (1.0 + m_congestionLevel);
-}
-
-
-// =============================================================================
-// Utility
-// =============================================================================
-
-std::string Road::toString() const {
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(4);
-    oss << "Road[" << m_roadId << "]: "
-        << m_sourceIntersection << " -> " << m_destIntersection
-        << " | dist="        << m_distance                  << " km"
-        << " | limit="       << m_speedLimit                << " km/h"
-        << " | congestion="  << (m_congestionLevel * 100.0) << "%"
-        << " | travelCost="  << m_travelCost                << " h";
-    return oss.str();
+    //   std::max(1, …) prevents zero-weight edges on very short / fast roads
+    //   (e.g. distance=1, speedLimit=130 → raw result = 0).
+    //   A weight of 0 would allow Dijkstra to visit cycles at no cost.
+    // ─────────────────────────────────────────────────────────────────────────
+    travelCost = std::max(1, (distance * (100 + congestionLevel)) / speedLimit);
+    return true;
 }
