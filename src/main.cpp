@@ -42,8 +42,6 @@ int main(int argc, char* args[]) {
 
     window -> cleanUp();
 
-    delete window;
-    delete MapBackground;
 
     SDL_Quit();
     return 0;
