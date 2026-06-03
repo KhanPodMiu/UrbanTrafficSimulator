@@ -2,54 +2,40 @@
 
 #include <algorithm>
 
-Intersection::Intersection()
-    : intersectionID(""),
-      x(0.0),
-      y(0.0),
-      type(IntersectionType::CROSS)
-{
-}
+constexpr int MAP_WIDTH = 4000;
+constexpr int MAP_HEIGHT = 4000;
 
 Intersection::Intersection(
     const std::string& id,
-    double x,
-    double y,
+    int x,
+    int y,
     IntersectionType type)
-    : intersectionID(id),
-      x(x),
-      y(y),
-      type(type)
+    :
+    intersectionID(id),
+    x(x),
+    y(y),
+    type(type)
 {
+    setPosition(x, y);
 }
 
 Intersection::~Intersection()
 {
 }
 
-//Getter
-std::string Intersection::getIntersectionID() const
+const std::string& Intersection::getIntersectionID() const
 {
     return intersectionID;
 }
 
-double Intersection::getX() const
+int Intersection::getX() const
 {
     return x;
 }
 
-double Intersection::getY() const
+int Intersection::getY() const
 {
     return y;
-}
-
-std::vector<Road*> Intersection::getIncomingRoad() const
-{
-    return incomingRoads;
-}
-
-std::vector<Road*> Intersection::getOutgoingRoad() const
-{
-    return outgoingRoads;
 }
 
 IntersectionType Intersection::getType() const
@@ -57,57 +43,122 @@ IntersectionType Intersection::getType() const
     return type;
 }
 
-//Setter
-void Intersection::setIntersectionID(const std::string& id)
+const std::vector<Road*>& Intersection::getIncomingRoads() const
 {
-    intersectionID = id;
+    return incomingRoads;
 }
 
-void Intersection::setPosition(double x, double y)
+const std::vector<Road*>& Intersection::getOutgoingRoads() const
 {
+    return outgoingRoads;
+}
+
+int Intersection::getIncomingRoadCount() const
+{
+    return incomingRoads.size();
+}
+
+int Intersection::getOutgoingRoadCount() const
+{
+    return outgoingRoads.size();
+}
+bool Intersection::setPosition(int x, int y)
+{
+    if (x < 0 || x > MAP_WIDTH)
+    {
+        return false;
+    }
+
+    if (y < 0 || y > MAP_HEIGHT)
+    {
+        return false;
+    }
+
     this->x = x;
     this->y = y;
+
+    return true;
 }
 
-void Intersection::setType(IntersectionType type)
+bool Intersection::addIncomingRoad(Road* road)
 {
-    this->type = type;
-}
-
-// Add Roads
-void Intersection::addIncomingRoad(Road* road)
-{
-    if (road != nullptr)
+    if (road == nullptr)
     {
-        incomingRoads.push_back(road);
+        return false;
     }
-}
 
-void Intersection::addOutgoingRoad(Road* road)
-{
-    if (road != nullptr)
+    auto it = std::find(
+        incomingRoads.begin(),
+        incomingRoads.end(),
+        road);
+
+    if (it != incomingRoads.end())
     {
-        outgoingRoads.push_back(road);
+        return false;
     }
+
+    incomingRoads.push_back(road);
+
+    return true;
 }
 
-// Remove Roads
-void Intersection::removeIncomingRoad(Road* road)
+bool Intersection::addOutgoingRoad(Road* road)
 {
-    incomingRoads.erase(
-        std::remove(
-            incomingRoads.begin(),
-            incomingRoads.end(),
-            road),
-        incomingRoads.end());
+    if (road == nullptr)
+    {
+        return false;
+    }
+
+    auto it = std::find(
+        outgoingRoads.begin(),
+        outgoingRoads.end(),
+        road);
+
+    if (it != outgoingRoads.end())
+    {
+        return false;
+    }
+
+    outgoingRoads.push_back(road);
+
+    return true;
 }
 
-void Intersection::removeOutgoingRoad(Road* road)
+bool Intersection::removeIncomingRoad(Road* road)
 {
-    outgoingRoads.erase(
-        std::remove(
-            outgoingRoads.begin(),
-            outgoingRoads.end(),
-            road),
-        outgoingRoads.end());
+    auto it = std::find(
+        incomingRoads.begin(),
+        incomingRoads.end(),
+        road);
+
+    if (it == incomingRoads.end())
+    {
+        return false;
+    }
+
+    incomingRoads.erase(it);
+
+    return true;
+}
+
+bool Intersection::removeOutgoingRoad(Road* road)
+{
+    auto it = std::find(
+        outgoingRoads.begin(),
+        outgoingRoads.end(),
+        road);
+
+    if (it == outgoingRoads.end())
+    {
+        return false;
+    }
+
+    outgoingRoads.erase(it);
+
+    return true;
+}
+
+int Intersection::getDegree() const
+{
+    return incomingRoads.size() + outgoingRoads.size();
 }

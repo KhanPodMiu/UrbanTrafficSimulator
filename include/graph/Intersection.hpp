@@ -9,8 +9,8 @@ class Road;
 enum class IntersectionType
 {
     T_INTERSECTION,
-    CROSS,
-    ROUNDABOUT
+    ROUNDABOUT,
+    CROSS
 };
 
 class Intersection
@@ -18,47 +18,49 @@ class Intersection
 private:
     std::string intersectionID;
 
-    double x;
-    double y;
+    int x;
+    int y;
+
+    IntersectionType type;
 
     std::vector<Road*> incomingRoads;
     std::vector<Road*> outgoingRoads;
 
-    IntersectionType type;
-
 public:
-    Intersection();
-
     Intersection(
         const std::string& id,
-        double x,
-        double y,
+        int x,
+        int y,
         IntersectionType type
     );
 
     ~Intersection();
 
-    // Getter
-    std::string getIntersectionID() const;
+    // Getters
+    const std::string& getIntersectionID() const;
 
-    double getX() const;
-    double getY() const;
-
-    std::vector<Road*> getIncomingRoad() const;
-    std::vector<Road*> getOutgoingRoad() const;
+    int getX() const;
+    int getY() const;
 
     IntersectionType getType() const;
 
-    // Setter
-    void setIntersectionID(const std::string& id);
-    void setPosition(double x, double y);
-    void setType(IntersectionType type);
+    const std::vector<Road*>& getIncomingRoads() const;
+    const std::vector<Road*>& getOutgoingRoads() const;
+
+    int getIncomingRoadCount() const;
+    int getOutgoingRoadCount() const;
+
+    // Setters
+    bool setPosition(int x, int y);
 
     // Road management
-    void addIncomingRoad(Road* road);
-    void addOutgoingRoad(Road* road);
-    void removeIncomingRoad(Road* road);
-    void removeOutgoingRoad(Road* road);
+    bool addIncomingRoad(Road* road);
+    bool addOutgoingRoad(Road* road);
+
+    bool removeIncomingRoad(Road* road);
+    bool removeOutgoingRoad(Road* road);
+
+    int getDegree() const;
 };
 
 #endif
