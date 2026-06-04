@@ -1,452 +1,802 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  Road_test.cpp
-//  Stand-alone unit tests for the Road class.
-//  No external test framework required – compile and run independently of the
-//  main SDL2 application.
-//
-//  Build example (from project root):
-//    g++ -std=c++17 -I. src/graph/Road.cpp src/graph/Intersection.cpp
-//        tests/Road_test.cpp -o Road_test && ./Road_test
-// ─────────────────────────────────────────────────────────────────────────────
+#include <gtest/gtest.h>
 
 #include "graph/Road.hpp"
 #include "graph/Intersection.hpp"
 
-#include <iostream>
+#include <stdexcept>
 #include <string>
+#include <type_traits>   // std::is_same (compile-time type checks)
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Minimal test runner
+//  Fixture
+//  Default Road: "R1"  distance=400  speedLimit=50  congestion=0
+//                travelCost = 400 × 100 / 50 = 800
 // ─────────────────────────────────────────────────────────────────────────────
-namespace Test
+class RoadTest : public ::testing::Test
 {
-    static int s_pass  = 0;
-    static int s_fail  = 0;
-    static int s_total = 0;
+protected:
+    static constexpr int DEFAULT_DISTANCE = 400;
+    static constexpr int DEFAULT_SPEED    = 50;
+    static constexpr int DEFAULT_COST     = 800;  // 400×100/50
 
-    void check(bool result, const char* expression, int line)
+    void SetUp() override
     {
-        ++s_total;
-        if (result)
-        {
-            ++s_pass;
-        }
-        else
-        {
-            ++s_fail;
-            std::cerr << "  [FAIL] line " << line << ":  " << expression << "\n";
-        }
+        src   = new Intersection("SRC",   100, 100, IntersectionType::CROSS);
+        dst   = new Intersection("DST",   500, 100, IntersectionType::CROSS);
+        extra = new Intersection("EXTRA", 300, 300, IntersectionType::T_INTERSECTION);
+        road  = new Road("R1", src, dst, DEFAULT_DISTANCE, DEFAULT_SPEED);
     }
 
-    void beginGroup(const char* name)
+    void TearDown() override
     {
-        std::cout << "\n[" << name << "]\n";
+        delete road;
+        delete extra;
+        delete dst;
+        delete src;
     }
 
-    void printSummary()
+    Intersection* src   = nullptr;
+    Intersection* dst   = nullptr;
+    Intersection* extra = nullptr;
+    Road*         road  = nullptr;
+};
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  1.  CONSTRUCTOR  (TEST – no fixture needed, each case builds its own Road)
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST(RoadConstruction, StoredAttributesMatchConstructorArguments)
+{
+    Intersection src("A", 0,  0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+
+    Road road("MY_ROAD", &src, &dst, 200, 60);
+
+    EXPECT_EQ(road.getRoadId(),                  "MY_ROAD");
+    EXPECT_EQ(road.getSourceIntersection(),      &src);
+    EXPECT_EQ(road.getDestinationIntersection(), &dst);
+    EXPECT_EQ(road.getDistance(),                200);
+    EXPECT_EQ(road.getSpeedLimit(),              60);
+}
+
+TEST(RoadConstruction, InitialCongestionLevelIsZero)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Road road("R", &src, &dst, 200, 60);
+
+    EXPECT_EQ(road.getCongestionLevel(), 0);
+}
+
+TEST(RoadConstruction, TravelCostIsCalculatedImmediately)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+
+    // distance=500, speed=100, congestion=0 → 500×100/100 = 500
+    Road road("R", &src, &dst, 500, 100);
+
+    EXPECT_EQ(road.getTravelCost(), 500);
+}
+
+TEST(RoadConstruction, AcceptsNullptrForSource)
+{
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("R", nullptr, &dst, 100, 50));
+}
+
+TEST(RoadConstruction, AcceptsNullptrForDestination)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("R", &src, nullptr, 100, 50));
+}
+
+TEST(RoadConstruction, AcceptsEmptyStringAsId)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("", &src, &dst, 100, 50));
+}
+
+TEST(RoadConstruction, AcceptsLongStringAsId)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road(std::string(1000, 'X'), &src, &dst, 100, 50));
+}
+
+// ── Invalid distance ──────────────────────────────────────────────────────────
+
+TEST(RoadConstruction, ThrowsOnDistanceZero)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, 0, 50), std::invalid_argument);
+}
+
+TEST(RoadConstruction, ThrowsOnNegativeDistance)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, -1, 50), std::invalid_argument);
+}
+
+TEST(RoadConstruction, ThrowsOnDistanceAboveMaximum)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, Road::MAX_DISTANCE + 1, 50), std::invalid_argument);
+}
+
+TEST(RoadConstruction, DoesNotThrowOnMinimumDistance)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("R", &src, &dst, Road::MIN_DISTANCE, 50));
+}
+
+TEST(RoadConstruction, DoesNotThrowOnMaximumDistance)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("R", &src, &dst, Road::MAX_DISTANCE, 50));
+}
+
+// ── Invalid speedLimit ────────────────────────────────────────────────────────
+
+TEST(RoadConstruction, ThrowsOnSpeedLimitZero)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, 200, 0), std::invalid_argument);
+}
+
+TEST(RoadConstruction, ThrowsOnNegativeSpeedLimit)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, 200, -1), std::invalid_argument);
+}
+
+TEST(RoadConstruction, ThrowsOnSpeedLimitBelowMinimum)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, 200, Road::MIN_SPEED_LIMIT - 1), std::invalid_argument);
+}
+
+TEST(RoadConstruction, ThrowsOnSpeedLimitAboveMaximum)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(Road("R", &src, &dst, 200, Road::MAX_SPEED_LIMIT + 1), std::invalid_argument);
+}
+
+TEST(RoadConstruction, DoesNotThrowOnMinimumSpeedLimit)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("R", &src, &dst, 200, Road::MIN_SPEED_LIMIT));
+}
+
+TEST(RoadConstruction, DoesNotThrowOnMaximumSpeedLimit)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_NO_THROW(Road("R", &src, &dst, 200, Road::MAX_SPEED_LIMIT));
+}
+
+// ── Exception content ─────────────────────────────────────────────────────────
+
+TEST(RoadConstruction, ExceptionMessageContainsRoadId_InvalidDistance)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    try
     {
-        std::cout << "\n════════════════════════════════════════\n"
-                  << "  Road unit tests\n"
-                  << "  Total : " << s_total << "\n"
-                  << "  Passed: " << s_pass  << "\n"
-                  << "  Failed: " << s_fail  << "\n"
-                  << "════════════════════════════════════════\n";
+        Road("ROAD_XYZ", &src, &dst, -999, 50);
+        FAIL() << "Expected std::invalid_argument";
     }
-
-    int exitCode() { return (s_fail == 0) ? 0 : 1; }
-}
-
-// Convenience macro – captures expression text and line number automatically.
-#define CHECK(expr) Test::check((expr), #expr, __LINE__)
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-static Intersection makeIntersection(const std::string& id, int x, int y)
-{
-    return Intersection(id, x, y, IntersectionType::CROSS);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: Construction with valid arguments
-//  Verifies that the constructor stores every attribute correctly and that
-//  travelCost is computed immediately (not left as 0).
-// ─────────────────────────────────────────────────────────────────────────────
-void test_construction_valid()
-{
-    Test::beginGroup("Construction – valid arguments");
-
-    Intersection src = makeIntersection("A", 100, 100);
-    Intersection dst = makeIntersection("B", 500, 100);
-
-    Road road("R1", &src, &dst, 400, 50);
-
-    CHECK(road.getRoadId()                  == "R1");
-    CHECK(road.getSourceIntersection()      == &src);
-    CHECK(road.getDestinationIntersection() == &dst);
-    CHECK(road.getDistance()                == 400);
-    CHECK(road.getSpeedLimit()              == 50);
-    CHECK(road.getCongestionLevel()         == 0);
-
-    // travelCost = max(1,  400 × (100 + 0) / 50 )
-    //           = max(1, 40 000 / 50)
-    //           = max(1, 800) = 800
-    CHECK(road.getTravelCost() == 800);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: Constructor clamps out-of-range distance / speedLimit
-//  Objects must always be in a valid state after construction.
-// ─────────────────────────────────────────────────────────────────────────────
-void test_construction_clampsInvalidValues()
-{
-    Test::beginGroup("Construction – clamps out-of-range values");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 10, 10);
-
-    // distance = -500 → clamped to MIN_DISTANCE = 1
-    // speedLimit = 999 → clamped to MAX_SPEED_LIMIT = 130
-    Road road("R2", &src, &dst, -500, 999);
-
-    CHECK(road.getDistance()   == Road::MIN_DISTANCE);
-    CHECK(road.getSpeedLimit() == Road::MAX_SPEED_LIMIT);
-
-    // travelCost = max(1,  1 × (100 + 0) / 130 )
-    //           = max(1, 0) = 1
-    CHECK(road.getTravelCost() == 1);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: setDistance
-// ─────────────────────────────────────────────────────────────────────────────
-void test_setDistance()
-{
-    Test::beginGroup("setDistance");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 0, 0);
-    Road road("R", &src, &dst, 500, 50);
-
-    // ── valid change ─────────────────────────────────────────────────────────
-    CHECK(road.setDistance(1000) == true);
-    CHECK(road.getDistance()     == 1000);
-    // travelCost must be recalculated: 1000 × 100 / 50 = 2000
-    CHECK(road.getTravelCost()   == 2000);
-
-    // ── invalid: zero ────────────────────────────────────────────────────────
-    CHECK(road.setDistance(0)    == false);
-    CHECK(road.getDistance()     == 1000); // unchanged
-
-    // ── invalid: negative ────────────────────────────────────────────────────
-    CHECK(road.setDistance(-1)   == false);
-    CHECK(road.getDistance()     == 1000);
-
-    // ── invalid: above maximum ───────────────────────────────────────────────
-    CHECK(road.setDistance(Road::MAX_DISTANCE + 1) == false);
-    CHECK(road.getDistance()                       == 1000);
-
-    // ── boundary: exact minimum ──────────────────────────────────────────────
-    CHECK(road.setDistance(Road::MIN_DISTANCE) == true);
-    CHECK(road.getDistance()                   == Road::MIN_DISTANCE);
-
-    // ── boundary: exact maximum ──────────────────────────────────────────────
-    CHECK(road.setDistance(Road::MAX_DISTANCE) == true);
-    CHECK(road.getDistance()                   == Road::MAX_DISTANCE);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: setSpeedLimit
-// ─────────────────────────────────────────────────────────────────────────────
-void test_setSpeedLimit()
-{
-    Test::beginGroup("setSpeedLimit");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 0, 0);
-    Road road("R", &src, &dst, 500, 50);
-
-    // ── valid change ─────────────────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(100) == true);
-    CHECK(road.getSpeedLimit()    == 100);
-    // travelCost: 500 × 100 / 100 = 500
-    CHECK(road.getTravelCost()    == 500);
-
-    // ── invalid: below minimum ───────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(Road::MIN_SPEED_LIMIT - 1) == false);
-    CHECK(road.getSpeedLimit()                          == 100); // unchanged
-
-    // ── invalid: zero ────────────────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(0) == false);
-    CHECK(road.getSpeedLimit()  == 100);
-
-    // ── invalid: negative ────────────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(-10) == false);
-    CHECK(road.getSpeedLimit()    == 100);
-
-    // ── invalid: above maximum ───────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(Road::MAX_SPEED_LIMIT + 1) == false);
-    CHECK(road.getSpeedLimit()                          == 100);
-
-    // ── boundary: exact minimum ──────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(Road::MIN_SPEED_LIMIT) == true);
-    CHECK(road.getSpeedLimit()                      == Road::MIN_SPEED_LIMIT);
-
-    // ── boundary: exact maximum ──────────────────────────────────────────────
-    CHECK(road.setSpeedLimit(Road::MAX_SPEED_LIMIT) == true);
-    CHECK(road.getSpeedLimit()                      == Road::MAX_SPEED_LIMIT);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: setSourceIntersection
-// ─────────────────────────────────────────────────────────────────────────────
-void test_setSourceIntersection()
-{
-    Test::beginGroup("setSourceIntersection");
-
-    Intersection a = makeIntersection("A", 0, 0);
-    Intersection b = makeIntersection("B", 10, 10);
-    Intersection c = makeIntersection("C", 20, 20);
-    Road road("R", &a, &b, 100, 50);
-
-    // ── nullptr rejected ─────────────────────────────────────────────────────
-    CHECK(road.setSourceIntersection(nullptr) == false);
-    CHECK(road.getSourceIntersection()        == &a);  // unchanged
-
-    // ── valid pointer accepted ───────────────────────────────────────────────
-    CHECK(road.setSourceIntersection(&c) == true);
-    CHECK(road.getSourceIntersection()   == &c);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: setDestinationIntersection
-// ─────────────────────────────────────────────────────────────────────────────
-void test_setDestinationIntersection()
-{
-    Test::beginGroup("setDestinationIntersection");
-
-    Intersection a = makeIntersection("A", 0, 0);
-    Intersection b = makeIntersection("B", 10, 10);
-    Intersection c = makeIntersection("C", 20, 20);
-    Road road("R", &a, &b, 100, 50);
-
-    // ── nullptr rejected ─────────────────────────────────────────────────────
-    CHECK(road.setDestinationIntersection(nullptr) == false);
-    CHECK(road.getDestinationIntersection()        == &b);  // unchanged
-
-    // ── valid pointer accepted ───────────────────────────────────────────────
-    CHECK(road.setDestinationIntersection(&c) == true);
-    CHECK(road.getDestinationIntersection()   == &c);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: updateCongestion
-//  Verifies range validation AND that travelCost is recalculated each time.
-// ─────────────────────────────────────────────────────────────────────────────
-void test_updateCongestion()
-{
-    Test::beginGroup("updateCongestion");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 0, 0);
-
-    // distance=400, speedLimit=50, congestion=0  →  400×100/50 = 800
-    Road road("R", &src, &dst, 400, 50);
-
-    CHECK(road.getCongestionLevel() == 0);
-    CHECK(road.getTravelCost()      == 800);
-
-    // ── congestion = 50: 400 × 150 / 50 = 1 200 ─────────────────────────────
-    CHECK(road.updateCongestion(50)  == true);
-    CHECK(road.getCongestionLevel()  == 50);
-    CHECK(road.getTravelCost()       == 1200);
-
-    // ── congestion = 100 (max): 400 × 200 / 50 = 1 600 ──────────────────────
-    CHECK(road.updateCongestion(100) == true);
-    CHECK(road.getCongestionLevel()  == 100);
-    CHECK(road.getTravelCost()       == 1600);
-
-    // ── congestion back to 0: cost returns to 800 ────────────────────────────
-    CHECK(road.updateCongestion(0)   == true);
-    CHECK(road.getCongestionLevel()  == 0);
-    CHECK(road.getTravelCost()       == 800);
-
-    // ── invalid: negative ────────────────────────────────────────────────────
-    CHECK(road.updateCongestion(-1)  == false);
-    CHECK(road.getCongestionLevel()  == 0);   // unchanged
-    CHECK(road.getTravelCost()       == 800); // cost unchanged
-
-    // ── invalid: above 100 ───────────────────────────────────────────────────
-    CHECK(road.updateCongestion(101) == false);
-    CHECK(road.getCongestionLevel()  == 0);
-    CHECK(road.getTravelCost()       == 800);
-
-    // ── boundary: exact minimum ──────────────────────────────────────────────
-    CHECK(road.updateCongestion(Road::MIN_CONGESTION) == true);
-
-    // ── boundary: exact maximum ──────────────────────────────────────────────
-    CHECK(road.updateCongestion(Road::MAX_CONGESTION) == true);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: calculateTravelCost formula
-//  Uses concrete numbers to pin the exact formula so any future change
-//  in the formula is caught immediately.
-// ─────────────────────────────────────────────────────────────────────────────
-void test_calculateTravelCost_formula()
-{
-    Test::beginGroup("calculateTravelCost – formula verification");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 0, 0);
-
-    // ── Case 1: distance=1000, speed=100, congestion=0 ───────────────────────
-    //    cost = max(1, 1000 × 100 / 100) = 1000
+    catch (const std::invalid_argument& e)
     {
-        Road r("R", &src, &dst, 1000, 100);
-        CHECK(r.getTravelCost() == 1000);
-    }
-
-    // ── Case 2: halve the speed → cost doubles ───────────────────────────────
-    //    distance=1000, speed=50, congestion=0 → 1000×100/50 = 2000
-    {
-        Road r("R", &src, &dst, 1000, 50);
-        CHECK(r.getTravelCost() == 2000);
-    }
-
-    // ── Case 3: max congestion doubles cost (the core acceptance criterion) ──
-    //    distance=1000, speed=100, congestion=100 → 1000×200/100 = 2000
-    {
-        Road r("R", &src, &dst, 1000, 100);
-        int costFree = r.getTravelCost();        // 1000
-
-        r.updateCongestion(100);
-        int costMax  = r.getTravelCost();        // 2000
-
-        CHECK(costFree != 0);
-        CHECK(costMax  == costFree * 2);
-    }
-
-    // ── Case 4: intermediate congestion ──────────────────────────────────────
-    //    distance=1000, speed=100, congestion=50 → 1000×150/100 = 1500
-    {
-        Road r("R", &src, &dst, 1000, 100);
-        r.updateCongestion(50);
-        CHECK(r.getTravelCost() == 1500);
-    }
-
-    // ── Case 5: zero-weight guard ─────────────────────────────────────────────
-    //    Very short road at max speed: distance=1, speed=130, congestion=0
-    //    raw = 1×100/130 = 0  →  clamped to max(1, 0) = 1
-    {
-        Road r("R", &src, &dst, 1, 130);
-        CHECK(r.getTravelCost() >= 1);
+        EXPECT_NE(std::string(e.what()).find("ROAD_XYZ"), std::string::npos)
+            << "Exception message must contain the road ID";
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: travelCost auto-updates when setters change relevant attributes
-// ─────────────────────────────────────────────────────────────────────────────
-void test_calculateTravelCost_autoUpdates()
+TEST(RoadConstruction, ExceptionMessageContainsRoadId_InvalidSpeed)
 {
-    Test::beginGroup("calculateTravelCost – auto-updates via setters");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 0, 0);
-
-    // Initial: distance=500, speed=50, congestion=0 → 500×100/50 = 1000
-    Road road("R", &src, &dst, 500, 50);
-    CHECK(road.getTravelCost() == 1000);
-
-    // Double the distance: 1000×100/50 = 2000
-    road.setDistance(1000);
-    CHECK(road.getTravelCost() == 2000);
-
-    // Double the speed: 1000×100/100 = 1000
-    road.setSpeedLimit(100);
-    CHECK(road.getTravelCost() == 1000);
-
-    // Add 50% congestion: 1000×150/100 = 1500
-    road.updateCongestion(50);
-    CHECK(road.getTravelCost() == 1500);
-
-    // Failed setter must NOT change travelCost
-    road.setDistance(-99);  // rejected
-    CHECK(road.getTravelCost() == 1500); // unchanged
-
-    road.setSpeedLimit(0);  // rejected
-    CHECK(road.getTravelCost() == 1500);
-
-    road.updateCongestion(999); // rejected
-    CHECK(road.getTravelCost() == 1500);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test: monotonicity of travelCost
-//  More congestion / longer distance → higher cost; higher speed → lower cost.
-// ─────────────────────────────────────────────────────────────────────────────
-void test_travelCost_monotonicity()
-{
-    Test::beginGroup("travelCost – monotonicity");
-
-    Intersection src = makeIntersection("A", 0, 0);
-    Intersection dst = makeIntersection("B", 0, 0);
-
-    // Congestion: cost increases as congestion increases
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    try
     {
-        Road r("R", &src, &dst, 1000, 60);
-        int prev = r.getTravelCost();
-        for (int c = 10; c <= 100; c += 10)
-        {
-            r.updateCongestion(c);
-            CHECK(r.getTravelCost() >= prev);
-            prev = r.getTravelCost();
-        }
+        Road("ROAD_ABC", &src, &dst, 200, 999);
+        FAIL() << "Expected std::invalid_argument";
     }
-
-    // Distance: cost increases as distance increases
+    catch (const std::invalid_argument& e)
     {
-        Road r("R", &src, &dst, Road::MIN_DISTANCE, 60);
-        int prev = r.getTravelCost();
-        for (int d = 100; d <= 2000; d += 100)
-        {
-            r.setDistance(d);
-            CHECK(r.getTravelCost() >= prev);
-            prev = r.getTravelCost();
-        }
-    }
-
-    // Speed: cost decreases as speed limit increases
-    {
-        Road r("R", &src, &dst, 1000, Road::MIN_SPEED_LIMIT);
-        int prev = r.getTravelCost();
-        for (int s = Road::MIN_SPEED_LIMIT + 5; s <= Road::MAX_SPEED_LIMIT; s += 5)
-        {
-            r.setSpeedLimit(s);
-            CHECK(r.getTravelCost() <= prev);
-            prev = r.getTravelCost();
-        }
+        EXPECT_NE(std::string(e.what()).find("ROAD_ABC"), std::string::npos)
+            << "Exception message must contain the road ID";
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Entry point
-// ─────────────────────────────────────────────────────────────────────────────
-int main()
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  2.  PARAMETERIZED  –  invalid distance / speedLimit
+//  Mỗi giá trị sai đều phải throw, không cần viết lại cùng 1 test nhiều lần.
+// ═════════════════════════════════════════════════════════════════════════════
+
+class InvalidDistanceTest : public ::testing::TestWithParam<int> {};
+
+TEST_P(InvalidDistanceTest, ConstructorThrowsInvalidArgument)
 {
-    std::cout << "Running Road unit tests…\n";
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(
+        Road("R", &src, &dst, GetParam(), 50),
+        std::invalid_argument
+    );
+}
 
-    test_construction_valid();
-    test_construction_clampsInvalidValues();
-    test_setDistance();
-    test_setSpeedLimit();
-    test_setSourceIntersection();
-    test_setDestinationIntersection();
-    test_updateCongestion();
-    test_calculateTravelCost_formula();
-    test_calculateTravelCost_autoUpdates();
-    test_travelCost_monotonicity();
+INSTANTIATE_TEST_SUITE_P(
+    OutOfRangeDistances,
+    InvalidDistanceTest,
+    ::testing::Values(
+        0,
+        -1,
+        -500,
+        Road::MAX_DISTANCE + 1,
+        Road::MAX_DISTANCE + 1000
+    )
+);
 
-    Test::printSummary();
-    return Test::exitCode();
+// ─────────────────────────────────────────────────────────────────────────────
+
+class InvalidSpeedLimitTest : public ::testing::TestWithParam<int> {};
+
+TEST_P(InvalidSpeedLimitTest, ConstructorThrowsInvalidArgument)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    EXPECT_THROW(
+        Road("R", &src, &dst, 200, GetParam()),
+        std::invalid_argument
+    );
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    OutOfRangeSpeedLimits,
+    InvalidSpeedLimitTest,
+    ::testing::Values(
+        0,
+        -1,
+        -100,
+        Road::MIN_SPEED_LIMIT - 1,
+        Road::MAX_SPEED_LIMIT + 1,
+        Road::MAX_SPEED_LIMIT + 100
+    )
+);
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  3.  GETTERS
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST_F(RoadTest, GetRoadId_ReturnsCorrectValue)
+{
+    EXPECT_EQ(road->getRoadId(), "R1");
+}
+
+TEST_F(RoadTest, GetRoadId_ReturnsByConstReference_NotCopy)
+{
+    // Trả value copy thì tốn memory; phải là const std::string&
+    static_assert(
+        std::is_same<decltype(road->getRoadId()), const std::string&>::value,
+        "getRoadId() must return const std::string& to avoid copying"
+    );
+    SUCCEED();
+}
+
+TEST_F(RoadTest, GetSourceIntersection_ReturnsCorrectAddress)
+{
+    EXPECT_EQ(road->getSourceIntersection(), src);
+}
+
+TEST_F(RoadTest, GetDestinationIntersection_ReturnsCorrectAddress)
+{
+    EXPECT_EQ(road->getDestinationIntersection(), dst);
+}
+
+TEST_F(RoadTest, GetSourceIntersection_ReturnsConstPointer)
+{
+    static_assert(
+        std::is_same<decltype(road->getSourceIntersection()), const Intersection*>::value,
+        "getSourceIntersection() must return const Intersection* (read-only)"
+    );
+    SUCCEED();
+}
+
+TEST_F(RoadTest, GetDestinationIntersection_ReturnsConstPointer)
+{
+    static_assert(
+        std::is_same<decltype(road->getDestinationIntersection()), const Intersection*>::value,
+        "getDestinationIntersection() must return const Intersection* (read-only)"
+    );
+    SUCCEED();
+}
+
+TEST_F(RoadTest, GetDistance_ReturnsStoredValue)
+{
+    EXPECT_EQ(road->getDistance(), DEFAULT_DISTANCE);
+}
+
+TEST_F(RoadTest, GetSpeedLimit_ReturnsStoredValue)
+{
+    EXPECT_EQ(road->getSpeedLimit(), DEFAULT_SPEED);
+}
+
+TEST_F(RoadTest, GetCongestionLevel_InitiallyZero)
+{
+    EXPECT_EQ(road->getCongestionLevel(), 0);
+}
+
+TEST_F(RoadTest, GetTravelCost_ReturnsComputedValue)
+{
+    EXPECT_EQ(road->getTravelCost(), DEFAULT_COST);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  4.  setDistance
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST_F(RoadTest, SetDistance_ReturnsTrueOnValidInput)
+{
+    EXPECT_TRUE(road->setDistance(1000));
+}
+
+TEST_F(RoadTest, SetDistance_StoresNewValue)
+{
+    road->setDistance(1000);
+    EXPECT_EQ(road->getDistance(), 1000);
+}
+
+TEST_F(RoadTest, SetDistance_RecalculatesTravelCost)
+{
+    road->setDistance(1000);
+    // 1000 × 100 / 50 = 2000
+    EXPECT_EQ(road->getTravelCost(), 2000);
+}
+
+TEST_F(RoadTest, SetDistance_ReturnsFalseOnZero)
+{
+    EXPECT_FALSE(road->setDistance(0));
+}
+
+TEST_F(RoadTest, SetDistance_ReturnsFalseOnNegative)
+{
+    EXPECT_FALSE(road->setDistance(-1));
+}
+
+TEST_F(RoadTest, SetDistance_ReturnsFalseAboveMax)
+{
+    EXPECT_FALSE(road->setDistance(Road::MAX_DISTANCE + 1));
+}
+
+TEST_F(RoadTest, SetDistance_PreservesAllStateOnFailure)
+{
+    const int prevDist = road->getDistance();
+    const int prevCost = road->getTravelCost();
+
+    road->setDistance(-999);
+
+    EXPECT_EQ(road->getDistance(),   prevDist);
+    EXPECT_EQ(road->getTravelCost(), prevCost);
+}
+
+TEST_F(RoadTest, SetDistance_BoundaryMinimum)
+{
+    ASSERT_TRUE(road->setDistance(Road::MIN_DISTANCE));
+    EXPECT_EQ(road->getDistance(), Road::MIN_DISTANCE);
+}
+
+TEST_F(RoadTest, SetDistance_BoundaryMaximum)
+{
+    ASSERT_TRUE(road->setDistance(Road::MAX_DISTANCE));
+    EXPECT_EQ(road->getDistance(), Road::MAX_DISTANCE);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  5.  setSpeedLimit
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST_F(RoadTest, SetSpeedLimit_ReturnsTrueOnValidInput)
+{
+    EXPECT_TRUE(road->setSpeedLimit(100));
+}
+
+TEST_F(RoadTest, SetSpeedLimit_StoresNewValue)
+{
+    road->setSpeedLimit(100);
+    EXPECT_EQ(road->getSpeedLimit(), 100);
+}
+
+TEST_F(RoadTest, SetSpeedLimit_RecalculatesTravelCost)
+{
+    road->setSpeedLimit(100);
+    // distance=400, speed=100, congestion=0 → 400×100/100 = 400
+    EXPECT_EQ(road->getTravelCost(), 400);
+}
+
+TEST_F(RoadTest, SetSpeedLimit_ReturnsFalseOnZero)
+{
+    EXPECT_FALSE(road->setSpeedLimit(0));
+}
+
+TEST_F(RoadTest, SetSpeedLimit_ReturnsFalseOnNegative)
+{
+    EXPECT_FALSE(road->setSpeedLimit(-1));
+}
+
+TEST_F(RoadTest, SetSpeedLimit_ReturnsFalseBelowMinimum)
+{
+    EXPECT_FALSE(road->setSpeedLimit(Road::MIN_SPEED_LIMIT - 1));
+}
+
+TEST_F(RoadTest, SetSpeedLimit_ReturnsFalseAboveMaximum)
+{
+    EXPECT_FALSE(road->setSpeedLimit(Road::MAX_SPEED_LIMIT + 1));
+}
+
+TEST_F(RoadTest, SetSpeedLimit_PreservesAllStateOnFailure)
+{
+    const int prevSpeed = road->getSpeedLimit();
+    const int prevCost  = road->getTravelCost();
+
+    road->setSpeedLimit(0);
+
+    EXPECT_EQ(road->getSpeedLimit(), prevSpeed);
+    EXPECT_EQ(road->getTravelCost(), prevCost);
+}
+
+TEST_F(RoadTest, SetSpeedLimit_BoundaryMinimum)
+{
+    ASSERT_TRUE(road->setSpeedLimit(Road::MIN_SPEED_LIMIT));
+    EXPECT_EQ(road->getSpeedLimit(), Road::MIN_SPEED_LIMIT);
+}
+
+TEST_F(RoadTest, SetSpeedLimit_BoundaryMaximum)
+{
+    ASSERT_TRUE(road->setSpeedLimit(Road::MAX_SPEED_LIMIT));
+    EXPECT_EQ(road->getSpeedLimit(), Road::MAX_SPEED_LIMIT);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  6.  setSourceIntersection / setDestinationIntersection
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST_F(RoadTest, SetSourceIntersection_ReturnsTrueOnValidPointer)
+{
+    EXPECT_TRUE(road->setSourceIntersection(extra));
+}
+
+TEST_F(RoadTest, SetSourceIntersection_StoresNewPointer)
+{
+    road->setSourceIntersection(extra);
+    EXPECT_EQ(road->getSourceIntersection(), extra);
+}
+
+TEST_F(RoadTest, SetSourceIntersection_ReturnsFalseOnNullptr)
+{
+    EXPECT_FALSE(road->setSourceIntersection(nullptr));
+}
+
+TEST_F(RoadTest, SetSourceIntersection_PreservesPointerOnFailure)
+{
+    road->setSourceIntersection(nullptr);
+    EXPECT_EQ(road->getSourceIntersection(), src);
+}
+
+TEST_F(RoadTest, SetSourceIntersection_DoesNotChangeTravelCost)
+{
+    // Cost phụ thuộc distance/speed/congestion, không phụ thuộc intersection nào
+    const int costBefore = road->getTravelCost();
+    road->setSourceIntersection(extra);
+    EXPECT_EQ(road->getTravelCost(), costBefore);
+}
+
+TEST_F(RoadTest, SetDestinationIntersection_ReturnsTrueOnValidPointer)
+{
+    EXPECT_TRUE(road->setDestinationIntersection(extra));
+}
+
+TEST_F(RoadTest, SetDestinationIntersection_StoresNewPointer)
+{
+    road->setDestinationIntersection(extra);
+    EXPECT_EQ(road->getDestinationIntersection(), extra);
+}
+
+TEST_F(RoadTest, SetDestinationIntersection_ReturnsFalseOnNullptr)
+{
+    EXPECT_FALSE(road->setDestinationIntersection(nullptr));
+}
+
+TEST_F(RoadTest, SetDestinationIntersection_PreservesPointerOnFailure)
+{
+    road->setDestinationIntersection(nullptr);
+    EXPECT_EQ(road->getDestinationIntersection(), dst);
+}
+
+TEST_F(RoadTest, SetDestinationIntersection_DoesNotChangeTravelCost)
+{
+    const int costBefore = road->getTravelCost();
+    road->setDestinationIntersection(extra);
+    EXPECT_EQ(road->getTravelCost(), costBefore);
+}
+
+TEST_F(RoadTest, SetIntersection_CanSetSameNodeAsBothEndpoints)
+{
+    // Self-loop hợp lệ ở cấp Road; graph manager chịu trách nhiệm topology.
+    EXPECT_TRUE(road->setDestinationIntersection(src));
+    EXPECT_EQ(road->getSourceIntersection(),      src);
+    EXPECT_EQ(road->getDestinationIntersection(), src);
+}
+
+TEST_F(RoadTest, SetIntersection_CanSwapSourceAndDestination)
+{
+    ASSERT_TRUE(road->setSourceIntersection(dst));
+    ASSERT_TRUE(road->setDestinationIntersection(src));
+    EXPECT_EQ(road->getSourceIntersection(),      dst);
+    EXPECT_EQ(road->getDestinationIntersection(), src);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  7.  updateCongestion
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST_F(RoadTest, UpdateCongestion_ReturnsTrueOnValidInput)
+{
+    EXPECT_TRUE(road->updateCongestion(50));
+}
+
+TEST_F(RoadTest, UpdateCongestion_StoresNewLevel)
+{
+    road->updateCongestion(75);
+    EXPECT_EQ(road->getCongestionLevel(), 75);
+}
+
+TEST_F(RoadTest, UpdateCongestion_RecalculatesTravelCost)
+{
+    road->updateCongestion(50);
+    // 400 × 150 / 50 = 1200
+    EXPECT_EQ(road->getTravelCost(), 1200);
+}
+
+TEST_F(RoadTest, UpdateCongestion_ReturnsFalseOnNegative)
+{
+    EXPECT_FALSE(road->updateCongestion(-1));
+}
+
+TEST_F(RoadTest, UpdateCongestion_ReturnsFalseAbove100)
+{
+    EXPECT_FALSE(road->updateCongestion(101));
+}
+
+TEST_F(RoadTest, UpdateCongestion_PreservesAllStateOnFailure)
+{
+    const int prevLevel = road->getCongestionLevel();
+    const int prevCost  = road->getTravelCost();
+
+    road->updateCongestion(-1);
+    EXPECT_EQ(road->getCongestionLevel(), prevLevel);
+    EXPECT_EQ(road->getTravelCost(),      prevCost);
+
+    road->updateCongestion(101);
+    EXPECT_EQ(road->getCongestionLevel(), prevLevel);
+    EXPECT_EQ(road->getTravelCost(),      prevCost);
+}
+
+TEST_F(RoadTest, UpdateCongestion_BoundaryMinimum)
+{
+    ASSERT_TRUE(road->updateCongestion(Road::MIN_CONGESTION));
+    EXPECT_EQ(road->getCongestionLevel(), Road::MIN_CONGESTION);
+}
+
+TEST_F(RoadTest, UpdateCongestion_BoundaryMaximum)
+{
+    ASSERT_TRUE(road->updateCongestion(Road::MAX_CONGESTION));
+    EXPECT_EQ(road->getCongestionLevel(), Road::MAX_CONGESTION);
+}
+
+TEST_F(RoadTest, UpdateCongestion_BackToZeroRestoresBaseCost)
+{
+    road->updateCongestion(80);
+    road->updateCongestion(0);
+    EXPECT_EQ(road->getTravelCost(), DEFAULT_COST);
+}
+
+TEST_F(RoadTest, UpdateCongestion_IsIdempotent)
+{
+    road->updateCongestion(50);
+    const int cost1 = road->getTravelCost();
+    road->updateCongestion(50);
+    EXPECT_EQ(road->getTravelCost(), cost1);
+}
+
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  8.  calculateTravelCost  –  formula, auto-update, edge-cases
+//  I guess this is the most important part of the Road class, so it deserves a lot of tests to verify the formula 
+//  is implemented correctly and behaves as expected across a wide range of inputs.
+// ═════════════════════════════════════════════════════════════════════════════
+
+TEST_F(RoadTest, TravelCost_FormulaWithNoCongestion)
+{
+    // 400 × 100 / 50 = 800
+    EXPECT_EQ(road->getTravelCost(), 800);
+}
+
+TEST_F(RoadTest, TravelCost_MaxCongestionDoublesCost)
+{
+    const int base = road->getTravelCost();
+    road->updateCongestion(100);
+    // 400 × 200 / 50 = 1600 = 800 × 2
+    EXPECT_EQ(road->getTravelCost(), base * 2);
+}
+
+TEST_F(RoadTest, TravelCost_IntermediateCongestion)
+{
+    road->updateCongestion(50);
+    // 400 × 150 / 50 = 1200
+    EXPECT_EQ(road->getTravelCost(), 1200);
+}
+
+TEST_F(RoadTest, TravelCost_HalvedSpeedDoublesCost)
+{
+    const int base = road->getTravelCost();  // 800
+    road->setSpeedLimit(DEFAULT_SPEED / 2);  // 25 km/h
+    // 400 × 100 / 25 = 1600
+    EXPECT_EQ(road->getTravelCost(), base * 2);
+}
+
+TEST_F(RoadTest, TravelCost_IntegerDivisionTruncates_NotRounds)
+{
+    // 7 × 100 / 11 = 700 / 11 = 63  (bị truncate, không round lên 64)
+    road->setDistance(7);
+    road->setSpeedLimit(11);
+    EXPECT_EQ(road->getTravelCost(), 700 / 11);  // 63
+}
+
+TEST_F(RoadTest, TravelCost_CongestionAndSpeedInteraction)
+{
+    road->updateCongestion(50);
+    road->setSpeedLimit(100);
+    // 400 × 150 / 100 = 600
+    EXPECT_EQ(road->getTravelCost(), 600);
+}
+
+TEST_F(RoadTest, TravelCost_MultipleAttributeChangesCompound)
+{
+    road->setDistance(1000);
+    road->setSpeedLimit(100);
+    road->updateCongestion(50);
+    // 1000 × 150 / 100 = 1500
+    EXPECT_EQ(road->getTravelCost(), 1500);
+}
+
+TEST_F(RoadTest, TravelCost_AllFailedSettersLeaveEverythingUnchanged)
+{
+    const int dist       = road->getDistance();
+    const int speed      = road->getSpeedLimit();
+    const int congestion = road->getCongestionLevel();
+    const int cost       = road->getTravelCost();
+
+    road->setDistance(-1);
+    road->setSpeedLimit(0);
+    road->updateCongestion(999);
+    road->setSourceIntersection(nullptr);
+    road->setDestinationIntersection(nullptr);
+
+    EXPECT_EQ(road->getDistance(),        dist);
+    EXPECT_EQ(road->getSpeedLimit(),      speed);
+    EXPECT_EQ(road->getCongestionLevel(), congestion);
+    EXPECT_EQ(road->getTravelCost(),      cost);
+    EXPECT_EQ(road->getSourceIntersection(),      src);
+    EXPECT_EQ(road->getDestinationIntersection(), dst);
+}
+
+TEST(RoadTravelCost, ZeroWeightGuard_EnsuresMinimumOfOne)
+{
+    // distance=1, speed=130, congestion=0 → 1×100/130 = 0 → clamped to max(1, 0) = 1
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 0, 0, IntersectionType::CROSS);
+    Road road("R", &src, &dst, Road::MIN_DISTANCE, Road::MAX_SPEED_LIMIT);
+
+    EXPECT_GE(road.getTravelCost(), 1);
+}
+
+TEST(RoadTravelCost, IsAlwaysPositive_AcrossValidInputCombinations)
+{
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 0, 0, IntersectionType::CROSS);
+
+    for (int dist  : {1, 10, 100, Road::MAX_DISTANCE})
+    for (int speed : {Road::MIN_SPEED_LIMIT, 50, Road::MAX_SPEED_LIMIT})
+    {
+        Road r("R", &src, &dst, dist, speed);
+        EXPECT_GT(r.getTravelCost(), 0)
+            << "distance=" << dist << " speed=" << speed;
+    }
+}
+
+TEST(RoadTravelCost, MaxPossibleCostWithinIntRange)
+{
+    // MAX_DISTANCE + MIN_SPEED + MAX_CONGESTION → 8000×200/5 = 320 000
+    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection dst("B", 0, 0, IntersectionType::CROSS);
+    Road road("R", &src, &dst, Road::MAX_DISTANCE, Road::MIN_SPEED_LIMIT);
+    road.updateCongestion(Road::MAX_CONGESTION);
+
+    const int expected = (Road::MAX_DISTANCE * (100 + Road::MAX_CONGESTION))
+                         / Road::MIN_SPEED_LIMIT;
+    EXPECT_EQ(road.getTravelCost(), expected);
+    EXPECT_GT(road.getTravelCost(), 0);  // không overflow thành âm
+}
+
+// ── Monotonicity ──────────────────────────────────────────────────────────────
+
+TEST_F(RoadTest, TravelCost_IncreasesMonotonicallyWithCongestion)
+{
+    road->updateCongestion(0);
+    int prev = road->getTravelCost();
+    for (int c = 1; c <= Road::MAX_CONGESTION; ++c)
+    {
+        road->updateCongestion(c);
+        EXPECT_GE(road->getTravelCost(), prev)
+            << "Cost decreased when congestion increased to " << c;
+        prev = road->getTravelCost();
+    }
+}
+
+TEST_F(RoadTest, TravelCost_IncreasesMonotonicallyWithDistance)
+{
+    road->setDistance(Road::MIN_DISTANCE);
+    int prev = road->getTravelCost();
+    for (int d = 100; d <= 3000; d += 100)
+    {
+        road->setDistance(d);
+        EXPECT_GE(road->getTravelCost(), prev)
+            << "Cost decreased when distance increased to " << d;
+        prev = road->getTravelCost();
+    }
+}
+
+TEST_F(RoadTest, TravelCost_DecreasesMonotonicallyWithSpeed)
+{
+    road->setSpeedLimit(Road::MIN_SPEED_LIMIT);
+    int prev = road->getTravelCost();
+    for (int s = Road::MIN_SPEED_LIMIT + 5; s <= Road::MAX_SPEED_LIMIT; s += 5)
+    {
+        road->setSpeedLimit(s);
+        EXPECT_LE(road->getTravelCost(), prev)
+            << "Cost increased when speedLimit increased to " << s;
+        prev = road->getTravelCost();
+    }
+}
+
+
+int runRoadTests()
+{
+    // GTest needs at least argv[0] (program name); provide a dummy so that
+    // InitGoogleTest() is satisfied when called from a host main() that may
+    // not expose its own argc/argv.
+    int   argc    = 1;
+    char  name[]  = "Road_test";
+    char* argv[]  = { name, nullptr };
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
