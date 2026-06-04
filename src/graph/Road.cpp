@@ -1,5 +1,6 @@
 #include "graph/Road.hpp"
 #include "graph/Intersection.hpp"
+#include <stdexcept> // to use invalid_argument in line 31, 39
 
 #include <algorithm> // std::clamp, std::max
 
@@ -21,11 +22,28 @@ Road::Road(
     roadId(id),
     sourceIntersection(source),
     destinationIntersection(destination),
-    distance(std::clamp(distance,   MIN_DISTANCE,    MAX_DISTANCE)),
-    speedLimit(std::clamp(speedLimit, MIN_SPEED_LIMIT, MAX_SPEED_LIMIT)),
+    distance(distance),
+    speedLimit(speedLimit),
     congestionLevel(MIN_CONGESTION),
     travelCost(0)
 {
+    if (distance < MIN_DISTANCE || distance > MAX_DISTANCE)
+    {
+        throw std::invalid_argument(
+            "Road \"" + id + "\": distance " + std::to_string(distance) +
+            " is outside valid range [" +
+            std::to_string(MIN_DISTANCE) + ", " + std::to_string(MAX_DISTANCE) + "]");
+    }
+
+    if (speedLimit < MIN_SPEED_LIMIT || speedLimit > MAX_SPEED_LIMIT)
+    {
+        throw std::invalid_argument(
+            "Road \"" + id + "\": speedLimit " + std::to_string(speedLimit) +
+            " is outside valid range [" +
+            std::to_string(MIN_SPEED_LIMIT) + ", " + std::to_string(MAX_SPEED_LIMIT) + "]");
+    }
+
+    //Fix the distance and speed limit to be within the valid range, so we can guarantee that these variantes are valid for the function.
     calculateTravelCost();
 }
 
@@ -42,12 +60,12 @@ const std::string& Road::getRoadId() const
     return roadId;
 }
 
-Intersection* Road::getSourceIntersection() const
+const Intersection* Road::getSourceIntersection() const
 {
     return sourceIntersection;
 }
 
-Intersection* Road::getDestinationIntersection() const
+const Intersection* Road::getDestinationIntersection() const
 {
     return destinationIntersection;
 }
