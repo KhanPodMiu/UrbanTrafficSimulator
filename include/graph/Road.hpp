@@ -33,8 +33,8 @@ public:
     const std::string& getRoadId()                  const;
 
     // Returns raw pointers – callers must NOT take ownership.
-    Intersection*      getSourceIntersection()      const;
-    Intersection*      getDestinationIntersection() const;
+    const Intersection*      getSourceIntersection()      const;
+    const Intersection*      getDestinationIntersection() const;
 
     int  getDistance()       const;
     int  getSpeedLimit()     const;
