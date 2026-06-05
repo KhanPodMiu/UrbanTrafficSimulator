@@ -26,8 +26,15 @@ find_package(SDL2_ttf REQUIRED)
 # JsonCpp
 # --------------------------------
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+include(FetchContent)
+
+FetchContent_Declare(
+    jsoncpp
+    GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
+    GIT_TAG 1.9.6
+)
+
+FetchContent_MakeAvailable(jsoncpp)
 
 # --------------------------------
 # Source files
@@ -53,18 +60,13 @@ add_library(traffic_lib
 
 target_include_directories(traffic_lib PUBLIC
     include
-    ${JSONCPP_INCLUDE_DIRS}
-)
-
-target_link_directories(traffic_lib PUBLIC
-    ${JSONCPP_LIBRARY_DIRS}
 )
 
 target_link_libraries(traffic_lib PUBLIC
     SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
-    ${JSONCPP_LIBRARIES}
+    jsoncpp_lib
 )
 
 # --------------------------------
