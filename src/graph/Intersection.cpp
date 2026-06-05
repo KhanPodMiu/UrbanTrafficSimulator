@@ -1,29 +1,52 @@
 #include "graph/Intersection.hpp"
-
 #include <algorithm>
+#include <stdexcept>
 
 constexpr int MAP_WIDTH = 4000;
 constexpr int MAP_HEIGHT = 4000;
 
 Intersection::Intersection(
-    const std::string& id,
-    int x,
-    int y,
-    IntersectionType type)
+    std::string id,
+    int                x,
+    int                y,
+    IntersectionType   type)
     :
     intersectionID(id),
     x(x),
     y(y),
     type(type)
 {
-    setPosition(x, y);
+    if (id.empty())
+    {
+        throw std::invalid_argument(
+            "Intersection ID cannot be empty");
+    }
+
+    if (x < 0 || x > MAP_WIDTH)
+    {
+        throw std::invalid_argument(
+            "Intersection \"" + id +
+            "\": x position " + std::to_string(x) +
+            " is outside valid range [0, " +
+            std::to_string(MAP_WIDTH) + "]");
+    }
+
+    if (y < 0 || y > MAP_HEIGHT)
+    {
+        throw std::invalid_argument(
+            "Intersection \"" + id +
+            "\": y position " + std::to_string(y) +
+            " is outside valid range [0, " +
+            std::to_string(MAP_HEIGHT) + "]");
+    }
 }
 
 Intersection::~Intersection()
 {
 }
 
-const std::string& Intersection::getIntersectionID() const
+//Getters
+std::string Intersection::getIntersectionID() const
 {
     return intersectionID;
 }
@@ -62,18 +85,20 @@ int Intersection::getOutgoingRoadCount() const
 {
     return outgoingRoads.size();
 }
+
+int Intersection::getDegree() const
+{
+    return incomingRoads.size() + outgoingRoads.size();
+}
+
+//Setters
 bool Intersection::setPosition(int x, int y)
 {
-    if (x < 0 || x > MAP_WIDTH)
+    if (x < 0 || x > MAP_WIDTH || y < 0 || y > MAP_HEIGHT)
     {
         return false;
     }
-
-    if (y < 0 || y > MAP_HEIGHT)
-    {
-        return false;
-    }
-
+    
     this->x = x;
     this->y = y;
 
@@ -94,7 +119,7 @@ bool Intersection::addIncomingRoad(Road* road)
 
     if (it != incomingRoads.end())
     {
-        return false;
+        return true;
     }
 
     incomingRoads.push_back(road);
@@ -116,7 +141,7 @@ bool Intersection::addOutgoingRoad(Road* road)
 
     if (it != outgoingRoads.end())
     {
-        return false;
+        return true;
     }
 
     outgoingRoads.push_back(road);
@@ -126,6 +151,11 @@ bool Intersection::addOutgoingRoad(Road* road)
 
 bool Intersection::removeIncomingRoad(Road* road)
 {
+    if (road == nullptr)
+    {
+        return false;
+    }
+
     auto it = std::find(
         incomingRoads.begin(),
         incomingRoads.end(),
@@ -143,6 +173,11 @@ bool Intersection::removeIncomingRoad(Road* road)
 
 bool Intersection::removeOutgoingRoad(Road* road)
 {
+    if (road == nullptr)
+    {
+        return false;
+    }
+
     auto it = std::find(
         outgoingRoads.begin(),
         outgoingRoads.end(),
@@ -158,7 +193,3 @@ bool Intersection::removeOutgoingRoad(Road* road)
     return true;
 }
 
-int Intersection::getDegree() const
-{
-    return incomingRoads.size() + outgoingRoads.size();
-}

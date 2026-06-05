@@ -16,8 +16,7 @@ enum class IntersectionType
 class Intersection
 {
 private:
-    std::string intersectionID;
-
+    const std::string& intersectionID;
     int x;
     int y;
 
@@ -28,7 +27,7 @@ private:
 
 public:
     Intersection(
-        const std::string& id,
+        std::string id,
         int x,
         int y,
         IntersectionType type
@@ -37,7 +36,7 @@ public:
     ~Intersection();
 
     // Getters
-    const std::string& getIntersectionID() const;
+    std::string getIntersectionID() const;
 
     int getX() const;
     int getY() const;
@@ -50,6 +49,8 @@ public:
     int getIncomingRoadCount() const;
     int getOutgoingRoadCount() const;
 
+    int getDegree() const;
+
     // Setters
     bool setPosition(int x, int y);
 
@@ -59,8 +60,6 @@ public:
 
     bool removeIncomingRoad(Road* road);
     bool removeOutgoingRoad(Road* road);
-
-    int getDegree() const;
 };
 
 #endif
