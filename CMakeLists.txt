@@ -16,11 +16,11 @@ include_directories(include)
 # SDL2
 # --------------------------------
 
-find_package(SDL2 REQUIRED)
+# find_package(SDL2 REQUIRED)
 
 
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
+# find_package(SDL2_image REQUIRED)
+# find_package(SDL2_ttf REQUIRED)
 
 # --------------------------------
 # JsonCpp
@@ -61,9 +61,9 @@ target_link_directories(traffic_lib PUBLIC
 )
 
 target_link_libraries(traffic_lib PUBLIC
-    SDL2::SDL2
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
+    # SDL2::SDL2
+    # SDL2_image::SDL2_image
+    # SDL2_ttf::SDL2_ttf
     ${JSONCPP_LIBRARIES}
 )
 
@@ -76,6 +76,7 @@ add_executable(main
 )
 
 target_link_libraries(main PRIVATE
+    # SDL2::SDL2main
     traffic_lib
 )
 
