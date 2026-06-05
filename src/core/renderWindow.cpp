@@ -1,6 +1,6 @@
 #include "core/renderWindow.hpp"
-#include "SDL.h"
-#include "SDL_image.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
 #include <iostream>
 
 RenderWindow::RenderWindow(const char* title, int w, int h) : window(nullptr), renderer(nullptr) {
