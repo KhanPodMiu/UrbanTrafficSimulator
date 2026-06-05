@@ -44,3 +44,7 @@ void RenderWindow::display(){
 void RenderWindow::cleanUp(){
     SDL_DestroyWindow(window);
 }
+
+void RenderWindow::cleanUpTexture(SDL_Texture* texture){
+    SDL_DestroyTexture(texture);
+}

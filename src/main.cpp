@@ -5,15 +5,7 @@
 
 int main(int argc, char* args[]) {
 
-    if(SDL_Init(SDL_INIT_VIDEO) != 0){
-        std::cerr << "Hey... SDL has failed" << SDL_GetError();
-        return 1;
-    }
-
-    if(!IMG_Init(IMG_INIT_PNG)){
-        std::cerr << "IMG_Init has failed" << SDL_GetError();
-        return 1;
-    }
+    SDL_Init(SDL_INIT_EVERYTHING);
 
     RenderWindow* window = new RenderWindow("Urban Traffic", 1600, 900);
 
@@ -38,11 +30,12 @@ int main(int argc, char* args[]) {
         window -> clear();
         window -> render(MapBackground);
         window -> display();
+
     }
 
     window -> cleanUp();
 
-    SDL_DestroyTexture(MapBackground);
+    window -> cleanUpTexture(MapBackground);
 
     SDL_Quit();
     return 0;

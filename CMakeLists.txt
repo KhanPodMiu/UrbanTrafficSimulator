@@ -18,6 +18,8 @@ include_directories(include)
 
 find_package(SDL2 REQUIRED)
 
+include_directories(/opt/homebrew/include)
+
 
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
@@ -76,7 +78,6 @@ add_executable(main
 )
 
 target_link_libraries(main PRIVATE
-    SDL2::SDL2main
     traffic_lib
 )
 

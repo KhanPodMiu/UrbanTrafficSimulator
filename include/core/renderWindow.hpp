@@ -10,6 +10,7 @@ public:
     void clear();
     void render(SDL_Texture* texture);
     void display();
+    void cleanUpTexture(SDL_Texture* texture);
 
 private:
     SDL_Window *window;
