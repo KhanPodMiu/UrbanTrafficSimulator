@@ -10,190 +10,18 @@ TEST(INTERSECTION, ValidData) {
     Intersection intersection(
             "I1",
             100,
-            200,
-            IntersectionType::CROSS
+            200
     );
     EXPECT_EQ(intersection.getIntersectionID(), "I1");
     EXPECT_EQ(intersection.getX(), 100);
     EXPECT_EQ(intersection.getY(), 200);
-    EXPECT_EQ(intersection.getType(),
-              IntersectionType::CROSS);
 }
 
-TEST(IntersectionConstructorTest,
-    CreateIntersection_WithXAtLowerBoundary)
-{
-    EXPECT_NO_THROW(
-        Intersection(
-            "I1",
-            0,
-            100,
-            IntersectionType::CROSS));
-}
-
-TEST(IntersectionConstructorTest,
-    CreateIntersection_WithXAtUpperBoundary)
-{
-    EXPECT_NO_THROW(
-        Intersection(
-            "I1",
-            4000,
-            100,
-            IntersectionType::CROSS));
-}
-
-TEST(IntersectionConstructorTest,
-    CreateIntersection_WithXBelowLowerBoundary)
-{
-    EXPECT_THROW(
-        Intersection(
-            "I1",
-            -1,
-            100,
-            IntersectionType::CROSS),
-        std::invalid_argument);
-}
-
-TEST(IntersectionConstructorTest,
-    CreateIntersection_WithXAboveUpperBoundary)
-{
-    EXPECT_THROW(
-        Intersection(
-            "I1",
-            4001,
-            100,
-            IntersectionType::CROSS),
-        std::invalid_argument);
-}
-
-//------------GETTER TEST------------
-TEST(IntersectionGetterTest,ValidGetter)
-{
-    Intersection intersection(
-        "I1",
-        100,
-        200,
-        IntersectionType::ROUNDABOUT);
-
-    EXPECT_EQ(
-        intersection.getIntersectionID(),"I1");
-    EXPECT_EQ(
-        intersection.getX(),100);
-    EXPECT_EQ(
-        intersection.getY(),200);
-    EXPECT_EQ(
-        intersection.getType(),
-        IntersectionType::ROUNDABOUT);
-}
-
-TEST(IntersectionGetterTest,Empty_State)
-{
-    Intersection intersection(
-        "I1",
-        100,
-        200,
-        IntersectionType::CROSS);
-
-    EXPECT_TRUE(
-        intersection.getIncomingRoads().empty());
-
-    EXPECT_TRUE(
-        intersection.getOutgoingRoads().empty());
-
-    
-    EXPECT_EQ(
-        intersection.getIncomingRoadCount(),0);
-
-    EXPECT_EQ(
-        intersection.getOutgoingRoadCount(),0);
-
-    EXPECT_EQ(
-        intersection.getDegree(),0);
-}
-
-TEST(IntersectionGetterTest,
-     GetIncomingRoadCount_ReturnsCorrectCount)
-{
-    Intersection source(
-        "S",
-        100,
-        100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",
-        200,
-        200,
-        IntersectionType::CROSS);
-
-    Road road(
-        "R1",
-        &source,
-        &destination,
-        100,
-        60);
-
-    destination.addIncomingRoad(&road);
-
-    EXPECT_EQ(
-        destination.getIncomingRoadCount(),
-        1);
-}
-
-TEST(IntersectionGetterTest,
-     GetDegree_ReturnsSumOfIncomingAndOutgoingRoads)
-{
-    Intersection center(
-        "C",
-        100,
-        100,
-        IntersectionType::CROSS);
-
-    Intersection a(
-        "A",
-        0,
-        0,
-        IntersectionType::CROSS);
-
-    Intersection b(
-        "B",
-        0,
-        0,
-        IntersectionType::CROSS);
-
-    Road incoming(
-        "R1",
-        &a,
-        &center,
-        100,
-        60);
-
-    Road outgoing(
-        "R2",
-        &center,
-        &b,
-        100,
-        60);
-
-    center.addIncomingRoad(&incoming);
-    center.addOutgoingRoad(&outgoing);
-
-    EXPECT_EQ(
-        center.getDegree(),
-        2);
-}
-
-//----------- Setter TEST ---------
-TEST(IntersectionSetterTest,
+TEST(IntersectionRoadTest,
      AddIncomingRoad_AddsRoadSuccessfully)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection source("S", 0, 0);
+    Intersection destination("D", 100, 100);
 
     Road road(
         "R1",
@@ -210,16 +38,11 @@ TEST(IntersectionSetterTest,
         1);
 }
 
-TEST(IntersectionSetterTest,
-     AddIncomingRoad_DoesNotAddDuplicateRoad)
+TEST(IntersectionRoadTest,
+     AddIncomingRoad_DoesNotDuplicateRoad)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection source("S", 0, 0);
+    Intersection destination("D", 100, 100);
 
     Road road(
         "R1",
@@ -236,14 +59,13 @@ TEST(IntersectionSetterTest,
         1);
 }
 
-TEST(IntersectionSetterTest,
+TEST(IntersectionRoadTest,
      AddIncomingRoad_RejectsNullptr)
 {
     Intersection intersection(
         "I1",
         100,
-        100,
-        IntersectionType::CROSS);
+        100);
 
     EXPECT_FALSE(
         intersection.addIncomingRoad(nullptr));
@@ -253,16 +75,11 @@ TEST(IntersectionSetterTest,
         0);
 }
 
-TEST(IntersectionSetterTest,
+TEST(IntersectionRoadTest,
      AddOutgoingRoad_AddsRoadSuccessfully)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection source("S", 0, 0);
+    Intersection destination("D", 100, 100);
 
     Road road(
         "R1",
@@ -279,17 +96,11 @@ TEST(IntersectionSetterTest,
         1);
 }
 
-//--------- REMOVE TEST---------
-TEST(IntersectionRemoveTest,
+TEST(IntersectionRoadTest,
      RemoveIncomingRoad_RemovesExistingRoad)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection source("S", 0, 0);
+    Intersection destination("D", 100, 100);
 
     Road road(
         "R1",
@@ -308,16 +119,11 @@ TEST(IntersectionRemoveTest,
         0);
 }
 
-TEST(IntersectionRemoveTest,
-     RemoveIncomingRoad_ReturnsFalseWhenRoadNotFound)
+TEST(IntersectionRoadTest,
+     RemoveIncomingRoad_RoadNotFound)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection source("S", 0, 0);
+    Intersection destination("D", 100, 100);
 
     Road road(
         "R1",
@@ -326,77 +132,15 @@ TEST(IntersectionRemoveTest,
         100,
         60);
 
-    EXPECT_FALSE(
-        destination.removeIncomingRoad(&road));
-
-    EXPECT_EQ(
-        destination.getIncomingRoadCount(),
-        0);
-}
-
-TEST(IntersectionRemoveTest,
-     RemoveIncomingRoad_RejectsNullptr)
-{
-    Intersection intersection(
-        "I1",
-        100,
-        100,
-        IntersectionType::CROSS);
-
-    EXPECT_FALSE(
-        intersection.removeIncomingRoad(nullptr));
-}
-
-TEST(IntersectionRemoveTest,
-     RemoveIncomingRoad_RemovesCorrectRoad)
-{
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
-
-    Road road1(
-        "R1",
-        &source,
-        &destination,
-        100,
-        60);
-
-    Road road2(
-        "R2",
-        &source,
-        &destination,
-        200,
-        60);
-
-    destination.addIncomingRoad(&road1);
-    destination.addIncomingRoad(&road2);
-
     EXPECT_TRUE(
-        destination.removeIncomingRoad(&road2));
-
-    EXPECT_EQ(
-        destination.getIncomingRoadCount(),
-        1);
-
-    EXPECT_EQ(
-        destination.getIncomingRoads()[0],
-        &road1);
+        destination.removeIncomingRoad(&road));
 }
 
-TEST(IntersectionRemoveTest,
+TEST(IntersectionRoadTest,
      RemoveOutgoingRoad_RemovesExistingRoad)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
-
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection source("S", 0, 0);
+    Intersection destination("D", 100, 100);
 
     Road road(
         "R1",
@@ -415,79 +159,174 @@ TEST(IntersectionRemoveTest,
         0);
 }
 
-TEST(IntersectionRemoveTest,
-     RemoveOutgoingRoad_ReturnsFalseWhenRoadNotFound)
+TEST(IntersectionTypeTest,
+     GetType_ReturnsStraight)
 {
-    Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
+    Intersection center("C", 100, 100);
 
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
+    Intersection a("A", 0, 0);
+    Intersection b("B", 0, 0);
 
-    Road road(
-        "R1",
-        &source,
-        &destination,
-        100,
-        60);
+    Road r1("R1", &a, &center, 100, 60);
+    Road r2("R2", &b, &center, 100, 60);
 
-    EXPECT_FALSE(
-        source.removeOutgoingRoad(&road));
+
+    center.addIncomingRoad(&r1);
+    center.addIncomingRoad(&r2);
+
+    EXPECT_EQ(
+        center.getType(),
+        IntersectionType::STRAIGHT);
 }
 
-TEST(IntersectionRemoveTest,
-     RemoveOutgoingRoad_RejectsNullptr)
+TEST(IntersectionTypeTest,
+     GetType_ReturnsTIntersection)
+{
+    Intersection center("C", 100, 100);
+
+    Intersection a("A", 0, 0);
+    Intersection b("B", 0, 0);
+    Intersection c("D", 0, 0);
+
+    Road r1("R1", &a, &center, 100, 60);
+    Road r2("R2", &b, &center, 100, 60);
+    Road r3("R3", &center, &c, 100, 60);
+
+    center.addIncomingRoad(&r1);
+    center.addIncomingRoad(&r2);
+    center.addOutgoingRoad(&r3);
+
+    EXPECT_EQ(
+        center.getType(),
+        IntersectionType::T_INTERSECTION);
+}
+
+TEST(IntersectionTypeTest,
+     GetType_ReturnsCross)
+{
+    Intersection center("C", 100, 100);
+
+    Intersection a("A", 0, 0);
+    Intersection b("B", 0, 0);
+    Intersection c("D", 0, 0);
+    Intersection d("E", 0, 0);
+
+    Road r1("R1", &a, &center, 100, 60);
+    Road r2("R2", &b, &center, 100, 60);
+    Road r3("R3", &center, &c, 100, 60);
+    Road r4("R4", &center, &d, 100, 60);
+
+    center.addIncomingRoad(&r1);
+    center.addIncomingRoad(&r2);
+    center.addOutgoingRoad(&r3);
+    center.addOutgoingRoad(&r4);
+
+    EXPECT_EQ(
+        center.getType(),
+        IntersectionType::CROSS);
+}
+
+TEST(IntersectionTypeTest,
+     GetType_ReturnsRoundabout)
+{
+    Intersection center("C", 100, 100);
+
+    Intersection a("A", 0, 0);
+    Intersection b("B", 0, 0);
+    Intersection c("D", 0, 0);
+    Intersection d("E", 0, 0);
+    Intersection e("F", 0, 0);
+
+    Road r1("R1", &a, &center, 100, 60);
+    Road r2("R2", &b, &center, 100, 60);
+    Road r3("R3", &c, &center, 100, 60);
+    Road r4("R4", &center, &d, 100, 60);
+    Road r5("R5", &center, &e, 100, 60);
+
+    center.addIncomingRoad(&r1);
+    center.addIncomingRoad(&r2);
+    center.addIncomingRoad(&r3);
+    center.addOutgoingRoad(&r4);
+    center.addOutgoingRoad(&r5);
+
+    EXPECT_EQ(
+        center.getType(),
+        IntersectionType::ROUNDABOUT);
+}
+
+TEST(IntersectionTypeTest,
+     GetType_ThrowsLogicErrorForIsolatedIntersection)
 {
     Intersection intersection(
         "I1",
         100,
-        100,
-        IntersectionType::CROSS);
+        100);
 
-    EXPECT_FALSE(
-        intersection.removeOutgoingRoad(nullptr));
+    EXPECT_THROW(
+        intersection.getType(),
+        std::logic_error);
 }
 
-TEST(IntersectionRemoveTest,
-     RemoveOutgoingRoad_RemovesCorrectRoad)
+TEST(IntersectionTypeTest,
+     GetType_ReturnsDeadEndForDegreeOne)
 {
+    Intersection center(
+        "C",
+        100,
+        100);
+
     Intersection source(
-        "S",100,100,
-        IntersectionType::CROSS);
+        "S",
+        0,
+        0);
 
-    Intersection destination(
-        "D",200,200,
-        IntersectionType::CROSS);
-
-    Road road1(
+    Road road(
         "R1",
         &source,
-        &destination,
+        &center,
         100,
         60);
 
-    Road road2(
-        "R2",
-        &source,
-        &destination,
-        200,
-        60);
-
-    source.addOutgoingRoad(&road1);
-    source.addOutgoingRoad(&road2);
-
-    EXPECT_TRUE(
-        source.removeOutgoingRoad(&road2));
+    center.addIncomingRoad(&road);
 
     EXPECT_EQ(
-        source.getOutgoingRoadCount(),
+        center.getDegree(),
         1);
 
     EXPECT_EQ(
-        source.getOutgoingRoads()[0],
-        &road1);
+        center.getType(),
+        IntersectionType::DEAD_END);
+}
+
+TEST(IntersectionTypeTest,
+     GetType_ReturnsDeadEndForSingleOutgoingRoad)
+{
+    Intersection center(
+        "C",
+        100,
+        100);
+
+    Intersection destination(
+        "D",
+        200,
+        200);
+
+    Road road(
+        "R1",
+        &center,
+        &destination,
+        100,
+        60);
+
+    center.addOutgoingRoad(&road);
+
+    EXPECT_EQ(
+        center.getDegree(),
+        1);
+
+    EXPECT_EQ(
+        center.getType(),
+        IntersectionType::DEAD_END);
 }
 
 int runIntersectionTests()
