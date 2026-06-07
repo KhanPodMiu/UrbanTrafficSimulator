@@ -7,10 +7,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  Constructor
 //
-//  Out-of-range distance / speedLimit values are *clamped* here rather than
-//  rejected.  Rationale: the object must always be in a consistent state
-//  after construction; the caller can fix values via setters afterwards.
-//  nullptr intersections are accepted – Road is not the owner.
+//  Validates all parameters before constructing the object:
+//  - source and destination must not be nullptr (consistent with setters).
+//  - distance must be within [MIN_DISTANCE, MAX_DISTANCE].
+//  - speedLimit must be within [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT].
+//  Throws std::invalid_argument on any violation.
 // ─────────────────────────────────────────────────────────────────────────────
 Road::Road(
     const std::string& id,
@@ -26,7 +27,29 @@ Road::Road(
     speedLimit(speedLimit),
     congestionLevel(MIN_CONGESTION),
     travelCost(0)
-{
+{   
+        // ── id validation ────────────────────────────────────────────────────────
+    if (id.empty())
+    {
+        throw std::invalid_argument("Road: id must not be empty");
+    }
+
+    // ── intersection nullptr validation ──────────────────────────────────────
+    // Consistent with setSourceIntersection / setDestinationIntersection which
+    // reject nullptr.  A Road without endpoints is not meaningful.
+    if (source == nullptr)
+    {
+        throw std::invalid_argument(
+            "Road \"" + id + "\": source intersection must not be nullptr");
+    }
+
+    if (destination == nullptr)
+    {
+        throw std::invalid_argument(
+            "Road \"" + id + "\": destination intersection must not be nullptr");
+    }
+
+    // ── distance validation ──────────────────────────────────────────────────
     if (distance < MIN_DISTANCE || distance > MAX_DISTANCE)
     {
         throw std::invalid_argument(
@@ -124,7 +147,10 @@ bool Road::setDistance(int distance)
     }
 
     this->distance = distance;
-    calculateTravelCost();
+    if (!calculateTravelCost())
+    {
+        return false;
+    }
     return true;
 }
 
@@ -136,7 +162,10 @@ bool Road::setSpeedLimit(int speedLimit)
     }
 
     this->speedLimit = speedLimit;
-    calculateTravelCost();
+    if (!calculateTravelCost())
+    {
+        return false;
+    }
     return true;
 }
 
@@ -152,7 +181,10 @@ bool Road::updateCongestion(int newCongestionLevel)
     }
 
     congestionLevel = newCongestionLevel;
-    calculateTravelCost();
+    if (!calculateTravelCost())
+    {
+        return false;
+    }
     return true;
 }
 
