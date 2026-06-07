@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(UrbanTrafficSimulator)
 
@@ -16,10 +17,19 @@ include_directories(include)
 # --------------------------------
 
 find_package(SDL2 REQUIRED)
+
+include_directories(/opt/homebrew/include)
+
+
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-message(STATUS "SDL2 include dirs: ${SDL2_INCLUDE_DIRS}")
+# --------------------------------
+# JsonCpp
+# --------------------------------
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONCPP REQUIRED jsoncpp)
 
 # --------------------------------
 # Source files
@@ -45,13 +55,18 @@ add_library(traffic_lib
 
 target_include_directories(traffic_lib PUBLIC
     include
-    /opt/homebrew/include
+    ${JSONCPP_INCLUDE_DIRS}
 )
 
-target_link_libraries(traffic_lib
+target_link_directories(traffic_lib PUBLIC
+    ${JSONCPP_LIBRARY_DIRS}
+)
+
+target_link_libraries(traffic_lib PUBLIC
     SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
+    ${JSONCPP_LIBRARIES}
 )
 
 # --------------------------------
@@ -62,11 +77,8 @@ add_executable(main
     src/main.cpp
 )
 
-target_link_libraries(main
+target_link_libraries(main PRIVATE
     traffic_lib
-    SDL2::SDL2
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
 )
 
 # --------------------------------
@@ -75,7 +87,14 @@ target_link_libraries(main
 
 enable_testing()
 
-find_package(GTest REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+)
+
+FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE TEST_SOURCES
     tests/*.cpp
@@ -85,7 +104,7 @@ add_executable(unit_tests
     ${TEST_SOURCES}
 )
 
-target_link_libraries(unit_tests
+target_link_libraries(unit_tests PRIVATE
     traffic_lib
     GTest::gtest
     GTest::gtest_main

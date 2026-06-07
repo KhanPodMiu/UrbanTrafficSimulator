@@ -21,9 +21,9 @@ protected:
 
     void SetUp() override
     {
-        src   = new Intersection("SRC",   100, 100, IntersectionType::CROSS);
-        dst   = new Intersection("DST",   500, 100, IntersectionType::CROSS);
-        extra = new Intersection("EXTRA", 300, 300, IntersectionType::T_INTERSECTION);
+        src   = new Intersection("SRC",   100, 100);
+        dst   = new Intersection("DST",   500, 100);
+        extra = new Intersection("EXTRA", 300, 300);
         road  = new Road("R1", src, dst, DEFAULT_DISTANCE, DEFAULT_SPEED);
     }
 
@@ -48,8 +48,8 @@ protected:
 
 TEST(RoadConstruction, StoredAttributesMatchConstructorArguments)
 {
-    Intersection src("A", 0,  0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
 
     Road road("MY_ROAD", &src, &dst, 200, 60);
 
@@ -62,8 +62,8 @@ TEST(RoadConstruction, StoredAttributesMatchConstructorArguments)
 
 TEST(RoadConstruction, InitialCongestionLevelIsZero)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     Road road("R", &src, &dst, 200, 60);
 
     EXPECT_EQ(road.getCongestionLevel(), 0);
@@ -71,8 +71,8 @@ TEST(RoadConstruction, InitialCongestionLevelIsZero)
 
 TEST(RoadConstruction, TravelCostIsCalculatedImmediately)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
 
     // distance=500, speed=100, congestion=0 → 500×100/100 = 500
     Road road("R", &src, &dst, 500, 100);
@@ -82,27 +82,27 @@ TEST(RoadConstruction, TravelCostIsCalculatedImmediately)
 
 TEST(RoadConstruction, AcceptsNullptrForSource)
 {
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road("R", nullptr, &dst, 100, 50));
 }
 
 TEST(RoadConstruction, AcceptsNullptrForDestination)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
+    Intersection src("A", 0, 0);
     EXPECT_NO_THROW(Road("R", &src, nullptr, 100, 50));
 }
 
 TEST(RoadConstruction, AcceptsEmptyStringAsId)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0, 0);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road("", &src, &dst, 100, 50));
 }
 
 TEST(RoadConstruction, AcceptsLongStringAsId)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road(std::string(1000, 'X'), &src, &dst, 100, 50));
 }
 
@@ -110,36 +110,36 @@ TEST(RoadConstruction, AcceptsLongStringAsId)
 
 TEST(RoadConstruction, ThrowsOnDistanceZero)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0, 0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, 0, 50), std::invalid_argument);
 }
 
 TEST(RoadConstruction, ThrowsOnNegativeDistance)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, -1, 50), std::invalid_argument);
 }
 
 TEST(RoadConstruction, ThrowsOnDistanceAboveMaximum)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, Road::MAX_DISTANCE + 1, 50), std::invalid_argument);
 }
 
 TEST(RoadConstruction, DoesNotThrowOnMinimumDistance)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road("R", &src, &dst, Road::MIN_DISTANCE, 50));
 }
 
 TEST(RoadConstruction, DoesNotThrowOnMaximumDistance)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road("R", &src, &dst, Road::MAX_DISTANCE, 50));
 }
 
@@ -147,43 +147,43 @@ TEST(RoadConstruction, DoesNotThrowOnMaximumDistance)
 
 TEST(RoadConstruction, ThrowsOnSpeedLimitZero)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, 200, 0), std::invalid_argument);
 }
 
 TEST(RoadConstruction, ThrowsOnNegativeSpeedLimit)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, 200, -1), std::invalid_argument);
 }
 
 TEST(RoadConstruction, ThrowsOnSpeedLimitBelowMinimum)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, 200, Road::MIN_SPEED_LIMIT - 1), std::invalid_argument);
 }
 
 TEST(RoadConstruction, ThrowsOnSpeedLimitAboveMaximum)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(Road("R", &src, &dst, 200, Road::MAX_SPEED_LIMIT + 1), std::invalid_argument);
 }
 
 TEST(RoadConstruction, DoesNotThrowOnMinimumSpeedLimit)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road("R", &src, &dst, 200, Road::MIN_SPEED_LIMIT));
 }
 
 TEST(RoadConstruction, DoesNotThrowOnMaximumSpeedLimit)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_NO_THROW(Road("R", &src, &dst, 200, Road::MAX_SPEED_LIMIT));
 }
 
@@ -191,8 +191,8 @@ TEST(RoadConstruction, DoesNotThrowOnMaximumSpeedLimit)
 
 TEST(RoadConstruction, ExceptionMessageContainsRoadId_InvalidDistance)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     try
     {
         Road("ROAD_XYZ", &src, &dst, -999, 50);
@@ -207,8 +207,8 @@ TEST(RoadConstruction, ExceptionMessageContainsRoadId_InvalidDistance)
 
 TEST(RoadConstruction, ExceptionMessageContainsRoadId_InvalidSpeed)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     try
     {
         Road("ROAD_ABC", &src, &dst, 200, 999);
@@ -231,8 +231,8 @@ class InvalidDistanceTest : public ::testing::TestWithParam<int> {};
 
 TEST_P(InvalidDistanceTest, ConstructorThrowsInvalidArgument)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(
         Road("R", &src, &dst, GetParam(), 50),
         std::invalid_argument
@@ -257,8 +257,8 @@ class InvalidSpeedLimitTest : public ::testing::TestWithParam<int> {};
 
 TEST_P(InvalidSpeedLimitTest, ConstructorThrowsInvalidArgument)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 10, 0, IntersectionType::CROSS);
+    Intersection src("A", 0,  0);
+    Intersection dst("B", 10, 0);
     EXPECT_THROW(
         Road("R", &src, &dst, 200, GetParam()),
         std::invalid_argument
@@ -712,8 +712,8 @@ TEST_F(RoadTest, TravelCost_AllFailedSettersLeaveEverythingUnchanged)
 TEST(RoadTravelCost, ZeroWeightGuard_EnsuresMinimumOfOne)
 {
     // distance=1, speed=130, congestion=0 → 1×100/130 = 0 → clamped to max(1, 0) = 1
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 0, 0, IntersectionType::CROSS);
+    Intersection src("A", 0, 0);
+    Intersection dst("B", 0, 0);
     Road road("R", &src, &dst, Road::MIN_DISTANCE, Road::MAX_SPEED_LIMIT);
 
     EXPECT_GE(road.getTravelCost(), 1);
@@ -721,8 +721,8 @@ TEST(RoadTravelCost, ZeroWeightGuard_EnsuresMinimumOfOne)
 
 TEST(RoadTravelCost, IsAlwaysPositive_AcrossValidInputCombinations)
 {
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 0, 0, IntersectionType::CROSS);
+    Intersection src("A", 0, 0);
+    Intersection dst("B", 0, 0);
 
     for (int dist  : {1, 10, 100, Road::MAX_DISTANCE})
     for (int speed : {Road::MIN_SPEED_LIMIT, 50, Road::MAX_SPEED_LIMIT})
@@ -736,8 +736,8 @@ TEST(RoadTravelCost, IsAlwaysPositive_AcrossValidInputCombinations)
 TEST(RoadTravelCost, MaxPossibleCostWithinIntRange)
 {
     // MAX_DISTANCE + MIN_SPEED + MAX_CONGESTION → 8000×200/5 = 320 000
-    Intersection src("A", 0, 0, IntersectionType::CROSS);
-    Intersection dst("B", 0, 0, IntersectionType::CROSS);
+    Intersection src("A", 0, 0);
+    Intersection dst("B", 0, 0);
     Road road("R", &src, &dst, Road::MAX_DISTANCE, Road::MIN_SPEED_LIMIT);
     road.updateCongestion(Road::MAX_CONGESTION);
 
