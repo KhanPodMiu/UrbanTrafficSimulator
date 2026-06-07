@@ -18,7 +18,7 @@ enum class IntersectionType
 class Intersection
 {
 private:
-    const std::string& intersectionID;
+    const std::string intersectionID;
     int x;
     int y;
 
