@@ -15,8 +15,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 Road::Road(
     const std::string& id,
-    Intersection*      source,
-    Intersection*      destination,
+    const Intersection*      source,
+    const Intersection*      destination,
     int                distance,
     int                speedLimit)
     :
@@ -26,7 +26,13 @@ Road::Road(
     distance(distance),
     speedLimit(speedLimit),
     congestionLevel(MIN_CONGESTION),
-    travelCost(0)
+    travelCost(0),
+    trafficLightState(TrafficLightState::GREEN),
+    trafficLightEnabled(false),
+    greenDuration(DEFAULT_GREEN_DURATION),
+    yellowDuration(DEFAULT_YELLOW_DURATION),
+    redDuration(DEFAULT_RED_DURATION),
+    timeRemaining(DEFAULT_GREEN_DURATION)
 {   
         // ── id validation ────────────────────────────────────────────────────────
     if (id.empty())
@@ -114,10 +120,50 @@ int Road::getTravelCost() const
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  Traffic light getters
+// ─────────────────────────────────────────────────────────────────────────────
+
+TrafficLightState Road::getTrafficLightState() const
+{
+    return trafficLightState;
+}
+
+bool Road::isTrafficLightEnabled() const
+{
+    return trafficLightEnabled;
+}
+
+bool Road::isGreen() const
+{
+    return !trafficLightEnabled ||
+           trafficLightState == TrafficLightState::GREEN;
+}
+
+int Road::getTimeRemaining() const
+{
+    return timeRemaining;
+}
+
+int Road::getGreenDuration() const
+{
+    return greenDuration;
+}
+
+int Road::getYellowDuration() const
+{
+    return yellowDuration;
+}
+
+int Road::getRedDuration() const
+{
+    return redDuration;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  Setters
 // ─────────────────────────────────────────────────────────────────────────────
 
-bool Road::setSourceIntersection(Intersection* source)
+bool Road::setSourceIntersection(const Intersection* source)
 {
     if (source == nullptr)
     {
@@ -128,7 +174,7 @@ bool Road::setSourceIntersection(Intersection* source)
     return true;
 }
 
-bool Road::setDestinationIntersection(Intersection* destination)
+bool Road::setDestinationIntersection(const Intersection* destination)
 {
     if (destination == nullptr)
     {
@@ -166,6 +212,40 @@ bool Road::setSpeedLimit(int speedLimit)
     {
         return false;
     }
+    return true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Traffic light setters
+// ─────────────────────────────────────────────────────────────────────────────
+
+bool Road::setGreenDuration(int duration)
+{
+    if (duration < MIN_DURATION || duration > MAX_DURATION)
+    {
+        return false;
+    }
+    greenDuration = duration;
+    return true;
+}
+
+bool Road::setYellowDuration(int duration)
+{
+    if (duration < MIN_DURATION || duration > MAX_DURATION)
+    {
+        return false;
+    }
+    yellowDuration = duration;
+    return true;
+}
+
+bool Road::setRedDuration(int duration)
+{
+    if (duration < MIN_DURATION || duration > MAX_DURATION)
+    {
+        return false;
+    }
+    redDuration = duration;
     return true;
 }
 
@@ -214,4 +294,87 @@ bool Road::calculateTravelCost()
     // ─────────────────────────────────────────────────────────────────────────
     travelCost = std::max(1, (distance * (100 + congestionLevel)) / speedLimit);
     return true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Traffic light operations
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Road::updateTrafficLight(int deltaTimeSeconds)
+{
+    if (!trafficLightEnabled || deltaTimeSeconds <= 0)
+    {
+        return;
+    }
+
+    timeRemaining -= deltaTimeSeconds;
+
+    // Handle multiple state transitions if deltaTime is large
+    while (timeRemaining <= 0)
+    {
+        switchToNextState();
+    }
+}
+
+void Road::resetTrafficLight()
+{
+    trafficLightState = TrafficLightState::GREEN;
+    timeRemaining = greenDuration;
+}
+
+void Road::enableTrafficLight()
+{
+    trafficLightEnabled = true;
+    resetTrafficLight();
+}
+
+void Road::disableTrafficLight()
+{
+    trafficLightEnabled = false;
+}
+
+bool Road::needsTrafficLightAtDestination() const
+{
+    if (destinationIntersection == nullptr)
+    {
+        return false;
+    }
+
+    // getDegree() == 0 means isolated intersection → no light needed.
+    if (destinationIntersection->getDegree() == 0)
+    {
+        return false;
+    }
+
+    // Intersections with degree >= 3 (T_INTERSECTION, CROSS, ROUNDABOUT)
+    // typically need traffic lights.  DEAD_END (1) and STRAIGHT (2) do not.
+    IntersectionType type = destinationIntersection->getType();
+    return type == IntersectionType::T_INTERSECTION ||
+           type == IntersectionType::CROSS ||
+           type == IntersectionType::ROUNDABOUT;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Private helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Road::switchToNextState()
+{
+    switch (trafficLightState)
+    {
+    case TrafficLightState::GREEN:
+        trafficLightState = TrafficLightState::YELLOW;
+        timeRemaining += yellowDuration;
+        break;
+
+    case TrafficLightState::YELLOW:
+        trafficLightState = TrafficLightState::RED;
+        timeRemaining += redDuration;
+        break;
+
+    case TrafficLightState::RED:
+        trafficLightState = TrafficLightState::GREEN;
+        timeRemaining += greenDuration;
+        break;
+    }
 }
