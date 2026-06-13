@@ -7,58 +7,41 @@
 class Road;
 
 enum class IntersectionType
-{                     // degree = 0 => throw exception
-    DEAD_END,         // degree = 1
-    STRAIGHT,         // degree = 2
-    T_INTERSECTION,   // degree = 3
-    CROSS,            // degree = 4
-    ROUNDABOUT        // degree > 4
+{                     // neighbor = 0 => throw exception
+    DEAD_END,         // neighbor = 1
+    STRAIGHT,         // neighbor = 2
+    T_INTERSECTION,   // neighbor = 3
+    CROSS,            // neighbor = 4
+    ROUNDABOUT        // neighbor > 4
 };
 
 class Intersection
 {
 private:
-    const std::string& intersectionID;
+    const std::string intersectionID;
     int x;
     int y;
-
-    IntersectionType type;
-
     std::vector<const Road*> incomingRoads;
     std::vector<const Road*> outgoingRoads;
-
+    int getNeighborCount() const;
 public:
-    Intersection(
-        std::string id,
-        int x,
-        int y
-    );
-
+    Intersection(std::string id,int x,int y);
     ~Intersection();
-
     // Getters
-    std::string getIntersectionID() const;
-
+    const std::string& getIntersectionID() const;
     int getX() const;
     int getY() const;
-
     IntersectionType getType() const;
-
     const std::vector<const Road*>& getIncomingRoads() const;
     const std::vector<const Road*>& getOutgoingRoads() const;
-
     int getIncomingRoadCount() const;
     int getOutgoingRoadCount() const;
-
     int getDegree() const;
-
     // Setters
     bool setPosition(int x, int y);
-
     // Road management
     bool addIncomingRoad(const Road* road);
     bool addOutgoingRoad(const Road* road);
-
     bool removeIncomingRoad(const Road* road);
     bool removeOutgoingRoad(const Road* road);
 };
