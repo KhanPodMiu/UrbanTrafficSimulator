@@ -1,32 +1,42 @@
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
 #include <iostream>
-#include <fstream>
-#include <json/json.h>
+#include "core/renderWindow.hpp"
 
+int main(int argc, char* args[]) {
 
-int main() {
-    std::string file_name = "assets/maps/data.json";
-    std::ifstream file(file_name, std::ifstream::binary);
+    SDL_Init(SDL_INIT_EVERYTHING);
 
-    if(!file.is_open()){
-        std::cerr << "Error to open " << file_name << std::endl;
+    RenderWindow* window = new RenderWindow("Urban Traffic", 1600, 900);
+
+    SDL_Texture* MapBackground = window -> loadTexture("assets/maps/background.png");
+
+    if(MapBackground == nullptr){
+        std::cerr << "Hey.. recheck the IMG PATH" << SDL_GetError();
         return 1;
     }
 
-    Json::Value data;
-    Json::CharReaderBuilder readerBuilder;
-    std::string err;
+    bool is_game_running = true;
 
-    if(!Json::parseFromStream(readerBuilder, file, &data, &err)){
-        std::cerr << err;
-        return 1;
+    SDL_Event event;
+
+    while(is_game_running){
+        while(SDL_PollEvent(&event)){
+            if(event.type == SDL_QUIT){
+                is_game_running = false;
+            }
+        }
+
+        window -> clear();
+        window -> render(MapBackground);
+        window -> display();
+
     }
 
-    const Json::Value students = data["students"];
-    for(const auto& student : students){
-        std::cout << student["name"].asString() << " " << student["age"].asInt() << '\n';
-    }
+    window -> cleanUp();
 
-    file.close();
+    window -> cleanUpTexture(MapBackground);
 
+    SDL_Quit();
     return 0;
 }
