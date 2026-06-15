@@ -7,6 +7,11 @@
 constexpr int MAP_WIDTH = 4000;
 constexpr int MAP_HEIGHT = 4000;
 
+const int WIDTH = 40;
+const int ROAD_PADDING = 20;
+const int ROUNDABOUT_RADIUS = 80;
+const int EXPAND_ROUNDABOUT = WIDTH / 2;
+
 Intersection::Intersection(
     std::string id,
     int                x,
@@ -61,7 +66,6 @@ int Intersection::getY() const
     return y;
 }
 
-
 const std::vector<const Road*>& Intersection::getIncomingRoads() const
 {
     return incomingRoads;
@@ -85,6 +89,19 @@ int Intersection::getOutgoingRoadCount() const
 int Intersection::getDegree() const
 {
     return incomingRoads.size() + outgoingRoads.size();
+}
+
+int Intersection::getRadius() const {
+    int neighbor = getNeighborCount();
+
+    //Roundabout
+    if (neighbor > 4) {
+        return ROUNDABOUT_RADIUS + (neighbor - 4)*EXPAND_ROUNDABOUT + ROAD_PADDING;
+    }
+    //Non-Roundabout
+    if (getDegree() > neighbor)
+        return WIDTH + ROAD_PADDING;
+    return  WIDTH / 2 + ROAD_PADDING;
 }
 
 int Intersection::getNeighborCount() const

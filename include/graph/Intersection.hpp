@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 class Road;
 
@@ -24,6 +25,7 @@ private:
     std::vector<const Road*> incomingRoads;
     std::vector<const Road*> outgoingRoads;
     int getNeighborCount() const;
+
 public:
     Intersection(std::string id,int x,int y);
     ~Intersection();
@@ -37,6 +39,7 @@ public:
     int getIncomingRoadCount() const;
     int getOutgoingRoadCount() const;
     int getDegree() const;
+    int getRadius() const;
     // Setters
     bool setPosition(int x, int y);
     // Road management
