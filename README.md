@@ -25,15 +25,6 @@ This project demonstrates:
 * Real-time visualization techniques
 
 
-# 🎮 Technologies
-
-* C++17
-* SDL2
-* SDL2_image
-* SDL2_ttf
-* Makefile build system
-* GoogleTest (unit testing)
-
 ---
 
 # ⚙️ Build & Run
@@ -64,65 +55,9 @@ Clean build:
 make clean
 ```
 
----
-
-# 📌 Notes
-
-* All rendering-related systems are isolated inside the `visualization/` module.
-* SDL2 should only be used inside the visualization layer.
-* Simulation and pathfinding systems are independent from rendering systems.
-* Header files are stored inside `include/`.
-* Source files are stored inside `src/`.
-
-
 
 ---
 
-
-
-# Class attributes
-
-```
-class Intersection {
-private:
-    int id;
-    float x;
-    float y;
-};
-
-class Road {
-private:
-    int roadId;
-
-    int sourceIntersectionId;
-    int destinationIntersectionId;
-
-    double distance;
-    double speedLimit;
-
-    double congestionLevel;
-    double travelCost;
-};
-
-{
-  "intersections": [
-    {
-      "id": 1,
-      "x": 100,
-      "y": 200
-    }
-  ],
-  "roads": [
-    {
-      "id": 1,
-      "source": 1,
-      "destination": 2,
-      "distance": 50,
-      "speedLimit": 60
-    }
-  ]
-}
-```
 
 # Map and Window Design
 
@@ -185,78 +120,19 @@ Only a portion of the world is visible at any given time.
 
 ---
 
-## Coordinate System
-
-Each intersection stores its position inside the world.
-
-Example:
-
-```cpp
-Intersection
-{
-    id: 1,
-    name: "Beach",
-    x: 2500,
-    y: 1200
-}
-```
-
-SDL2 uses these coordinates to render intersection sprites and roads.
-
-The graph structure is used for pathfinding, while the coordinates are used for visualization.
-
----
-
 ## Camera System
 
 A camera controls which part of the world is currently visible.
 
-Example:
-
-```cpp
-Camera
-{
-    x;
-    y;
-    zoom;
-}
-```
 
 Features:
 
 * Zoom in / Zoom out
 * Pan across the island
-* Follow tourist bus (optional)
 
 This allows large maps to be explored while keeping the application window size fixed.
 
 ---
-
-## Control Panel
-
-The right-side panel displays simulation controls and statistics.
-
-Suggested controls:
-
-* Start Simulation
-* Pause Simulation
-* Reset Simulation
-* Simulation Speed
-
-Suggested traffic settings:
-
-* Congestion Level
-* Accident Probability
-* Vehicle Spawn Rate
-
-Suggested statistics:
-
-* Current Algorithm
-* Travel Time
-* Travel Cost
-* Attractions Visited
-* Number of Route Recalculations
-* Current Traffic Status
 
 ## UML Class Diagram
 
