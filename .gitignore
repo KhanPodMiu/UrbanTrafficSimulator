@@ -83,3 +83,5 @@ coverage/
 *.gcda
 *.gcno
 *.gcov
+
+project_context.md

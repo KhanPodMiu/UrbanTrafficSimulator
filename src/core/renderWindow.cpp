@@ -10,7 +10,7 @@ RenderWindow::RenderWindow(const char* title, int w, int h) : window(nullptr), r
         std::cerr << "Window failed to init" << SDL_GetError();
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if(renderer == nullptr){
         std::cerr << "Renderer failed to init" << SDL_GetError();
