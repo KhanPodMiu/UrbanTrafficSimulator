@@ -29,7 +29,22 @@ SDL_Texture* RenderWindow::loadTexture(const char* filePath){
     return texture;
 }
 
+SDL_Renderer* RenderWindow::getRenderer(){
+    return renderer;
+}
+
+void RenderWindow::renderLine(int x1, int y1, int x2, int y2){
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+}
+
+void RenderWindow::renderRect(int x, int y, int w, int h){
+    SDL_Rect rect{x,y,w,h};
+    SDL_RenderFillRect(renderer,&rect);
+}
+
 void RenderWindow::clear(){
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 }
 
@@ -42,6 +57,7 @@ void RenderWindow::display(){
 }
 
 void RenderWindow::cleanUp(){
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 }
 

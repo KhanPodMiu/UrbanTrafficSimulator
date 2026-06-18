@@ -12,6 +12,10 @@ public:
     void display();
     void cleanUpTexture(SDL_Texture* texture);
 
+    void renderLine(int x1, int x2, int y1, int y2);
+    void renderRect(int x, int y, int w, int h);
+    SDL_Renderer* getRenderer();
+
 private:
     SDL_Window *window;
     SDL_Renderer *renderer;
