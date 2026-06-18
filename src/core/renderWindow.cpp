@@ -43,19 +43,19 @@ void RenderWindow::clear(){
     SDL_RenderClear(renderer);
 }
 
-void RenderWindow::render(SDL_Texture* texture, Vector2& AimPoint, int OBJECT_RADIUS)
+void RenderWindow::render(SDL_Texture* texture, Vector2& AimPoint, float zoom, float OBJECT_RADIUS)
 {
     SDL_Rect point;
+    point.x = (int)AimPoint.x;
+    point.y = (int)AimPoint.y;
 
-    point.x = AimPoint.x;
-    point.y = AimPoint.y;
-
-    if (OBJECT_RADIUS == 0){
+    if (OBJECT_RADIUS == 0) {
         SDL_QueryTexture(texture, nullptr, nullptr, &point.w, &point.h);
-    }
-    else{
-        point.w = OBJECT_RADIUS * 2;
-        point.h = OBJECT_RADIUS * 2;
+        point.w *= zoom;   // nếu bạn đã pass zoom vào
+        point.h *= zoom;
+    } else {
+        point.w = (int)(OBJECT_RADIUS * 2);
+        point.h = (int)(OBJECT_RADIUS * 2);
     }
 
     SDL_RenderCopy(renderer, texture, nullptr, &point);

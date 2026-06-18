@@ -12,7 +12,7 @@ public:
 
     float getX() const;
     float getY() const;
-    float getZoom();
+    float getZoom() const;
 
     void zoomIn();
     void zoomOut();
@@ -22,7 +22,6 @@ public:
     void subX();
     void subY();
 
-    void move(int dx, int dy);
 
     Camera();
 };

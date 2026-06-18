@@ -9,7 +9,7 @@ public:
     SDL_Texture* loadTexture(const char* filePath);
     void cleanUp();
     void clear();
-    void render(SDL_Texture* texture, Vector2& AimPoint, int OBJECT_RADIUS = 0);
+    void render(SDL_Texture* texture, Vector2& AimPoint, float zoom, float OBJECT_RADIUS = 0);
     void display();
     void cleanUpTexture(SDL_Texture* texture);
 

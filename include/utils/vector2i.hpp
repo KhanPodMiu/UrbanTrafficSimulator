@@ -1,7 +1,7 @@
 #pragma once
 
 struct Vector2{
-    int x, y;
+    float x, y;
     Vector2();
-    Vector2(int dx, int dy);
+    Vector2(float dx, float dy);
 };

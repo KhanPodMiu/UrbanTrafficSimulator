@@ -40,7 +40,8 @@ struct RoadRenderData
 
 Vector2 applyCamera(const Vector2& worldPos, const Camera& camera)
 {
-    return Vector2(worldPos.x - camera.getX(), worldPos.y - camera.getY());
+    float zoom = camera.getZoom();
+    return Vector2((worldPos.x - camera.getX()) * zoom, (worldPos.y - camera.getY()) * zoom);
 }
 
 //=======================================================================================================================================================================
@@ -151,21 +152,25 @@ int main(int argc, char* args[]) {
         //=======================================================================================================================================================================
         window -> clear();
 
-        Vector2 BackGround_Position = applyCamera(Background_Point, camera);
-        window->render(MapBackground, BackGround_Position);
+        float zoom = camera.getZoom();
+
+        Vector2 worldOrigin(0, 0);
+        Vector2 bgPos = applyCamera(worldOrigin, camera);
+        bgPos.x += PANEL_WIDTH; 
+        window->render(MapBackground, bgPos, zoom);
 
         for(const auto& road : roads_location)
         {
             Vector2 renderPos = applyCamera(road.start, camera);
-
-            window->renderRoad(Road_Texture, renderPos, road.length, ROAD_WIDTH, road.angle);
+            renderPos.x += PANEL_WIDTH; 
+            window->renderRoad(Road_Texture, renderPos, road.length * zoom, ROAD_WIDTH * zoom, road.angle);
         }
 
         for(const auto& intersection : intersections_location)
         {
             Vector2 renderPos = applyCamera(intersection, camera);
-
-            window->render(Intersection_Texture, renderPos, ROUNDABOUT_RADIUS);
+            renderPos.x += PANEL_WIDTH; 
+            window->render(Intersection_Texture, renderPos, zoom, ROUNDABOUT_RADIUS * zoom);
         }
 
         //UI Panel
