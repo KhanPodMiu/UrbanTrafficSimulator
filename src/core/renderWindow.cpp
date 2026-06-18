@@ -84,5 +84,9 @@ void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, int le
     dstRect.w = length;
     dstRect.h = width;
 
-    SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, nullptr, SDL_FLIP_NONE);
+    SDL_Point pivot;
+    pivot.x = 0;
+    pivot.y = width / 2;
+
+    SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, &pivot, SDL_FLIP_NONE);
 }

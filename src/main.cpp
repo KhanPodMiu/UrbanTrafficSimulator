@@ -3,6 +3,7 @@
 #include "core/renderWindow.hpp"
 
 #include "utils/vector2i.hpp"
+#include "utils/event_handling.hpp"
 
 #include "utils/MapLoader.hpp"
 #include "visualization/MapRenderer.hpp"
@@ -36,6 +37,11 @@ struct RoadRenderData
     float length;
     float angle;
 };
+
+Vector2 applyCamera(const Vector2& worldPos, const Camera& camera)
+{
+    return Vector2(worldPos.x - camera.getX(), worldPos.y - camera.getY());
+}
 
 //=======================================================================================================================================================================
 
@@ -78,7 +84,7 @@ int main(int argc, char* args[]) {
     Camera camera;
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/test_map.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/small_map.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
@@ -121,6 +127,14 @@ int main(int argc, char* args[]) {
 
 
     //=======================================================================================================================================================================
+
+    for(const auto& road : roads_location)
+    {
+        std::cout
+            << "start=(" << road.start.x << "," << road.start.y << ") "
+            << "end=(" << road.end.x << "," << road.end.y << ") "
+            << "angle=" << road.angle << "\n";
+    }
     
     while(is_game_running){
 
@@ -130,57 +144,28 @@ int main(int argc, char* args[]) {
         clock.update();
 
         //=======================================================================================================================================================================
-
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                is_game_running = false;
-            } 
-            else if (event.type == SDL_KEYDOWN) {
-                switch(event.key.keysym.sym){
-                    case SDLK_ESCAPE:
-                        is_game_running = false;
-                        break;
-                    case SDLK_w:
-                        camera.subY();
-                        break;
-                    case SDLK_a:
-                        camera.subX();
-                        break;
-                    case SDLK_s:
-                        camera.addY();
-                        break;
-                    case SDLK_d:
-                        camera.addX();
-                        break;
-                }
-            }
+            handleInput(event, is_game_running, camera);
         }
+
         //=======================================================================================================================================================================
         window -> clear();
-        
 
-        //Background
-        Background_Point.x -= camera.getX();
-        Background_Point.y -= camera.getY();
-        window -> render(MapBackground, Background_Point);
-        Background_Point.x += camera.getX();
-        Background_Point.y += camera.getY();
+        Vector2 BackGround_Position = applyCamera(Background_Point, camera);
+        window->render(MapBackground, BackGround_Position);
 
-        for(auto& road : roads_location)
+        for(const auto& road : roads_location)
         {
-            road.start.x -= camera.getX();
-            road.start.y -= camera.getY();
-            window -> renderRoad(Road_Texture, road.start, road.length, ROAD_WIDTH, road.angle);
-            road.start.x += camera.getX();
-            road.start.y += camera.getY();
-}
+            Vector2 renderPos = applyCamera(road.start, camera);
 
-        for(auto& intersection_point : intersections_location){
-            intersection_point.x -= camera.getX();
-            intersection_point.y -= camera.getY();
-            window -> render(Intersection_Texture, intersection_point, ROUNDABOUT_RADIUS);
-            intersection_point.x += camera.getX();
-            intersection_point.y += camera.getY();
+            window->renderRoad(Road_Texture, renderPos, road.length, ROAD_WIDTH, road.angle);
+        }
+
+        for(const auto& intersection : intersections_location)
+        {
+            Vector2 renderPos = applyCamera(intersection, camera);
+
+            window->render(Intersection_Texture, renderPos, ROUNDABOUT_RADIUS);
         }
 
         //UI Panel

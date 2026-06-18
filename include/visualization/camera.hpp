@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/vector2i.hpp"
+
 class Camera
 {
 private:
@@ -8,9 +10,12 @@ private:
     float zoom;
 public:
 
-    float getX();
-    float getY();
+    float getX() const;
+    float getY() const;
     float getZoom();
+
+    void zoomIn();
+    void zoomOut();
 
     void addX();
     void addY();

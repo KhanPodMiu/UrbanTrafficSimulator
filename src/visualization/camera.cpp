@@ -1,15 +1,16 @@
 #include "visualization/camera.hpp"
+#include "utils/vector2i.hpp"
 
 constexpr int VIEW_PORT_WIDTH = 1200;
 constexpr int VIEW_PORT_HEIGHT = 900;
 constexpr int MAP_WIDTH = 4000;
 constexpr int MAP_HEIGHT = 4000;
 
-float Camera::getX(){
+float Camera::getX() const{
     return x;
 }
 
-float Camera::getY(){
+float Camera::getY() const{
     return y;
 } 
 
@@ -41,6 +42,18 @@ void Camera::subY(){
     }
 }
 
+void Camera::zoomIn()
+{
+    if (zoom < 3.0)
+        zoom += 0.1;
+}
+
+void Camera::zoomOut()
+{
+    if (zoom > 0.2)
+        zoom -= 0.1;
+}
+
 Camera::Camera() : x(0), y(0), zoom(1.0){
 
 }
@@ -49,3 +62,4 @@ void Camera::move(int dx, int dy){
     x += dx;
     y += dy;
 }
+
