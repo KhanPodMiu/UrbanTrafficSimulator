@@ -1,9 +1,16 @@
 #include "graph/Intersection.hpp"
+#include "graph/Road.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include <unordered_set>
 
 constexpr int MAP_WIDTH = 4000;
 constexpr int MAP_HEIGHT = 4000;
+
+const int WIDTH = 40;
+const int ROAD_PADDING = 20;
+const int ROUNDABOUT_RADIUS = 80;
+const int EXPAND_ROUNDABOUT = WIDTH / 2;
 
 Intersection::Intersection(
     std::string id,
@@ -44,7 +51,7 @@ Intersection::~Intersection()
 }
 
 //Getters
-std::string Intersection::getIntersectionID() const
+const std::string& Intersection::getIntersectionID() const
 {
     return intersectionID;
 }
@@ -58,7 +65,6 @@ int Intersection::getY() const
 {
     return y;
 }
-
 
 const std::vector<const Road*>& Intersection::getIncomingRoads() const
 {
@@ -85,35 +91,76 @@ int Intersection::getDegree() const
     return incomingRoads.size() + outgoingRoads.size();
 }
 
+int Intersection::getRadius() const {
+    int neighbor = getNeighborCount();
+
+    //Roundabout
+    if (neighbor > 4) {
+        return ROUNDABOUT_RADIUS + (neighbor - 4)*EXPAND_ROUNDABOUT + ROAD_PADDING;
+    }
+    //Non-Roundabout
+    if (getDegree() > neighbor)
+        return WIDTH + ROAD_PADDING;
+    return  WIDTH / 2 + ROAD_PADDING;
+}
+
+int Intersection::getNeighborCount() const
+{
+    std::unordered_set<const Intersection*> neighbors;
+
+    for (const Road* road : incomingRoads)
+    {
+        if (road != nullptr)
+        {
+            const Intersection* source = road->getSourceIntersection();
+
+            if (source != nullptr && source != this)
+            {
+                neighbors.insert(source);
+            }
+        }
+    }
+
+    for (const Road* road : outgoingRoads)
+    {
+        if (road != nullptr)
+        {
+            const Intersection* destination = road->getDestinationIntersection();
+
+            if (destination != nullptr && destination != this)
+            {
+                neighbors.insert(destination);
+            }
+        }
+    }
+
+    return static_cast<int>(neighbors.size());
+}
+
 IntersectionType Intersection::getType() const
 {
-    const int degree = getDegree();
-    if (degree == 0)
+    switch (getNeighborCount())
     {
-        throw std::logic_error("Isolated intersection");
-    }
+        case 0:
+            throw std::logic_error(
+                "Intersection has no connected roads."
+            );
 
-    if (degree == 1)
-    {
-        return IntersectionType::DEAD_END;
-    }
+        case 1:
+            return IntersectionType::DEAD_END;
 
-    if (degree == 2)
-    {
-        return IntersectionType::STRAIGHT;
-    }
+        case 2:
+            return IntersectionType::STRAIGHT;
 
-    if (degree == 3)
-    {
-        return IntersectionType::T_INTERSECTION;
-    }
+        case 3:
+            return IntersectionType::T_INTERSECTION;
 
-    if (degree == 4)
-    {
-        return IntersectionType::CROSS;
-    }
+        case 4:
+            return IntersectionType::CROSS;
 
-    return IntersectionType::ROUNDABOUT;
+        default:
+            return IntersectionType::ROUNDABOUT;
+    }
 }
 
 bool Intersection::addIncomingRoad(const Road* road)
