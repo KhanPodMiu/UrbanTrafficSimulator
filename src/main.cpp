@@ -1,13 +1,21 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
-#include <iostream>
 #include "core/renderWindow.hpp"
-#include "simulation/WorldClock.hpp"
-#include "utils/MapLoader.hpp"
-#include "graph/Graph.hpp"
-#include "visualization/MapRenderer.hpp"
+
 #include "utils/vector2i.hpp"
+
+#include "utils/MapLoader.hpp"
+#include "visualization/MapRenderer.hpp"
+
+#include "simulation/WorldClock.hpp"
 #include "visualization/camera.hpp"
+
+#include "graph/Graph.hpp"
+#include "graph/Intersection.hpp"
+#include "graph/Road.hpp"
+
+#include <iostream>
+#include <cmath>
 
 constexpr int WINDOW_WIDTH = 1600;
 constexpr int WINDOW_HEIGHT = 900;
@@ -16,8 +24,18 @@ constexpr int PANEL_WIDTH = 400;
 constexpr int MAP_WIDTH = 1200;
 
 constexpr int ROUNDABOUT_RADIUS = 80;
+constexpr int ROAD_WIDTH = 80;
 
 constexpr int INITIAL_CAMERA_SCALE = 900;
+
+struct RoadRenderData
+{
+    Vector2 start;
+    Vector2 end;
+
+    float length;
+    float angle;
+};
 
 //=======================================================================================================================================================================
 
@@ -28,11 +46,27 @@ int main(int argc, char* args[]) {
     SDL_Init(SDL_INIT_EVERYTHING);
     RenderWindow* window = new RenderWindow("Urban Traffic", 1600, 900);
 
+    //=======================================================================================================================================================================
+
     SDL_Texture* MapBackground = window -> loadTexture("assets/textures/Background.png");
     if(MapBackground == nullptr){
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return 1;
     }
+
+    SDL_Texture* Intersection_Texture = window -> loadTexture("assets/textures/Intersection/temp_roundabout.png");
+    if(Intersection_Texture == nullptr){
+        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        return 1;
+    }
+
+    SDL_Texture* Road_Texture = window -> loadTexture("assets/textures/Roads/temp_road.png");
+    if(Road_Texture == nullptr){
+        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        return 1;
+    }
+
+    //=======================================================================================================================================================================
 
     Vector2 Background_Point(PANEL_WIDTH, 0);
 
@@ -44,10 +78,41 @@ int main(int argc, char* args[]) {
     Camera camera;
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/small_map.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/test_map.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
+
+    std::vector<Vector2> intersections_location;
+    std::vector<RoadRenderData> roads_location;
+    
+    for(const auto& [intersectionID, intersection] : graph.getIntersections()){
+        Vector2 temp(intersection -> getX() - ROUNDABOUT_RADIUS, intersection -> getY() - ROUNDABOUT_RADIUS);
+        intersections_location.push_back(temp);
+    }
+
+
+    for(const auto& [roadID, road] : graph.getRoads())
+    {
+        const Intersection* src = road->getSourceIntersection();
+        const Intersection* dst = road->getDestinationIntersection();
+
+        RoadRenderData temp;
+
+        temp.start = Vector2(src->getX(), src->getY());
+
+        temp.end = Vector2(dst->getX(), dst->getY());
+
+        float dx = temp.end.x - temp.start.x;
+        float dy = temp.end.y - temp.start.y;
+
+        temp.length = sqrt(dx * dx + dy * dy);
+        temp.angle = atan2(dy, dx) * 180.0 / M_PI;
+
+        roads_location.push_back(temp);
+    }
+
+    //=======================================================================================================================================================================
 
     //Declaration area
     bool is_game_running = true;
@@ -101,6 +166,22 @@ int main(int argc, char* args[]) {
         Background_Point.x += camera.getX();
         Background_Point.y += camera.getY();
 
+        for(auto& road : roads_location)
+        {
+            road.start.x -= camera.getX();
+            road.start.y -= camera.getY();
+            window -> renderRoad(Road_Texture, road.start, road.length, ROAD_WIDTH, road.angle);
+            road.start.x += camera.getX();
+            road.start.y += camera.getY();
+}
+
+        for(auto& intersection_point : intersections_location){
+            intersection_point.x -= camera.getX();
+            intersection_point.y -= camera.getY();
+            window -> render(Intersection_Texture, intersection_point, ROUNDABOUT_RADIUS);
+            intersection_point.x += camera.getX();
+            intersection_point.y += camera.getY();
+        }
 
         //UI Panel
         SDL_SetRenderDrawColor(window->getRenderer(), 40, 40, 40, 255);

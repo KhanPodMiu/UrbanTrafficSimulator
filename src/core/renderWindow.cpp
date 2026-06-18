@@ -73,3 +73,16 @@ void RenderWindow::cleanUp(){
 void RenderWindow::cleanUpTexture(SDL_Texture* texture){
     SDL_DestroyTexture(texture);
 }
+
+void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, int length, int width, double angle)
+{
+    SDL_Rect dstRect;
+
+    dstRect.x = start.x;
+    dstRect.y = start.y - width / 2;
+
+    dstRect.w = length;
+    dstRect.h = width;
+
+    SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, nullptr, SDL_FLIP_NONE);
+}

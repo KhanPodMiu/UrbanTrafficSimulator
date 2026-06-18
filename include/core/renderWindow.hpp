@@ -13,6 +13,7 @@ public:
     void display();
     void cleanUpTexture(SDL_Texture* texture);
 
+    void renderRoad(SDL_Texture* texture, const Vector2& start, int length, int width, double angle);
     void renderLine(int x1, int x2, int y1, int y2);
     void renderRect(int x, int y, int w, int h);
     SDL_Renderer* getRenderer();
