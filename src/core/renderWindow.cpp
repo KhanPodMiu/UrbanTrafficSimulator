@@ -5,13 +5,10 @@
 
 RenderWindow::RenderWindow(const char* title, int w, int h) : window(nullptr), renderer(nullptr) {
     window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN);
-    
     if(window == nullptr){
         std::cerr << "Window failed to init" << SDL_GetError();
     }
-
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
     if(renderer == nullptr){
         std::cerr << "Renderer failed to init" << SDL_GetError();
     }
@@ -20,12 +17,10 @@ RenderWindow::RenderWindow(const char* title, int w, int h) : window(nullptr), r
 SDL_Texture* RenderWindow::loadTexture(const char* filePath){
     SDL_Texture* texture = nullptr;
     texture = IMG_LoadTexture(renderer, filePath);
-
     if(texture == nullptr){
         std::cerr << "Failed to load texture" << SDL_GetError();
         return nullptr;
     }
-
     return texture;
 }
 
@@ -48,8 +43,22 @@ void RenderWindow::clear(){
     SDL_RenderClear(renderer);
 }
 
-void RenderWindow::render(SDL_Texture* texture){
-    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+void RenderWindow::render(SDL_Texture* texture, Vector2& AimPoint, int OBJECT_RADIUS)
+{
+    SDL_Rect point;
+
+    point.x = AimPoint.x;
+    point.y = AimPoint.y;
+
+    if (OBJECT_RADIUS == 0){
+        SDL_QueryTexture(texture, nullptr, nullptr, &point.w, &point.h);
+    }
+    else{
+        point.w = OBJECT_RADIUS * 2;
+        point.h = OBJECT_RADIUS * 2;
+    }
+
+    SDL_RenderCopy(renderer, texture, nullptr, &point);
 }
 
 void RenderWindow::display(){

@@ -5,7 +5,7 @@
 #include "core/renderWindow.hpp"
 
 void MapRenderer::render(RenderWindow& window, const Graph& graph) {
-    constexpr float SCALE = 0.25f;
+    constexpr float SCALE = 1.0;
 
     for (const auto& [roadID, road] : graph.getRoads()) {
         const Intersection* source = road->getSourceIntersection();

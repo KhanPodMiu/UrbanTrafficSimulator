@@ -24,5 +24,6 @@ public:
     std::shared_ptr<Road> getRoad(const std::string& roadID) const;
     bool isValid() const;
     const std::unordered_map<std::string, std::shared_ptr<Road>>& getRoads() const;
+    const std::unordered_map<std::string, std::shared_ptr <Intersection>>& getIntersections() const;
 
 };

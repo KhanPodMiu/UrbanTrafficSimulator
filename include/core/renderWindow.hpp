@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDL2/SDL.h"
+#include "utils/vector2i.hpp"
 
 class RenderWindow{
 public:
@@ -8,7 +9,7 @@ public:
     SDL_Texture* loadTexture(const char* filePath);
     void cleanUp();
     void clear();
-    void render(SDL_Texture* texture);
+    void render(SDL_Texture* texture, Vector2& AimPoint, int OBJECT_RADIUS = 0);
     void display();
     void cleanUpTexture(SDL_Texture* texture);
 
