@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <unordered_set>
 
-constexpr int MAP_WIDTH = 4000;
+constexpr int MAP_WIDTH = 5300;
 constexpr int MAP_HEIGHT = 4000;
 
 const int WIDTH = 40;
