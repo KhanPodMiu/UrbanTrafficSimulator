@@ -55,7 +55,7 @@ int main(int argc, char* args[]) {
 
     //=======================================================================================================================================================================
 
-    SDL_Texture* MapBackground = window -> loadTexture("assets/textures/Background.png");
+    SDL_Texture* MapBackground = window -> loadTexture("assets/textures/newtemp.png");
     if(MapBackground == nullptr){
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return 1;
