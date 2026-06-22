@@ -8,6 +8,7 @@ private:
     float x;
     float y;
     float zoom;
+    void clampPosition();
 public:
 
     float getX() const;
