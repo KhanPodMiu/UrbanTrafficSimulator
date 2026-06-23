@@ -1,0 +1,164 @@
+#include "algorithms/AStarStrategy.hpp"
+#include "graph/Graph.hpp"
+#include "graph/Intersection.hpp"
+#include "graph/Road.hpp"
+#include "simulation/RouteRequest.hpp"
+#include "simulation/RouteResult.hpp"
+
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
+AStarStrategy::AStarStrategy(
+    HeuristicType heuristic)
+    : heuristicType(heuristic)
+{
+}
+
+// double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
+//     return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY());
+// }
+
+double AStarStrategy::heuristic(
+    const Intersection& current,
+    const Intersection& goal) const
+{
+    double dx =
+        std::abs(
+            current.getX() -
+            goal.getX());
+
+    double dy =
+        std::abs(
+            current.getY() -
+            goal.getY());
+
+    switch (heuristicType)
+    {
+    case HeuristicType::Zero:
+        return 0.0;
+
+    case HeuristicType::Euclidean:
+        return std::hypot(dx, dy);
+
+    case HeuristicType::WeightedEuclidean:
+        return 1.2 * std::hypot(dx, dy);
+    }
+
+    return 0.0;
+}
+
+Route AStarStrategy::reconstructPath(
+    const std::unordered_map<std::string,std::string>& cameFrom,
+    const std::string& start,
+    const std::string& goal) const
+{
+    std::vector<std::string> path;
+
+    std::string current = goal;
+
+    path.push_back(current);
+
+    while(current != start)
+    {
+        auto it = cameFrom.find(current);
+
+        if(it == cameFrom.end())
+            return Route();
+
+        current = it->second;
+        path.push_back(current);
+    }
+
+    std::reverse(path.begin(), path.end());
+
+    return Route(path);
+}
+
+Route AStarStrategy::calculateRoute(
+    const Graph& graph,
+    const RouteRequest& request)
+{
+    expandedNodes = 0;
+
+    auto start = graph.getIntersection(request.startIntersectionID);
+    auto goal  = graph.getIntersection(request.destinationIntersectionID);
+
+    if(!start || !goal)
+        return Route();
+
+    using OpenSet = std::priority_queue<Node, std::vector<Node>, Compare>;
+    OpenSet openSet;
+
+    std::unordered_map<std::string,double> gScore;
+    std::unordered_map<std::string,std::string> cameFrom;
+
+    constexpr double INF = std::numeric_limits<double>::infinity();
+
+    /*
+        Initialize every node.
+    */
+
+    for(const auto& road : graph.getConnectedRoads(start->getIntersectionID())) {
+        (void)road;
+    }
+
+    /*
+        Because Graph stores intersections internally,
+        initialize lazily instead of iterating.
+    */
+
+    gScore[start->getIntersectionID()] = 0.0;
+
+    openSet.push(
+    {
+        start->getIntersectionID(),
+        0.0,
+        heuristic(*start,*goal),
+        heuristic(*start,*goal)
+    });
+
+    while(!openSet.empty())
+    {
+        Node current = openSet.top();
+        openSet.pop();
+
+        /*
+            Lazy deletion.
+
+            Ignore outdated queue entries.
+        */
+
+        auto currentScore = gScore[current.intersectionID];
+
+        if(current.g > currentScore)
+            continue;
+
+        expandedNodes++;
+
+        if(current.intersectionID == goal->getIntersectionID()) {
+            return reconstructPath(cameFrom, start->getIntersectionID(), goal->getIntersectionID());
+        }
+
+        const auto& roads = graph.getConnectedRoads(current.intersectionID);
+
+        for(const auto& road : roads) {
+            const Intersection* neighbor = road->getDestinationIntersection();
+            if(neighbor == nullptr)
+                continue;
+
+            double tentative = currentScore + road->getTravelCost();
+            auto it = gScore.find(neighbor->getIntersectionID());
+            double oldScore =(it == gScore.end()) ? INF : it->second;
+
+            if(tentative < oldScore) {
+                cameFrom[neighbor->getIntersectionID()] = current.intersectionID;
+                gScore[neighbor->getIntersectionID()] = tentative;
+                double h = heuristic(*neighbor,*goal);
+                openSet.push({neighbor->getIntersectionID(), tentative, h, tentative + h});
+            }
+        }
+    }
+
+    return Route();
+}

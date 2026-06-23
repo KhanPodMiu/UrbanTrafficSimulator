@@ -1,4 +1,55 @@
 #pragma once
+#include <queue>
+#include <unordered_map>
+#include <string>
+#include <vector>
 
 #include "graph/Graph.hpp"
+#include "simulation/RouteRequest.hpp"
+#include "simulation/RouteResult.hpp"
+
+enum HeuristicType {
+    Zero,
+    Euclidean,
+    WeightedEuclidean
+};
+
+class AStarStrategy
+{
+public:
+    explicit AStarStrategy(
+        HeuristicType heuristic =
+            HeuristicType::Euclidean);
+
+    Route calculateRoute(const Graph& graph, const RouteRequest& request);
+    std::size_t getExpandedNodeCount() const {
+        return expandedNodes;
+    }
+
+private:
+
+    struct Node
+    {
+        std::string intersectionID;
+        double g;
+        double h;
+        double f;
+    };
+    struct Compare
+    {
+        bool operator()(const Node& lhs, const Node& rhs) const {
+            // Smaller f has higher priority.
+            if (lhs.f == rhs.f)
+                return lhs.h > rhs.h;     // tie-breaker
+            return lhs.f > rhs.f;
+        }
+    };
+    HeuristicType heuristicType;
+    double heuristic(const Intersection& current, const Intersection& goal) const;
+    Route reconstructPath(
+        const std::unordered_map<std::string,std::string>& cameFrom,
+        const std::string& start,
+        const std::string& goal) const;
+    std::size_t expandedNodes = 0;
+};
 
