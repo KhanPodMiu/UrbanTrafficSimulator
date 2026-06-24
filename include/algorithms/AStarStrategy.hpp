@@ -21,7 +21,7 @@ public:
         HeuristicType heuristic =
             HeuristicType::Euclidean);
 
-    Route calculateRoute(const Graph& graph, const RouteRequest& request);
+    RouteResult calculateRoute(const Graph& graph, const RouteRequest& request);
     std::size_t getExpandedNodeCount() const {
         return expandedNodes;
     }
@@ -46,7 +46,7 @@ private:
     };
     HeuristicType heuristicType;
     double heuristic(const Intersection& current, const Intersection& goal) const;
-    Route reconstructPath(
+    RouteResult reconstructPath(
         const std::unordered_map<std::string,std::string>& cameFrom,
         const std::string& start,
         const std::string& goal) const;

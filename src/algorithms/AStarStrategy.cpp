@@ -48,7 +48,7 @@ double AStarStrategy::heuristic(
     return 0.0;
 }
 
-Route AStarStrategy::reconstructPath(
+RouteResult AStarStrategy::reconstructPath(
     const std::unordered_map<std::string,std::string>& cameFrom,
     const std::string& start,
     const std::string& goal) const
@@ -64,7 +64,7 @@ Route AStarStrategy::reconstructPath(
         auto it = cameFrom.find(current);
 
         if(it == cameFrom.end())
-            return Route();
+            return RouteResult();
 
         current = it->second;
         path.push_back(current);
@@ -72,10 +72,10 @@ Route AStarStrategy::reconstructPath(
 
     std::reverse(path.begin(), path.end());
 
-    return Route(path);
+    return RouteResult(path);
 }
 
-Route AStarStrategy::calculateRoute(
+RouteResult AStarStrategy::calculateRoute(
     const Graph& graph,
     const RouteRequest& request)
 {
@@ -85,7 +85,7 @@ Route AStarStrategy::calculateRoute(
     auto goal  = graph.getIntersection(request.destinationIntersectionID);
 
     if(!start || !goal)
-        return Route();
+        return RouteResult();
 
     using OpenSet = std::priority_queue<Node, std::vector<Node>, Compare>;
     OpenSet openSet;
@@ -160,5 +160,5 @@ Route AStarStrategy::calculateRoute(
         }
     }
 
-    return Route();
+    return RouteResult();
 }
