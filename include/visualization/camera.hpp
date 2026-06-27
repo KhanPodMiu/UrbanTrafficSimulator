@@ -23,6 +23,7 @@ public:
     void subX();
     void subY();
 
+    void setZoom(float newZoom);
 
     Camera();
 };

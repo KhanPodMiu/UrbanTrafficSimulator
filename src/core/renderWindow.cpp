@@ -34,8 +34,8 @@ void RenderWindow::renderLine(int x1, int y1, int x2, int y2){
 }
 
 void RenderWindow::renderRect(int x, int y, int w, int h){
-    SDL_Rect rect{x,y,w,h};
-    SDL_RenderFillRect(renderer,&rect);
+    SDL_Rect rect{x, y, w, h};
+    SDL_RenderFillRect(renderer, &rect);
 }
 
 void RenderWindow::clear(){
@@ -51,8 +51,8 @@ void RenderWindow::render(SDL_Texture* texture, Vector2& AimPoint, float zoom, f
 
     if (OBJECT_RADIUS == 0) {
         SDL_QueryTexture(texture, nullptr, nullptr, &point.w, &point.h);
-        point.w *= zoom;   // nếu bạn đã pass zoom vào
-        point.h *= zoom;
+        point.w = (int)(point.w * zoom);
+        point.h = (int)(point.h * zoom);
     } else {
         point.w = (int)(OBJECT_RADIUS * 2);
         point.h = (int)(OBJECT_RADIUS * 2);
@@ -74,19 +74,20 @@ void RenderWindow::cleanUpTexture(SDL_Texture* texture){
     SDL_DestroyTexture(texture);
 }
 
-void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, int length, int width, double angle)
+// FIX (Bug 1): length and width changed from int to float to preserve zoom precision
+void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, float length, float width, double angle)
 {
     SDL_Rect dstRect;
 
-    dstRect.x = start.x;
-    dstRect.y = start.y - width / 2;
+    dstRect.x = (int)start.x;
+    dstRect.y = (int)(start.y - width / 2.0f);
 
-    dstRect.w = length;
-    dstRect.h = width;
+    dstRect.w = (int)length;
+    dstRect.h = (int)width;
 
     SDL_Point pivot;
     pivot.x = 0;
-    pivot.y = width / 2;
+    pivot.y = (int)(width / 2.0f);
 
     SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, &pivot, SDL_FLIP_NONE);
 }

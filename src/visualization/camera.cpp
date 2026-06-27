@@ -62,3 +62,12 @@ void Camera::clampPosition() {
     if (x > maxX) x = maxX;
     if (y > maxY) y = maxY;
 }
+
+void Camera::setZoom(float newZoom)
+{
+    float minZoom = VIEW_PORT_HEIGHT / MAP_HEIGHT;
+    if (newZoom < minZoom) newZoom = minZoom;
+    if (newZoom > 3.0f)   newZoom = 3.0f;
+    zoom = newZoom;
+    clampPosition();
+}
