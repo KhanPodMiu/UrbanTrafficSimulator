@@ -2,6 +2,7 @@
 
 #include "utils/vector2i.hpp"
 
+
 class Camera
 {
 private:

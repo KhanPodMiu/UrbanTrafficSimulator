@@ -24,11 +24,10 @@ constexpr int WINDOW_HEIGHT = 900;
 constexpr int PANEL_WIDTH = 400;
 constexpr int MAP_WIDTH = 1200;
 
-constexpr int ROUNDABOUT_RADIUS = 100;
+constexpr int ROUNDABOUT_RADIUS = 250;
 constexpr int ROAD_WIDTH = 80;
 
-// FIX (Bug 6): INITIAL_CAMERA_SCALE is now actually passed to the camera below
-constexpr float INITIAL_CAMERA_SCALE = 0.17f; // zoom so that a 5300px map fits in ~900px
+constexpr float INITIAL_CAMERA_SCALE = 1.0f; // zoom so that a 5300px map fits in ~900px
 
 struct RoadRenderData
 {
@@ -38,8 +37,6 @@ struct RoadRenderData
     float length;
     float angle;
 
-    // Perpendicular offset (world-space) so one-way roads don't overlap.
-    // Computed once at load time: (-sin(angle_rad), cos(angle_rad)) * ROAD_WIDTH/2
     float offsetX;
     float offsetY;
 };
@@ -47,7 +44,9 @@ struct RoadRenderData
 Vector2 applyCamera(const Vector2& worldPos, const Camera& camera)
 {
     float zoom = camera.getZoom();
-    return Vector2((worldPos.x - camera.getX()) * zoom, (worldPos.y - camera.getY()) * zoom);
+    float screenX = (worldPos.x - camera.getX()) * zoom;
+    float screenY = (worldPos.y - camera.getY()) * zoom;
+    return Vector2(screenX, screenY);
 }
 
 //=======================================================================================================================================================================
@@ -73,13 +72,13 @@ int main(int argc, char* args[]) {
         return 1;
     }
 
-    SDL_Texture* Intersection_Texture = window.loadTexture("assets/textures/Intersection/temp_roundabout.png");
+    SDL_Texture* Intersection_Texture = window.loadTexture("assets/textures/Intersection/rb1.png");
     if(Intersection_Texture == nullptr){
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return 1;
     }
 
-    SDL_Texture* Road_Texture = window.loadTexture("assets/textures/Roads/temp_road.png");
+    SDL_Texture* Road_Texture = window.loadTexture("assets/textures/Roads/road2.png");
     if(Road_Texture == nullptr){
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return 1;
@@ -92,11 +91,10 @@ int main(int argc, char* args[]) {
     WorldClock clock;
     Camera camera;
 
-    // FIX (Bug 6): Actually use the constant to initialise camera zoom
     camera.setZoom(INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/complex_map.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/small_map.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
@@ -125,10 +123,6 @@ int main(int argc, char* args[]) {
         temp.length = std::sqrt(dx * dx + dy * dy);
         temp.angle  = std::atan2(dy, dx) * 180.0f / static_cast<float>(M_PI);
 
-        // FIX (Bug 2): Compute perpendicular offset for one-way road lane separation.
-        // The perpendicular to direction (cos θ, sin θ) is (-sin θ, cos θ).
-        // We shift each road half a road-width to the RIGHT of its travel direction,
-        // so that two opposing roads sit side by side without overlapping.
         float angle_rad = std::atan2(dy, dx);
         float halfWidth = ROAD_WIDTH * 0.5f;
         temp.offsetX = -std::sin(angle_rad) * halfWidth;
@@ -163,17 +157,14 @@ int main(int argc, char* args[]) {
         bgPos.x += PANEL_WIDTH;
         window.render(MapBackground, bgPos, zoom);
 
-        // Road — FIX (Bug 2): apply perpendicular offset so one-way roads don't overlap
         for(const auto& road : roads_location)
         {
-            // Shift the start point by the (already world-space) offset, then camera-transform
             Vector2 shiftedStart(road.start.x + road.offsetX,
                                  road.start.y + road.offsetY);
 
             Vector2 renderPos = applyCamera(shiftedStart, camera);
             renderPos.x += PANEL_WIDTH;
 
-            // FIX (Bug 1): pass floats — renderRoad signature updated to accept float
             window.renderRoad(Road_Texture, renderPos, road.length * zoom, ROAD_WIDTH * zoom, road.angle);
         }
 
@@ -210,7 +201,6 @@ int main(int argc, char* args[]) {
     window.cleanUpTexture(Road_Texture);
 
     window.cleanUp();
-    // FIX (Bug 4): no delete needed — window is now a stack object
 
     SDL_Quit();
     return 0;
