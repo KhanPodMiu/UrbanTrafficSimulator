@@ -22,12 +22,13 @@ constexpr int WINDOW_WIDTH = 1600;
 constexpr int WINDOW_HEIGHT = 900;
 
 constexpr int PANEL_WIDTH = 400;
-constexpr int MAP_WIDTH = 1200;
 
 constexpr int ROUNDABOUT_RADIUS = 250;
 constexpr int ROAD_WIDTH = 80;
 
-constexpr float INITIAL_CAMERA_SCALE = 1.0f; // zoom so that a 5300px map fits in ~900px
+constexpr int MAP_WIDTH = 53000;
+
+constexpr float INITIAL_CAMERA_SCALE = WINDOW_WIDTH/MAP_WIDTH; 
 
 struct RoadRenderData
 {
@@ -66,7 +67,7 @@ int main(int argc, char* args[]) {
 
     //=======================================================================================================================================================================
 
-    SDL_Texture* MapBackground = window.loadTexture("assets/textures/newtemp.png");
+    SDL_Texture* MapBackground = window.loadTexture("assets/textures/BG.png");
     if(MapBackground == nullptr){
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return 1;
@@ -94,7 +95,7 @@ int main(int argc, char* args[]) {
     camera.setZoom(INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/small_map.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/large_map_v2.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
