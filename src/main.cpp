@@ -28,7 +28,7 @@ constexpr int ROAD_WIDTH = 80;
 
 constexpr int MAP_WIDTH = 53000;
 
-constexpr float INITIAL_CAMERA_SCALE = WINDOW_WIDTH/MAP_WIDTH; 
+constexpr float INITIAL_CAMERA_SCALE = WINDOW_WIDTH/ MAP_WIDTH; 
 
 struct RoadRenderData
 {
@@ -56,13 +56,11 @@ int main(int argc, char* args[]) {
 
     //=======================================================================================================================================================================
 
-    // FIX (Bug 5): Check SDL_Init return value
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
         return 1;
     }
 
-    // FIX (Bug 4): Use stack object instead of raw new to avoid memory leak
     RenderWindow window("Urban Traffic", WINDOW_WIDTH, WINDOW_HEIGHT);
 
     //=======================================================================================================================================================================
@@ -95,7 +93,7 @@ int main(int argc, char* args[]) {
     camera.setZoom(INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/large_map_v2.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/LangDaiHoc.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
@@ -196,7 +194,6 @@ int main(int argc, char* args[]) {
 
     //=======================================================================================================================================================================
 
-    // FIX (Bug 3): clean up ALL textures, not just MapBackground
     window.cleanUpTexture(MapBackground);
     window.cleanUpTexture(Intersection_Texture);
     window.cleanUpTexture(Road_Texture);
