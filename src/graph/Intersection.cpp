@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <unordered_set>
 
-constexpr int MAP_WIDTH = 5300;
-constexpr int MAP_HEIGHT = 4000;
+constexpr int MAP_WIDTH = 53000;
+constexpr int MAP_HEIGHT = 40000;
 
 const int WIDTH = 40;
 const int ROAD_PADDING = 20;

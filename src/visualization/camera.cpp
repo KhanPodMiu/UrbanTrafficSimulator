@@ -3,9 +3,11 @@
 
 constexpr float VIEW_PORT_WIDTH  = 1200;
 constexpr float VIEW_PORT_HEIGHT = 900;
-constexpr float MAP_WIDTH        = 5300.0;
-constexpr float MAP_HEIGHT       = 4000.0;
-constexpr float MOVE_SPEED       = 20.0f;
+constexpr float MAP_WIDTH        = 53000.0;
+constexpr float MAP_HEIGHT       = 40000.0;
+constexpr float MOVE_SPEED       = 40.0f;
+
+constexpr float MINZOOM = VIEW_PORT_WIDTH/MAP_WIDTH;
 
 float Camera::getX() const { return x; }
 float Camera::getY() const { return y; }
@@ -36,18 +38,14 @@ void Camera::subY() {
 }
 
 void Camera::zoomOut() {
-    float minZoom = 900.0f / 4000.0f;
-    if (zoom > minZoom)
-        zoom -= 0.1f;
-    if (zoom < minZoom) zoom = minZoom;
-
+    zoom -= zoom * 0.05f;
+    if (zoom < MINZOOM) zoom = MINZOOM;
     clampPosition();
 }
 
 void Camera::zoomIn() {
-    if (zoom < 3.0f)
-        zoom += 0.1f;
-
+    zoom += zoom * 0.05f;
+    if (zoom > 3.0f) zoom = 3.0f;
     clampPosition();
 }
 
@@ -65,8 +63,8 @@ void Camera::clampPosition() {
 
 void Camera::setZoom(float newZoom)
 {
-    float minZoom = VIEW_PORT_HEIGHT / MAP_HEIGHT;
-    if (newZoom < minZoom) newZoom = minZoom;
+    float MINZOOM = VIEW_PORT_HEIGHT / MAP_HEIGHT;
+    if (newZoom < MINZOOM) newZoom = MINZOOM;
     if (newZoom > 3.0f)   newZoom = 3.0f;
     zoom = newZoom;
     clampPosition();

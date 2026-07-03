@@ -74,20 +74,49 @@ void RenderWindow::cleanUpTexture(SDL_Texture* texture){
     SDL_DestroyTexture(texture);
 }
 
-// FIX (Bug 1): length and width changed from int to float to preserve zoom precision
+
 void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, float length, float width, double angle)
 {
-    SDL_Rect dstRect;
+    int texW, texH;
+    SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
 
-    dstRect.x = (int)start.x;
-    dstRect.y = (int)(start.y - width / 2.0f);
+    float scale     = width / (float)texH;
+    float tileWidth = texW * scale;
+    if (tileWidth <= 0) return;
 
-    dstRect.w = (int)length;
-    dstRect.h = (int)width;
+    // FIX: Overlap mỗi tile 1px để lấp gap do floating point
+    const float OVERLAP = 1.0f;
 
-    SDL_Point pivot;
-    pivot.x = 0;
-    pivot.y = (int)(width / 2.0f);
+    int fullTiles   = (int)(length / tileWidth);
+    float remainder = length - fullTiles * tileWidth;
 
-    SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, &pivot, SDL_FLIP_NONE);
+    for (int i = 0; i <= fullTiles; i++)
+    {
+        bool isLastTile   = (i == fullTiles);
+        float thisTileScreenW = isLastTile ? remainder : (tileWidth + OVERLAP);
+        if (thisTileScreenW <= 0.5f) break;
+
+        // FIX: Dùng float thuần, chỉ round khi gán vào SDL_Rect
+        float offsetX = i * tileWidth;  // KHÔNG dùng roundf ở đây
+
+        SDL_Rect srcRect;
+        srcRect.x = 0;
+        srcRect.y = 0;
+        srcRect.w = isLastTile
+            ? (int)roundf((float)texW * (remainder / tileWidth))
+            : texW;
+        srcRect.h = texH;
+
+        SDL_Rect dstRect;
+        dstRect.x = (int)roundf(start.x + offsetX);
+        dstRect.y = (int)roundf(start.y - width / 2.0f);
+        dstRect.w = (int)ceilf(thisTileScreenW);   // FIX: ceilf thay roundf để không bị thiếu pixel
+        dstRect.h = (int)ceilf(width);
+
+        SDL_Point pivot;
+        pivot.x = -(int)roundf(offsetX);
+        pivot.y = (int)roundf(width / 2.0f);
+
+        SDL_RenderCopyEx(renderer, texture, &srcRect, &dstRect, angle, &pivot, SDL_FLIP_VERTICAL);
+    }
 }
