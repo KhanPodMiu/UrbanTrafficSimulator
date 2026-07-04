@@ -260,7 +260,7 @@ const std::vector <std::shared_ptr <Road>>& Graph::getConnectedRoads(const std::
 
 
 
-std::shared_ptr<Intersection> Graph::getIntersection(const std::string& intersectionID) const {
+const std::shared_ptr<Intersection> Graph::getIntersection(const std::string& intersectionID) const {
 
     auto it = Intersections.find(intersectionID);
 
@@ -276,7 +276,7 @@ std::shared_ptr<Intersection> Graph::getIntersection(const std::string& intersec
 
 
 
-std::shared_ptr<Road> Graph::getRoad(const std::string& roadID) const {
+const std::shared_ptr<Road> Graph::getRoad(const std::string& roadID) const {
 
     auto it = Roads.find(roadID);
 
