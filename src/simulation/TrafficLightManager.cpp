@@ -108,13 +108,11 @@ void TrafficLightManager::initializeTopology(Graph& graph) {
 }
 
 void TrafficLightManager::update(double dt) {
-    // Duyệt qua tất cả các ngã tư có đèn
     for (auto& control : m_signalizedIntersections) {
         
         control.timer += dt;
 
         if (control.currentLightState == TrafficLightState::GREEN) {
-            // Hết Xanh -> Chuyển sang Vàng
             if (control.timer >= control.greenDuration) {
                 control.currentLightState = TrafficLightState::YELLOW;
                 control.timer = 0.0;
