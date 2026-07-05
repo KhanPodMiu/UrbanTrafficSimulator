@@ -43,8 +43,9 @@ double AStarStrategy::heuristic(
 
     case HeuristicType::WeightedEuclidean:
         return 2.0 * std::hypot(dx, dy);
+
     case HeuristicType::DivideSpeed:
-        return std::hypot(dx, dy)/ 50;
+        return std::hypot(dx, dy)/ Road::MAX_SPEED_LIMIT;
     }
 
     return 0.0;
@@ -77,11 +78,13 @@ RouteResult AStarStrategy::reconstructPath(
     return RouteResult(path);
 }
 
+
 RouteResult AStarStrategy::calculateRoute(
     const Graph& graph,
     const RouteRequest& request)
 {
     expandedNodes = 0;
+    lastTravelCost = 0.0;
 
     auto start = graph.getIntersection(request.startIntersectionID);
     auto goal  = graph.getIntersection(request.destinationIntersectionID);
@@ -116,7 +119,6 @@ RouteResult AStarStrategy::calculateRoute(
     {
         start->getIntersectionID(),
         0.0,
-        heuristic(*start,*goal),
         heuristic(*start,*goal)
     });
 
@@ -139,6 +141,7 @@ RouteResult AStarStrategy::calculateRoute(
         expandedNodes++;
 
         if(current.intersectionID == goal->getIntersectionID()) {
+            lastTravelCost = currentScore;
             return reconstructPath(cameFrom, start->getIntersectionID(), goal->getIntersectionID());
         }
 

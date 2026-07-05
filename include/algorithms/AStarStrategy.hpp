@@ -27,6 +27,11 @@ public:
         return expandedNodes;
     }
 
+     double getLastTravelCost() const
+    {
+        return lastTravelCost;
+    }
+
 private:
 
     struct Node
@@ -36,6 +41,7 @@ private:
         double h;
         double f;
     };
+    double lastTravelCost = 0.0;
     struct Compare
     {
         bool operator()(const Node& lhs, const Node& rhs) const {
