@@ -42,7 +42,9 @@ double AStarStrategy::heuristic(
         return std::hypot(dx, dy);
 
     case HeuristicType::WeightedEuclidean:
-        return 1.2 * std::hypot(dx, dy);
+        return 2.0 * std::hypot(dx, dy);
+    case HeuristicType::DivideSpeed:
+        return std::hypot(dx, dy)/ 50;
     }
 
     return 0.0;

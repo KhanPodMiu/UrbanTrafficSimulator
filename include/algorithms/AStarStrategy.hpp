@@ -11,7 +11,8 @@
 enum HeuristicType {
     Zero,
     Euclidean,
-    WeightedEuclidean
+    WeightedEuclidean,
+    DivideSpeed
 };
 
 class AStarStrategy
