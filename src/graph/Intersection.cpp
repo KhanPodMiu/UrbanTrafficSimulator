@@ -1,12 +1,16 @@
 #include "graph/Intersection.hpp"
 #include "graph/Road.hpp"
+#include "core/Constants.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <unordered_set>
 
-constexpr int MAP_WIDTH = 53000;
-constexpr int MAP_HEIGHT = 40000;
-
+// NOTE: WIDTH / ROAD_PADDING / ROUNDABOUT_RADIUS / EXPAND_ROUNDABOUT below are
+// Intersection's own geometry constants used by getRadius()'s formula. They
+// are intentionally NOT moved into Config, and NOT merged with the
+// similarly-named Config::ROUNDABOUT_RADIUS (=250) used for fixed-size
+// rendering in main.cpp/VisualizationEngine — same name, different meaning.
+// Merging them would silently change getRadius()'s output.
 const int WIDTH = 40;
 const int ROAD_PADDING = 20;
 const int ROUNDABOUT_RADIUS = 80;
@@ -27,22 +31,22 @@ Intersection::Intersection(
             "Intersection ID cannot be empty");
     }
 
-    if (x < 0 || x > MAP_WIDTH)
+    if (x < 0 || x > Config::MAP_WIDTH)
     {
         throw std::invalid_argument(
             "Intersection \"" + id +
             "\": x position " + std::to_string(x) +
             " is outside valid range [0, " +
-            std::to_string(MAP_WIDTH) + "]");
+            std::to_string(Config::MAP_WIDTH) + "]");
     }
 
-    if (y < 0 || y > MAP_HEIGHT)
+    if (y < 0 || y > Config::MAP_HEIGHT)
     {
         throw std::invalid_argument(
             "Intersection \"" + id +
             "\": y position " + std::to_string(y) +
             " is outside valid range [0, " +
-            std::to_string(MAP_HEIGHT) + "]");
+            std::to_string(Config::MAP_HEIGHT) + "]");
     }
 }
 

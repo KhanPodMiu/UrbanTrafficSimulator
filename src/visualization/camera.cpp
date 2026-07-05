@@ -1,39 +1,38 @@
 #include "visualization/camera.hpp"
 #include "utils/vector2i.hpp"
+#include "core/Constants.hpp"
 
-constexpr float VIEW_PORT_WIDTH  = 1200;
-constexpr float VIEW_PORT_HEIGHT = 900;
-constexpr float MAP_WIDTH        = 53000.0;
-constexpr float MAP_HEIGHT       = 40000.0;
-constexpr float MOVE_SPEED       = 40.0f;
-
-constexpr float MINZOOM = VIEW_PORT_WIDTH/MAP_WIDTH;
+// NOTE: Config::VIEW_PORT_WIDTH/HEIGHT and MAP_WIDTH/HEIGHT are declared as
+// int in Constants.hpp. The original camera.cpp declared its own copies as
+// float, so plain constant-to-constant divisions here are explicitly cast
+// to float to reproduce the exact same floating point result as before.
+constexpr float MINZOOM = static_cast<float>(Config::VIEW_PORT_WIDTH) / static_cast<float>(Config::MAP_WIDTH);
 
 float Camera::getX() const { return x; }
 float Camera::getY() const { return y; }
 float Camera::getZoom() const { return zoom; }
 
 void Camera::addX() {
-    float maxX = MAP_WIDTH - VIEW_PORT_WIDTH / zoom;
+    float maxX = Config::MAP_WIDTH - Config::VIEW_PORT_WIDTH / zoom;
     if (x < maxX)
-        x += MOVE_SPEED / zoom;
+        x += Config::MOVE_SPEED / zoom;
 }
 
 void Camera::addY() {
-    float maxY = MAP_HEIGHT - VIEW_PORT_HEIGHT / zoom;
+    float maxY = Config::MAP_HEIGHT - Config::VIEW_PORT_HEIGHT / zoom;
     if (y < maxY)
-        y += MOVE_SPEED / zoom;
+        y += Config::MOVE_SPEED / zoom;
 }
 
 void Camera::subX() {
     if (x > 0)
-        x -= MOVE_SPEED / zoom;
+        x -= Config::MOVE_SPEED / zoom;
     if (x < 0) x = 0;
 }
 
 void Camera::subY() {
     if (y > 0)
-        y -= MOVE_SPEED / zoom;
+        y -= Config::MOVE_SPEED / zoom;
     if (y < 0) y = 0;
 }
 
@@ -52,8 +51,8 @@ void Camera::zoomIn() {
 Camera::Camera() : x(0), y(0), zoom(1.0f) {}
 
 void Camera::clampPosition() {
-    float maxX = MAP_WIDTH - VIEW_PORT_WIDTH / zoom;
-    float maxY = MAP_HEIGHT - VIEW_PORT_HEIGHT / zoom;
+    float maxX = Config::MAP_WIDTH - Config::VIEW_PORT_WIDTH / zoom;
+    float maxY = Config::MAP_HEIGHT - Config::VIEW_PORT_HEIGHT / zoom;
 
     if (x < 0) x = 0;
     if (y < 0) y = 0;
@@ -63,7 +62,11 @@ void Camera::clampPosition() {
 
 void Camera::setZoom(float newZoom)
 {
-    float MINZOOM = VIEW_PORT_HEIGHT / MAP_HEIGHT;
+    // NOTE: this local MINZOOM intentionally shadows the file-scope MINZOOM
+    // above (used by zoomIn/zoomOut) exactly as in the original code — it is
+    // computed from height instead of width. Preserved as-is, not unified,
+    // to avoid changing existing behavior.
+    float MINZOOM = static_cast<float>(Config::VIEW_PORT_HEIGHT) / static_cast<float>(Config::MAP_HEIGHT);
     if (newZoom < MINZOOM) newZoom = MINZOOM;
     if (newZoom > 3.0f)   newZoom = 3.0f;
     zoom = newZoom;
