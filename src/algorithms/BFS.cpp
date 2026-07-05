@@ -1,15 +1,21 @@
 #include <iostream>
 
-#include "BFS.hpp"
-#include "Graph.hpp"
-#include "Road.hpp"
-#include "Intersection.hpp"
+#include "algorithms/BFS.hpp"
+#include "graph/Graph.hpp"
+#include "graph/Road.hpp"
+#include "graph/Intersection.hpp"
 
 #include <queue>
 #include <unordered_map>
 #include <algorithm>
 
+size_t BFS::expandedNodeCount = 0;
+
 RouteResult BFS::findShortestPath(const Graph& graph, const RouteRequest& request) {
+
+    // ===== ADDED: Reset benchmark counter =====
+    expandedNodeCount = 0;
+
     std::string start = request.startIntersectionID;
     std::string dest = request.destinationIntersectionID;
 
@@ -20,23 +26,27 @@ RouteResult BFS::findShortestPath(const Graph& graph, const RouteRequest& reques
         return RouteResult(path);
     }
 
-    std::queue <std::string> q;
-    std::unordered_map<std::string, bool> visited;            
+    std::queue<std::string> q;
+    std::unordered_map<std::string, bool> visited;
     std::unordered_map<std::string, std::string> trace;
 
     q.push(start);
-    visited[start] = true; 
+    visited[start] = true;
 
     while (!q.empty())
     {
         std::string currentID = q.front();
         q.pop();
+
+        // ===== ADDED: Count expanded node =====
+        expandedNodeCount++;
+
         if (currentID == dest) {
             break;
         }
-        
-        std::vector <std::shared_ptr <Road>> connectedRoads = graph.getConnectedRoads(currentID);
-        for (const auto &road : connectedRoads) {
+
+        std::vector<std::shared_ptr<Road>> connectedRoads = graph.getConnectedRoads(currentID);
+        for (const auto& road : connectedRoads) {
 
             if (!road) continue;
             const Intersection* neighborIntersection = road->getDestinationIntersection();
@@ -46,7 +56,7 @@ RouteResult BFS::findShortestPath(const Graph& graph, const RouteRequest& reques
 
             if (!visited[neighborID])
             {
-                visited[neighborID] = true; 
+                visited[neighborID] = true;
                 q.push(neighborID);
                 trace[neighborID] = currentID;
             }
@@ -63,8 +73,15 @@ RouteResult BFS::findShortestPath(const Graph& graph, const RouteRequest& reques
         path.push_back(temp);
         temp = trace[temp];
     }
+
     path.push_back(start);
     std::reverse(path.begin(), path.end());
 
     return RouteResult(path);
+}
+
+// ===== ADDED: Getter for benchmark =====
+size_t BFS::getExpandedNodeCount()
+{
+    return expandedNodeCount;
 }
