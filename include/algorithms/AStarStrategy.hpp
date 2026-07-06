@@ -8,20 +8,20 @@
 #include "simulation/RouteRequest.hpp"
 #include "simulation/RouteResult.hpp"
 
-enum HeuristicType {
-    Zero,
-    Euclidean,
-    WeightedEuclidean,
-    DivideSpeed
-};
+// enum HeuristicType {
+//     Zero,
+//     Euclidean,
+//     WeightedEuclidean,
+//     DivideSpeed
+// };
 
 class AStarStrategy
 {
 public:
-    explicit AStarStrategy(
-        HeuristicType heuristic =
-            HeuristicType::Euclidean);
-
+    // explicit AStarStrategy(
+    //     HeuristicType heuristic =
+    //         HeuristicType::Euclidean);
+    AStarStrategy() = default;
     RouteResult calculateRoute(const Graph& graph, const RouteRequest& request);
     std::size_t getExpandedNodeCount() const {
         return expandedNodes;
@@ -51,7 +51,7 @@ private:
             return lhs.f > rhs.f;
         }
     };
-    HeuristicType heuristicType;
+    // HeuristicType heuristicType;
     double heuristic(const Intersection& current, const Intersection& goal) const;
     RouteResult reconstructPath(
         const std::unordered_map<std::string,std::string>& cameFrom,

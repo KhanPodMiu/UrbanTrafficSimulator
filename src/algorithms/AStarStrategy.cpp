@@ -9,47 +9,48 @@
 #include <cmath>
 #include <limits>
 
-AStarStrategy::AStarStrategy(
-    HeuristicType heuristic)
-    : heuristicType(heuristic)
-{
-}
-
-// double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
-//     return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY());
+// AStarStrategy::AStarStrategy(
+//     HeuristicType heuristic)
+//     : heuristicType(heuristic)
+// {
 // }
 
-double AStarStrategy::heuristic(
-    const Intersection& current,
-    const Intersection& goal) const
-{
-    double dx =
-        std::abs(
-            current.getX() -
-            goal.getX());
-
-    double dy =
-        std::abs(
-            current.getY() -
-            goal.getY());
-
-    switch (heuristicType)
-    {
-    case HeuristicType::Zero:
-        return 0.0;
-
-    case HeuristicType::Euclidean:
-        return std::hypot(dx, dy);
-
-    case HeuristicType::WeightedEuclidean:
-        return 2.0 * std::hypot(dx, dy);
-
-    case HeuristicType::DivideSpeed:
-        return std::hypot(dx, dy)/ Road::MAX_SPEED_LIMIT;
-    }
-
-    return 0.0;
+double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
+    return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY()) / Road::MAX_SPEED_LIMIT;
 }
+
+//========= Use for benchmarking heuristics ========
+// double AStarStrategy::heuristic(
+//     const Intersection& current,
+//     const Intersection& goal) const
+// {
+//     double dx =
+//         std::abs(
+//             current.getX() -
+//             goal.getX());
+
+//     double dy =
+//         std::abs(
+//             current.getY() -
+//             goal.getY());
+
+//     switch (heuristicType)
+//     {
+//     case HeuristicType::Zero:
+//         return 0.0;
+
+//     case HeuristicType::Euclidean:
+//         return std::hypot(dx, dy);
+
+//     case HeuristicType::WeightedEuclidean:
+//         return 2.0 * std::hypot(dx, dy);
+
+//     case HeuristicType::DivideSpeed:
+//         return std::hypot(dx, dy)/ Road::MAX_SPEED_LIMIT;
+//     }
+
+//     return 0.0;
+// }
 
 RouteResult AStarStrategy::reconstructPath(
     const std::unordered_map<std::string,std::string>& cameFrom,
@@ -99,32 +100,19 @@ RouteResult AStarStrategy::calculateRoute(
     std::unordered_map<std::string,std::string> cameFrom;
 
     constexpr double INF = std::numeric_limits<double>::infinity();
-
-    /*
-        Initialize every node.
-    */
-
-    for(const auto& road : graph.getConnectedRoads(start->getIntersectionID())) {
-        (void)road;
-    }
-
-    /*
-        Because Graph stores intersections internally,
-        initialize lazily instead of iterating.
-    */
-
     gScore[start->getIntersectionID()] = 0.0;
 
+    const double h = heuristic(*start, *goal);
     openSet.push(
     {
         start->getIntersectionID(),
         0.0,
-        heuristic(*start,*goal)
+        h,
+        h
     });
-
     while(!openSet.empty())
     {
-        Node current = openSet.top();
+        const Node current = openSet.top();
         openSet.pop();
 
         /*
@@ -133,7 +121,7 @@ RouteResult AStarStrategy::calculateRoute(
             Ignore outdated queue entries.
         */
 
-        auto currentScore = gScore[current.intersectionID];
+        const double currentScore = gScore[current.intersectionID];
 
         if(current.g > currentScore)
             continue;
