@@ -5,9 +5,11 @@
 #include <string>
 #include <memory>
 
+class TrafficLightManager; 
 class Intersection;
 class Road;
 class Graph {
+    friend class TrafficLightManager;
 private:
     std::unordered_map<std::string, std::shared_ptr <Intersection>> Intersections;
     std::unordered_map<std::string, std::shared_ptr <Road>> Roads;
@@ -20,10 +22,8 @@ public:
     bool addRoad(std::shared_ptr <Road> road);
     bool removeRoad(const std::string& roadID);
     const std::vector<std::shared_ptr <Road>> &getConnectedRoads(const std::string& intersectionID) const;
-    std::shared_ptr<Intersection> getIntersection(const std::string& intersectionID) const;
-    std::shared_ptr<Road> getRoad(const std::string& roadID) const;
+    const std::shared_ptr<Intersection> getIntersection(const std::string& intersectionID) const;
+    const std::shared_ptr<Road> getRoad(const std::string& roadID) const;
     bool isValid() const;
-    const std::unordered_map<std::string, std::shared_ptr<Road>>& getRoads() const;
-    const std::unordered_map<std::string, std::shared_ptr <Intersection>>& getIntersections() const;
 
 };
