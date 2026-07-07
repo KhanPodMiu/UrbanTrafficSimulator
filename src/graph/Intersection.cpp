@@ -1,16 +1,12 @@
 #include "graph/Intersection.hpp"
 #include "graph/Road.hpp"
-#include "core/Constants.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <unordered_set>
 
-// NOTE: WIDTH / ROAD_PADDING / ROUNDABOUT_RADIUS / EXPAND_ROUNDABOUT below are
-// Intersection's own geometry constants used by getRadius()'s formula. They
-// are intentionally NOT moved into Config, and NOT merged with the
-// similarly-named Config::ROUNDABOUT_RADIUS (=250) used for fixed-size
-// rendering in main.cpp/VisualizationEngine — same name, different meaning.
-// Merging them would silently change getRadius()'s output.
+constexpr int MAP_WIDTH = 53000;
+constexpr int MAP_HEIGHT = 40000;
+
 const int WIDTH = 40;
 const int ROAD_PADDING = 20;
 const int ROUNDABOUT_RADIUS = 80;
@@ -254,4 +250,3 @@ bool Intersection::removeOutgoingRoad(const Road* road)
 
     return true;
 }
-

@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "Dijkstra.hpp"
-#include "Graph.hpp"
-#include "Road.hpp"
-#include "Intersection.hpp"
+#include "algorithms/Dijkstra.hpp"
+#include "graph/Graph.hpp"
+#include "graph/Road.hpp"
+#include "graph/Intersection.hpp"
 
 #include <queue>
 #include <unordered_map>
