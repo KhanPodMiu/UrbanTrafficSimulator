@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
-struct Route {
+struct RouteResult {
     std::vector<std::string> intersectionIDs;
-    bool isValid;
-    Route() : isValid(false) {}
-    Route(const std::vector<std::string>& path)
-        : intersectionIDs(path), isValid(!path.empty()) {}
+    bool isSuccess;
+    RouteResult() : isSuccess(false) {}
+    RouteResult(const std::vector<std::string>& path)
+        : intersectionIDs(path), isSuccess(!path.empty()) {}
 };
 
