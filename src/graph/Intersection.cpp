@@ -27,22 +27,22 @@ Intersection::Intersection(
             "Intersection ID cannot be empty");
     }
 
-    if (x < 0 || x > MAP_WIDTH)
+    if (x < 0 || x > Config::MAP_WIDTH)
     {
         throw std::invalid_argument(
             "Intersection \"" + id +
             "\": x position " + std::to_string(x) +
             " is outside valid range [0, " +
-            std::to_string(MAP_WIDTH) + "]");
+            std::to_string(Config::MAP_WIDTH) + "]");
     }
 
-    if (y < 0 || y > MAP_HEIGHT)
+    if (y < 0 || y > Config::MAP_HEIGHT)
     {
         throw std::invalid_argument(
             "Intersection \"" + id +
             "\": y position " + std::to_string(y) +
             " is outside valid range [0, " +
-            std::to_string(MAP_HEIGHT) + "]");
+            std::to_string(Config::MAP_HEIGHT) + "]");
     }
 }
 
