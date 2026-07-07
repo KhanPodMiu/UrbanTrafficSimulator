@@ -1,0 +1,69 @@
+{
+  "tests": 9,
+  "name": "AllTests",
+  "testsuites": [
+    {
+      "name": "MapLoaderTest",
+      "tests": 3,
+      "testsuite": [
+        {
+          "name": "LoadValidMap",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/MapLoader\/mapLoader_test.cpp",
+          "line": 7
+        },
+        {
+          "name": "MissingFile",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/MapLoader\/mapLoader_test.cpp",
+          "line": 42
+        },
+        {
+          "name": "DuplicateIntersectionID",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/MapLoader\/mapLoader_test.cpp",
+          "line": 54
+        }
+      ]
+    },
+    {
+      "name": "BFS",
+      "tests": 4,
+      "testsuite": [
+        {
+          "name": "SameStartAndDestination",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/Algorithms\/BFS_test.cpp",
+          "line": 13
+        },
+        {
+          "name": "FindPathInGrid",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/Algorithms\/BFS_test.cpp",
+          "line": 30
+        },
+        {
+          "name": "NoPathExists",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/Algorithms\/BFS_test.cpp",
+          "line": 55
+        },
+        {
+          "name": "LargeGrid",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/Algorithms\/BFS_test.cpp",
+          "line": 78
+        }
+      ]
+    },
+    {
+      "name": "AStarTest",
+      "tests": 2,
+      "testsuite": [
+        {
+          "name": "ValidRoute",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/Algorithms\/AStar_test.cpp",
+          "line": 32
+        },
+        {
+          "name": "SameSourceDestination",
+          "file": "D:\/URBAN TRAFFIC\/UrbanTrafficSimulator\/tests\/Algorithms\/AStar_test.cpp",
+          "line": 45
+        }
+      ]
+    }
+  ]
+}
