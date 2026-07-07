@@ -50,6 +50,35 @@
             "destination": "I1",
             "distance": 2000,
             "speedLimit": 60
+        },
+        {
+            "id": "R5",
+            "source": "I4",
+            "destination": "I3",
+            "distance": 2000,
+            "speedLimit": 60
+        },
+        {
+            "id": "R6",
+            "source": "I2",
+            "destination": "I1",
+            "distance": 2000,
+            "speedLimit": 60
+        },
+        {
+            "id": "R7",
+            "source": "I3",
+            "destination": "I2",
+            "distance": 2000,
+            "speedLimit": 60
+        },
+        {
+            "id": "R8",
+            "source": "I1",
+            "destination": "I4",
+            "distance": 2000,
+            "speedLimit": 60
         }
+
     ]
 }
