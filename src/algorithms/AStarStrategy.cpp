@@ -15,10 +15,6 @@
 // {
 // }
 
-double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
-    return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY()) / Road::MAX_SPEED_LIMIT;
-}
-
 //========= Use for benchmarking heuristics ========
 // double AStarStrategy::heuristic(
 //     const Intersection& current,
@@ -51,6 +47,9 @@ double AStarStrategy::heuristic(const Intersection& current, const Intersection&
 
 //     return 0.0;
 // }
+double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
+    return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY()) / Road::MAX_SPEED_LIMIT;
+}
 
 RouteResult AStarStrategy::reconstructPath(
     const std::unordered_map<std::string,std::string>& cameFrom,
