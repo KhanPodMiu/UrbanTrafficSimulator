@@ -57,7 +57,6 @@ RouteResult AStarStrategy::reconstructPath(
     const std::string& goal) const
 {
     std::vector<std::string> path;
-
     std::string current = goal;
 
     path.push_back(current);
@@ -65,7 +64,6 @@ RouteResult AStarStrategy::reconstructPath(
     while(current != start)
     {
         auto it = cameFrom.find(current);
-
         if(it == cameFrom.end())
             return RouteResult();
 
@@ -95,20 +93,14 @@ RouteResult AStarStrategy::calculateRoute(
     using OpenSet = std::priority_queue<Node, std::vector<Node>, Compare>;
     OpenSet openSet;
 
-    std::unordered_map<std::string,double> gScore;
-    std::unordered_map<std::string,std::string> cameFrom;
+    std::unordered_map<std::string, double> gScore;
+    std::unordered_map<std::string, std::string> cameFrom;
 
     constexpr double INF = std::numeric_limits<double>::infinity();
     gScore[start->getIntersectionID()] = 0.0;
 
     const double h = heuristic(*start, *goal);
-    openSet.push(
-    {
-        start->getIntersectionID(),
-        0.0,
-        h,
-        h
-    });
+    openSet.push({start->getIntersectionID(), 0.0, h, h});
     while(!openSet.empty())
     {
         const Node current = openSet.top();
@@ -151,6 +143,5 @@ RouteResult AStarStrategy::calculateRoute(
             }
         }
     }
-
     return RouteResult();
 }
