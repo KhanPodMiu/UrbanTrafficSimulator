@@ -1,5 +1,6 @@
 #include "graph/Intersection.hpp"
 #include "graph/Road.hpp"
+#include "core/Constants.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <unordered_set>

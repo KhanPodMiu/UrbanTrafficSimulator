@@ -9,9 +9,7 @@
 #include <unordered_map>
 #include <algorithm>
 
-size_t BFS::expandedNodeCount = 0;
-
-RouteResult BFS::findShortestPath(const Graph& graph, const RouteRequest& request) {
+RouteResult BFS::calculateRoute(const Graph& graph, const RouteRequest& request) const {
 
     // ===== ADDED: Reset benchmark counter =====
     expandedNodeCount = 0;
@@ -81,7 +79,7 @@ RouteResult BFS::findShortestPath(const Graph& graph, const RouteRequest& reques
 }
 
 // ===== ADDED: Getter for benchmark =====
-size_t BFS::getExpandedNodeCount()
+size_t BFS::getExpandedNodeCount() const
 {
     return expandedNodeCount;
-}
+}

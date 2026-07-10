@@ -17,7 +17,7 @@ struct NodeIntersection {
     }
 };
 
-RouteResult Dijkstra::findShortestPath(const Graph& graph, const RouteRequest& request) {
+RouteResult Dijkstra::calculateRoute(const Graph& graph, const RouteRequest& request) const {
     std::string start = request.startIntersectionID;
     std::string dest = request.destinationIntersectionID;
     std::vector<std::string> path;

@@ -82,7 +82,7 @@ RouteResult AStarStrategy::reconstructPath(
 
 RouteResult AStarStrategy::calculateRoute(
     const Graph& graph,
-    const RouteRequest& request)
+    const RouteRequest& request) const
 {
     expandedNodes = 0;
     lastTravelCost = 0.0;
