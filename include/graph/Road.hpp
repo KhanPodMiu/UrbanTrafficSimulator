@@ -24,7 +24,7 @@ public:
     static constexpr int MIN_CONGESTION  = 0;
     static constexpr int MAX_CONGESTION  = 100;
     static constexpr int MIN_DISTANCE    = 1;     // map units
-    static constexpr int MAX_DISTANCE    = 8000;  // ≈ 1.4× map diagonal
+    static constexpr int MAX_DISTANCE    = 66400;  // ≈ 1.4× map diagonal
 
     // ── traffic light duration bounds ────────────────────────────────────────
     static constexpr int DEFAULT_GREEN_DURATION  = 30;  // seconds
