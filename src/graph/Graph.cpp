@@ -8,8 +8,9 @@
 
 #include <algorithm>
 
-#include <stdexcept>
+#include <functional> //ADDED: Library for call back function
 
+#include <stdexcept>
 
 
 
@@ -274,6 +275,11 @@ const std::shared_ptr<Intersection> Graph::getIntersection(const std::string& in
 
 }
 
+void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const {
+    for (const auto& pair : Intersections) {
+        func(pair.second); 
+    }
+}
 
 
 const std::shared_ptr<Road> Graph::getRoad(const std::string& roadID) const {

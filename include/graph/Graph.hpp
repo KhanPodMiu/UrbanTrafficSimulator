@@ -4,12 +4,12 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <functional> //ADDED: Library for call back function
 
 class TrafficLightManager; 
 class Intersection;
 class Road;
 class Graph {
-    friend class TrafficLightManager;
 private:
     std::unordered_map<std::string, std::shared_ptr <Intersection>> Intersections;
     std::unordered_map<std::string, std::shared_ptr <Road>> Roads;
@@ -25,5 +25,6 @@ public:
     const std::shared_ptr<Intersection> getIntersection(const std::string& intersectionID) const;
     const std::shared_ptr<Road> getRoad(const std::string& roadID) const;
     bool isValid() const;
-
+    // ===== ADDED: Get call back function=====
+    void forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const;
 };

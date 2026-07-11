@@ -40,15 +40,15 @@ private:
         size_t currentPhaseIndex = 0;             
         TrafficLightState currentLightState;      
         double timer = 0.0;                      
-        double greenDuration = 30.0;
-        double yellowDuration = 5.0;
-        double redDuration = 35.0; 
+        static constexpr int greenDuration = 30.0;
+        static constexpr int yellowDuration = 5.0;
+        static constexpr int redDuration = 30.0; 
     };
    
     std::vector<IntersectionControl> m_signalizedIntersections;
     double calculateDotProduct(const Vector2D& v1, const Vector2D& v2) const;
     Vector2D getIncomingRoadDirection(const Intersection* intersection, const Road* road) const;
-    void applyPhaseStates(IntersectionControl& control);
+    bool applyPhaseStates(IntersectionControl& control);
 
 public:
     static TrafficLightManager& getInstance() {
@@ -57,7 +57,6 @@ public:
     };
     TrafficLightManager(const TrafficLightManager&) = delete;
     TrafficLightManager& operator=(const TrafficLightManager&) = delete;
-    void initializeTopology(Graph& graph);
+    bool initializeTopology(Graph& graph);
     void update(double dt);
-
 };

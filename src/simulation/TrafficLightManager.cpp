@@ -34,8 +34,8 @@ TrafficLightManager::Vector2D TrafficLightManager::getIncomingRoadDirection(cons
 }
 
 
-void TrafficLightManager::applyPhaseStates(IntersectionControl& control) {
-    if (control.phases.empty()) return;
+bool TrafficLightManager::applyPhaseStates(IntersectionControl& control) {
+    if (control.phases.empty()) return false;
 
     for (size_t i = 0; i < control.phases.size(); ++i) {
         for (auto& road : control.phases[i].roads) {
@@ -47,17 +47,16 @@ void TrafficLightManager::applyPhaseStates(IntersectionControl& control) {
                 }
             }
         }
+        
     }
+    return true;
 }
 
 
-void TrafficLightManager::initializeTopology(Graph& graph) {
+bool TrafficLightManager::initializeTopology(Graph& graph) {
     m_signalizedIntersections.clear();
 
-    const auto& allIntersections = graph.Intersections;
-
-    for (const auto& pair : allIntersections) {
-        std::shared_ptr<Intersection> intersection = pair.second;
+    graph.forEachIntersection([&](const std::shared_ptr<Intersection>& intersection) {
 
         if (intersection->getType() == IntersectionType::CROSS || 
             intersection->getType() == IntersectionType::T_INTERSECTION) {
@@ -73,7 +72,8 @@ void TrafficLightManager::initializeTopology(Graph& graph) {
             for (const Road* rawRoad : intersection->getIncomingRoads()) {
                 if (rawRoad) {
                     auto sharedRoad = graph.getRoad(rawRoad->getRoadId());
-                    if (sharedRoad) unassignedRoads.push_back(sharedRoad);
+                    if (sharedRoad) 
+                        unassignedRoads.push_back(sharedRoad);
                 }
             }
 
@@ -93,7 +93,8 @@ void TrafficLightManager::initializeTopology(Graph& graph) {
                         newPhase.roads.push_back(*it); 
                         it = unassignedRoads.erase(it); 
                         break; 
-                    } else {
+                    } 
+                    else {
                         ++it;
                     }
                 }
@@ -104,7 +105,9 @@ void TrafficLightManager::initializeTopology(Graph& graph) {
             applyPhaseStates(control);
             m_signalizedIntersections.push_back(control);
         }
-    }
+    }); 
+    
+    return true; 
 }
 
 void TrafficLightManager::update(double dt) {
