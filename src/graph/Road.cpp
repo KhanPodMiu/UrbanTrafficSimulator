@@ -3,7 +3,7 @@
 #include <stdexcept> // to use invalid_argument in line 31, 39
 
 #include <algorithm> // std::clamp, std::max
-
+#include <math.h>
 // ─────────────────────────────────────────────────────────────────────────────
 //  Constructor
 //
@@ -17,13 +17,11 @@ Road::Road(
     const std::string& id,
     const Intersection*      source,
     const Intersection*      destination,
-    int                distance,
     int                speedLimit)
     :
     roadId(id),
     sourceIntersection(source),
     destinationIntersection(destination),
-    distance(distance),
     speedLimit(speedLimit),
     congestionLevel(MIN_CONGESTION),
     travelCost(0),
@@ -34,12 +32,12 @@ Road::Road(
     redDuration(DEFAULT_RED_DURATION),
     timeRemaining(DEFAULT_GREEN_DURATION)
 {   
+      
         // ── id validation ────────────────────────────────────────────────────────
     if (id.empty())
     {
         throw std::invalid_argument("Road: id must not be empty");
     }
-
     // ── intersection nullptr validation ──────────────────────────────────────
     // Consistent with setSourceIntersection / setDestinationIntersection which
     // reject nullptr.  A Road without endpoints is not meaningful.
@@ -54,7 +52,8 @@ Road::Road(
         throw std::invalid_argument(
             "Road \"" + id + "\": destination intersection must not be nullptr");
     }
-
+    distance = sqrt( (destination-> getX() - source->getX()) * (destination-> getX() - source->getX()) +
+                (destination-> getY() - source->getY()) * (destination-> getY() - source->getY()) );
     // ── distance validation ──────────────────────────────────────────────────
     if (distance < MIN_DISTANCE || distance > MAX_DISTANCE)
     {
@@ -99,7 +98,7 @@ const Intersection* Road::getDestinationIntersection() const
     return destinationIntersection;
 }
 
-int Road::getDistance() const
+double Road::getDistance() const
 {
     return distance;
 }
@@ -114,7 +113,7 @@ int Road::getCongestionLevel() const
     return congestionLevel;
 }
 
-int Road::getTravelCost() const
+double Road::getTravelCost() const
 {
     return travelCost;
 }
@@ -292,7 +291,7 @@ bool Road::calculateTravelCost()
     //   (e.g. distance=1, speedLimit=130 → raw result = 0).
     //   A weight of 0 would allow Dijkstra to visit cycles at no cost.
     // ─────────────────────────────────────────────────────────────────────────
-    travelCost = std::max(1, (distance * (100 + congestionLevel)) / speedLimit);
+    travelCost = std::max(1.0, (distance * (100 + congestionLevel) * 1.0) / speedLimit * 1.0);
     return true;
 }
 

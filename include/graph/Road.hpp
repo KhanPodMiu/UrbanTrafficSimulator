@@ -38,7 +38,6 @@ public:
         const std::string& id,
         const Intersection*      source,
         const Intersection*      destination,
-        int                distance,
         int                speedLimit
     );
 
@@ -52,10 +51,10 @@ public:
     const Intersection*      getSourceIntersection()      const;
     const Intersection*      getDestinationIntersection() const;
 
-    int  getDistance()       const;
+    double  getDistance()       const;
     int  getSpeedLimit()     const;
     int  getCongestionLevel()const;
-    int  getTravelCost()     const;
+    double  getTravelCost()     const;
 
     // ── traffic light getters ─────────────────────────────────────────────────
     TrafficLightState getTrafficLightState()  const;
@@ -110,10 +109,10 @@ private:
     const Intersection* sourceIntersection;
     const Intersection* destinationIntersection;
 
-    int distance;        // map units      [MIN_DISTANCE,   MAX_DISTANCE  ]
+    double distance;        // map units      [MIN_DISTANCE,   MAX_DISTANCE  ]
     int speedLimit;      // km/h           [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT]
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
-    int travelCost;      // dimensionless weight, kept in sync by setters
+    double travelCost;      // dimensionless weight, kept in sync by setters
 
     // ── traffic light state ──────────────────────────────────────────────────
     TrafficLightState trafficLightState;
