@@ -118,6 +118,11 @@ double Road::getTravelCost() const
     return travelCost;
 }
 
+int Road::getTotalVehicles() const
+{
+    return VehiclesOnRoad.size();
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  Traffic light getters
 // ─────────────────────────────────────────────────────────────────────────────
@@ -295,6 +300,22 @@ bool Road::calculateTravelCost()
     return true;
 }
 
+void Road::vehicleEnters(Vehicle* vehicle) {
+    if (vehicle != nullptr) {
+        VehiclesOnRoad.push(vehicle);
+        int newCongestion = std::min(MAX_CONGESTION, static_cast<int>(VehiclesOnRoad.size() * 2));
+        updateCongestion(newCongestion); 
+    }
+}
+
+void Road::vehicleExits() {
+    if (!VehiclesOnRoad.empty()) {
+        VehiclesOnRoad.pop(); 
+        int newCongestion = std::max(MIN_CONGESTION, static_cast<int>(VehiclesOnRoad.size() * 2));
+        updateCongestion(newCongestion);
+    }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  Traffic light operations
 // ─────────────────────────────────────────────────────────────────────────────
@@ -352,6 +373,7 @@ bool Road::needsTrafficLightAtDestination() const
            type == IntersectionType::CROSS ||
            type == IntersectionType::ROUNDABOUT;
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Private helpers

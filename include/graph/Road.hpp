@@ -3,9 +3,10 @@
 #define ROAD_HPP
 
 #include <string>
+#include <queue>
 
 class Intersection;
-
+class Vehicle;
 // ─────────────────────────────────────────────────────────────────────────────
 //  TrafficLightState – embedded in Road because each Road owns its own light.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -65,6 +66,9 @@ public:
     int               getYellowDuration()    const;
     int               getRedDuration()       const;
 
+    //ADDED: Function to get total current Vehicle on Road:
+    int               getTotalVehicles() const;
+
     // ── setters ───────────────────────────────────────────────────────────────
     bool setSourceIntersection(const Intersection* source);
     bool setDestinationIntersection(const Intersection* destination);
@@ -103,6 +107,10 @@ public:
     // light (T_INTERSECTION, CROSS, or ROUNDABOUT → true).
     bool needsTrafficLightAtDestination() const;
 
+    //Added: 2 funtion to update quantity of vehicle on road
+    void vehicleEnters(Vehicle* vehicle); 
+    void vehicleExits();
+
 private:
     std::string   roadId;
 
@@ -113,7 +121,10 @@ private:
     int speedLimit;      // km/h           [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT]
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
-
+    
+    //Added: Queue of vehicles on the road
+    std::queue <Vehicle*> VehiclesOnRoad; 
+    
     // ── traffic light state ──────────────────────────────────────────────────
     TrafficLightState trafficLightState;
     bool              trafficLightEnabled;
