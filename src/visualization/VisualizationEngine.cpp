@@ -9,6 +9,16 @@
 #include <iostream>
 #include <cmath>
 
+namespace {
+    void trafficLightColor(TrafficLightState state, Uint8& r, Uint8& g, Uint8& b) {
+        switch (state) {
+            case TrafficLightState::GREEN:  r = 0;   g = 200; b = 0;   break;
+            case TrafficLightState::YELLOW: r = 230; g = 200; b = 0;   break;
+            case TrafficLightState::RED:    r = 200; g = 0;   b = 0;   break;
+        }
+    }
+}
+
 VisualizationEngine::VisualizationEngine() = default;
 VisualizationEngine::~VisualizationEngine() = default;
 
@@ -43,6 +53,7 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
     return true;
 }
 
+
 void VisualizationEngine::buildRenderCache(const Graph& graph)
 {
     intersectionsLocation_.clear();
@@ -74,6 +85,19 @@ void VisualizationEngine::buildRenderCache(const Graph& graph)
         temp.offsetX = -std::sin(angle_rad) * halfWidth;
         temp.offsetY =  std::cos(angle_rad) * halfWidth;
 
+        temp.road = road;
+
+        if (temp.length > 0.0f) {
+            float dirX = dx / temp.length;
+            float dirY = dy / temp.length;
+            temp.lightPos = Vector2(
+                temp.end.x - dirX * Config::ROUNDABOUT_RADIUS + temp.offsetX,
+                temp.end.y - dirY * Config::ROUNDABOUT_RADIUS + temp.offsetY
+            );
+        } else {
+            temp.lightPos = temp.end;
+        }
+
         roadsLocation_.push_back(temp);
     }
 }
@@ -104,6 +128,19 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
         window.render(intersectionTexture_, renderPos, zoom, Config::ROUNDABOUT_RADIUS * zoom);
     }
 
+    for (const auto& road : roadsLocation_) {
+        if (road.road && road.road->isTrafficLightEnabled()) {
+            Vector2 lightScreenPos = applyCamera(road.lightPos, camera);
+            lightScreenPos.x += Config::PANEL_WIDTH;
+
+            Uint8 r, g, b;
+            trafficLightColor(road.road->getTrafficLightState(), r, g, b);
+
+            int size = static_cast<int>(Config::TRAFFIC_LIGHT_MARKER_SIZE * zoom);
+            window.renderTrafficLight((int)lightScreenPos.x, (int)lightScreenPos.y, size, r, g, b);
+        }
+    }
+
     // UI Panel
     SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
     SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
@@ -116,3 +153,4 @@ void VisualizationEngine::cleanUp(RenderWindow& window)
     window.cleanUpTexture(intersectionTexture_);
     window.cleanUpTexture(roadTexture_);
 }
+

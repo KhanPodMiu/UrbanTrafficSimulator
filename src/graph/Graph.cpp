@@ -376,3 +376,11 @@ bool Graph::isValid() const {
     return true; 
 
 }
+
+const std::unordered_map<std::string, std::shared_ptr<Intersection>>& Graph::getIntersections() const {
+    return Intersections;
+}
+
+const std::unordered_map<std::string, std::shared_ptr<Road>>& Graph::getRoads() const {
+    return Roads;
+}
