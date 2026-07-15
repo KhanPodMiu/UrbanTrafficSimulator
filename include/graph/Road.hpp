@@ -15,8 +15,8 @@ enum class TrafficLightState {
     GREEN
 };
 
-class Road
-{
+class Road {
+    friend class TrafficLightManager;
 public:
     // ── validation bounds (public so tests can reference them) ────────────────
     static constexpr int MIN_SPEED_LIMIT = 5;     // km/h
