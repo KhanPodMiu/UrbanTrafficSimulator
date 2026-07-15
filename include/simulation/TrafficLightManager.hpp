@@ -16,14 +16,6 @@ class TrafficLightManager {
 private:
     TrafficLightManager() = default;
     ~TrafficLightManager() = default;
-
-    /* struct Vector2D {
-        double x = 0.0;
-        double y = 0.0;
-        
-        
-    }; */
-
     struct SignalPhase {
         std::vector<std::shared_ptr<Road>> roads; 
     };
