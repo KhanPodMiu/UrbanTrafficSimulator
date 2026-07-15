@@ -123,7 +123,7 @@ private:
     double travelCost;      // dimensionless weight, kept in sync by setters
     
     //Added: Queue of vehicles on the road
-    std::queue <Vehicle*> VehiclesOnRoad; 
+    std::vector <Vehicle*> VehiclesOnRoad; 
     
     // ── traffic light state ──────────────────────────────────────────────────
     TrafficLightState trafficLightState;

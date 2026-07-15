@@ -302,7 +302,7 @@ bool Road::calculateTravelCost()
 
 void Road::vehicleEnters(Vehicle* vehicle) {
     if (vehicle != nullptr) {
-        VehiclesOnRoad.push(vehicle);
+        VehiclesOnRoad.push_back(vehicle);
         int newCongestion = std::min(MAX_CONGESTION, static_cast<int>(VehiclesOnRoad.size() * 2));
         updateCongestion(newCongestion); 
     }
@@ -310,7 +310,7 @@ void Road::vehicleEnters(Vehicle* vehicle) {
 
 void Road::vehicleExits() {
     if (!VehiclesOnRoad.empty()) {
-        VehiclesOnRoad.pop(); 
+        VehiclesOnRoad.erase(VehiclesOnRoad.begin()); 
         int newCongestion = std::max(MIN_CONGESTION, static_cast<int>(VehiclesOnRoad.size() * 2));
         updateCongestion(newCongestion);
     }

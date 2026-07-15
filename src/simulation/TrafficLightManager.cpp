@@ -8,12 +8,19 @@
 #include "../graph/Intersection.hpp"
 #include "../graph/Road.hpp"
 
-double TrafficLightManager::calculateDotProduct(const Vector2D& v1, const Vector2D& v2) const {
+void normalize(Vector2 &V) {
+    double len = std::sqrt(V.x * V.x + V.y * V.y);
+    if (len > 0.0) {
+        V.x /= len;
+        V.y /= len;
+    }
+}
+double TrafficLightManager::calculateDotProduct(const Vector2& v1, const Vector2& v2) const {
     return (v1.x * v2.x) + (v1.y * v2.y);
 }
 
-TrafficLightManager::Vector2D TrafficLightManager::getIncomingRoadDirection(const Intersection* intersection, const Road* road) const {
-    Vector2D dir;
+Vector2 TrafficLightManager::getIncomingRoadDirection(const Intersection* intersection, const Road* road) const {
+    Vector2 dir;
 
     const Intersection* otherIntersection = nullptr;
     
@@ -27,7 +34,7 @@ TrafficLightManager::Vector2D TrafficLightManager::getIncomingRoadDirection(cons
     if (otherIntersection != nullptr) {
         dir.x = otherIntersection->getX() - intersection->getX();
         dir.y = otherIntersection->getY() - intersection->getY();
-        dir.normalize();
+        normalize(dir);
     }
 
     return dir;
@@ -83,10 +90,10 @@ bool TrafficLightManager::initializeTopology(Graph& graph) {
                 newPhase.roads.push_back(baseRoad);
                 unassignedRoads.erase(unassignedRoads.begin());
 
-                Vector2D baseDir = getIncomingRoadDirection(intersection.get(), baseRoad.get());
+                Vector2 baseDir = getIncomingRoadDirection(intersection.get(), baseRoad.get());
 
                 for (auto it = unassignedRoads.begin(); it != unassignedRoads.end(); ) {
-                    Vector2D compareDir = getIncomingRoadDirection(intersection.get(), (*it).get());
+                    Vector2 compareDir = getIncomingRoadDirection(intersection.get(), (*it).get());
                     double dot = calculateDotProduct(baseDir, compareDir);
 
                     if (dot < -0.8) { 
