@@ -11,6 +11,7 @@
 #include "visualization/VisualizationEngine.hpp"
 
 #include "simulation/WorldClock.hpp"
+#include "simulation/TrafficLightManager.hpp"
 #include "visualization/camera.hpp"
 
 #include "graph/Graph.hpp"
@@ -55,6 +56,8 @@ int main(int argc, char* args[]) {
 
     visualizationEngine.buildRenderCache(graph);
 
+    TrafficLightManager::getInstance().initializeTopology(graph);
+
     //=======================================================================================================================================================================
 
     bool is_game_running = true;
@@ -65,6 +68,8 @@ int main(int argc, char* args[]) {
 
         Uint64 frameStart = SDL_GetPerformanceCounter();
         clock.update();
+
+        TrafficLightManager::getInstance().update(clock.getDeltaTime());
 
         while (SDL_PollEvent(&event)) {
             handleInput(event, is_game_running, camera);

@@ -120,3 +120,9 @@ void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, float 
         SDL_RenderCopyEx(renderer, texture, &srcRect, &dstRect, angle, &pivot, SDL_FLIP_VERTICAL);
     }
 }
+
+void RenderWindow::renderTrafficLight(int centerX, int centerY, int size, Uint8 r, Uint8 g, Uint8 b){
+    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+    SDL_Rect rect{centerX - size / 2, centerY - size / 2, size, size};
+    SDL_RenderFillRect(renderer, &rect);
+}
