@@ -34,6 +34,11 @@ public:
     static constexpr int MIN_DURATION            = 1;   // seconds
     static constexpr int MAX_DURATION            = 120; // seconds
 
+    //ADDED ── For BPR Funtion and CongestionLevel ──────────────────────────
+    static constexpr double VEHICLE_HITBOX_SIZE = 5.0; // Length of vehicle hitbox in map units can change after
+    static constexpr double BPR_ALPHA = 0.15;         
+    static constexpr double BPR_BETA = 4.0;          
+
     // ── constructor / destructor ──────────────────────────────────────────────
     Road(
         const std::string& id,
@@ -84,7 +89,7 @@ public:
 
     // updateCongestion: sets congestionLevel and recomputes travelCost.
     // Returns false when newCongestionLevel is outside [MIN_CONGESTION, MAX_CONGESTION].
-    bool updateCongestion(int newCongestionLevel);
+    bool updateCongestion();
 
     // calculateTravelCost: recomputes travelCost from current attributes.
     // Called automatically by every setter that touches a relevant attribute.

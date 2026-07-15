@@ -52,8 +52,10 @@ Road::Road(
         throw std::invalid_argument(
             "Road \"" + id + "\": destination intersection must not be nullptr");
     }
+
     distance = sqrt( (destination-> getX() - source->getX()) * (destination-> getX() - source->getX()) +
-                (destination-> getY() - source->getY()) * (destination-> getY() - source->getY()) );
+                (destination-> getY() - source->getY()) * (destination-> getY() - source->getY()) )
+                ;
     // ── distance validation ──────────────────────────────────────────────────
     if (distance < MIN_DISTANCE || distance > MAX_DISTANCE)
     {
@@ -257,24 +259,24 @@ bool Road::setRedDuration(int duration)
 //  Road operations
 // ─────────────────────────────────────────────────────────────────────────────
 
-bool Road::updateCongestion(int newCongestionLevel)
+bool Road::updateCongestion()
 {
-    if (newCongestionLevel < MIN_CONGESTION || newCongestionLevel > MAX_CONGESTION)
-    {
-        return false;
-    }
-
-    congestionLevel = newCongestionLevel;
-    if (!calculateTravelCost())
-    {
-        return false;
-    }
-    return true;
+    double maxVehicles = std::max(1.0, distance / VEHICLE_HITBOX_SIZE);
+    double currentVehicles = static_cast<double>(VehiclesOnRoad.size());
+    double exactCongestion = (currentVehicles / maxVehicles) * 100.0;
+    congestionLevel = std::clamp(static_cast<int>(exactCongestion), MIN_CONGESTION, MAX_CONGESTION);
+    travelCost = calculateTravelCost();
 }
 
 bool Road::calculateTravelCost()
 {
-    if (speedLimit <= 0)
+    double t0 = distance / static_cast<double>(std::max(1, speedLimit));
+    double ratio = static_cast<double>(congestionLevel) / 100.0;
+    double travelTime = t0 * (1.0 + BPR_ALPHA * std::pow(ratio, BPR_BETA));
+    
+    return travelTime;
+
+    /* if (speedLimit <= 0)
     {
         // Guard against division by zero; should never happen in normal use
         // because setSpeedLimit and the constructor both enforce MIN_SPEED_LIMIT.
@@ -297,22 +299,20 @@ bool Road::calculateTravelCost()
     //   A weight of 0 would allow Dijkstra to visit cycles at no cost.
     // ─────────────────────────────────────────────────────────────────────────
     travelCost = std::max(1.0, (distance * (100 + congestionLevel) * 1.0) / speedLimit * 1.0);
-    return true;
+    return true; */
 }
 
 void Road::vehicleEnters(Vehicle* vehicle) {
     if (vehicle != nullptr) {
         VehiclesOnRoad.push_back(vehicle);
-        int newCongestion = std::min(MAX_CONGESTION, static_cast<int>(VehiclesOnRoad.size() * 2));
-        updateCongestion(newCongestion); 
+        updateCongestion(); 
     }
 }
 
 void Road::vehicleExits() {
     if (!VehiclesOnRoad.empty()) {
         VehiclesOnRoad.erase(VehiclesOnRoad.begin()); 
-        int newCongestion = std::max(MIN_CONGESTION, static_cast<int>(VehiclesOnRoad.size() * 2));
-        updateCongestion(newCongestion);
+        updateCongestion(); 
     }
 }
 
