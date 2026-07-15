@@ -79,6 +79,7 @@ add_executable(main
 
 target_link_libraries(main PRIVATE
     traffic_lib
+    SDL2::SDL2main
 )
 
 # --------------------------------
