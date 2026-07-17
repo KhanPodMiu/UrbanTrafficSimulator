@@ -58,6 +58,8 @@ int main(int argc, char* argv[]) {
 
     visualizationEngine.buildRenderCache(graph);
 
+    TrafficLightManager::getInstance().initializeTopology(graph);
+
     // Routing Strategy Demo
 
     RoutingManager routingManager;
