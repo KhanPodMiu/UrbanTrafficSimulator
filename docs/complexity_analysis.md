@@ -111,7 +111,6 @@ RouteRequest("I1", "I464")
 
 ---
 
-### E. Summary Table
-### Conclusion
+### E. Conclusion
 
 The experimental results show that BFS is the most efficient algorithm for unweighted graphs but cannot guarantee the minimum travel cost because edge weights are ignored. Dijkstra consistently produces the optimal route with respect to travel cost, while A* significantly reduces the number of expanded vertices and execution time by incorporating heuristic guidance. Among the evaluated heuristics, the **Distance / Maximum Speed** heuristic provides the best balance between search efficiency and solution quality, achieving the same optimal travel cost as Dijkstra on most test cases while exploring fewer vertices.

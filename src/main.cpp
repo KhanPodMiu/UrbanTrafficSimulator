@@ -13,6 +13,7 @@
 #include "visualization/VisualizationEngine.hpp"
 
 #include "simulation/WorldClock.hpp"
+#include "simulation/TrafficLightManager.hpp"
 #include "visualization/camera.hpp"
 
 #include "graph/Graph.hpp"
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
     camera.setZoom(Config::INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/LangDaiHoc.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/DinhDocLap.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
@@ -103,6 +104,8 @@ int main(int argc, char* argv[]) {
         Uint64 frameStart = SDL_GetPerformanceCounter();
         clock.update();
 
+        TrafficLightManager::getInstance().update(clock.getDeltaTime());
+
         while (SDL_PollEvent(&event)) {
             handleInput(event, is_game_running, camera);
         }
@@ -133,6 +136,3 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// int main() {
-//     return 0;
-// }

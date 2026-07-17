@@ -3,10 +3,12 @@
 #include "SDL2/SDL.h"
 #include "utils/vector2i.hpp"
 #include <vector>
+#include <memory>
 
 class Graph;
 class RenderWindow;
 class Camera;
+class Road;
 
 // Owns everything needed to draw the map each frame: the textures, the
 // precomputed per-road/per-intersection render data (so expensive math like
@@ -43,12 +45,14 @@ private:
     {
         Vector2 start;
         Vector2 end;
-
         float length;
         float angle;
-
         float offsetX;
         float offsetY;
+
+        std::shared_ptr<Road> road;
+
+        Vector2 lightPos;
     };
 
     Vector2 applyCamera(const Vector2& worldPos, const Camera& camera) const;
