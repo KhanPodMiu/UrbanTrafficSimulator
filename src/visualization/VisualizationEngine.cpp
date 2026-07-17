@@ -10,12 +10,15 @@
 #include <cmath>
 
 namespace {
-    void trafficLightColor(TrafficLightState state, Uint8& r, Uint8& g, Uint8& b) {
+    // Trả về đúng texture (Green/Yellow/Red) tương ứng với trạng thái đèn hiện tại.
+    SDL_Texture* trafficLightTexture(TrafficLightState state, SDL_Texture* green, SDL_Texture* yellow, SDL_Texture* red)
+    {
         switch (state) {
-            case TrafficLightState::GREEN:  r = 0;   g = 200; b = 0;   break;
-            case TrafficLightState::YELLOW: r = 230; g = 200; b = 0;   break;
-            case TrafficLightState::RED:    r = 200; g = 0;   b = 0;   break;
+            case TrafficLightState::GREEN:  return green;
+            case TrafficLightState::YELLOW: return yellow;
+            case TrafficLightState::RED:    return red;
         }
+        return red;
     }
 }
 
@@ -50,12 +53,31 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         return false;
     }
 
+    greenLightTexture_ = window.loadTexture("assets/textures/TrafficLight/Green_light.png");
+    if (greenLightTexture_ == nullptr) {
+        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        return false;
+    }
+
+    yellowLightTexture_ = window.loadTexture("assets/textures/TrafficLight/Yellow_light.png");
+    if (yellowLightTexture_ == nullptr) {
+        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        return false;
+    }
+
+    redLightTexture_ = window.loadTexture("assets/textures/TrafficLight/Red_light.png");
+    if (redLightTexture_ == nullptr) {
+        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        return false;
+    }
+
     return true;
 }
 
 
 void VisualizationEngine::buildRenderCache(const Graph& graph)
 {
+    // Không đổi gì trong hàm này
     intersectionsLocation_.clear();
     roadsLocation_.clear();
 
@@ -112,8 +134,7 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
     window.render(mapBackground_, bgPos, zoom);
 
     for (const auto& road : roadsLocation_) {
-        Vector2 shiftedStart(road.start.x + road.offsetX,
-                              road.start.y + road.offsetY);
+        Vector2 shiftedStart(road.start.x + road.offsetX, road.start.y + road.offsetY);
 
         Vector2 renderPos = applyCamera(shiftedStart, camera);
         renderPos.x += Config::PANEL_WIDTH;
@@ -133,11 +154,15 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
             Vector2 lightScreenPos = applyCamera(road.lightPos, camera);
             lightScreenPos.x += Config::PANEL_WIDTH;
 
-            Uint8 r, g, b;
-            trafficLightColor(road.road->getTrafficLightState(), r, g, b);
+            SDL_Texture* lightTex = trafficLightTexture(
+                road.road->getTrafficLightState(),
+                greenLightTexture_,
+                yellowLightTexture_,
+                redLightTexture_
+            );
 
             int size = static_cast<int>(Config::TRAFFIC_LIGHT_MARKER_SIZE * zoom);
-            window.renderTrafficLight((int)lightScreenPos.x, (int)lightScreenPos.y, size, r, g, b);
+            window.renderTrafficLight(lightTex, (int)lightScreenPos.x, (int)lightScreenPos.y, size);
         }
     }
 
@@ -152,5 +177,9 @@ void VisualizationEngine::cleanUp(RenderWindow& window)
     window.cleanUpTexture(mapBackground_);
     window.cleanUpTexture(intersectionTexture_);
     window.cleanUpTexture(roadTexture_);
-}
 
+    // --- MỚI: dọn dẹp 3 texture đèn ---
+    window.cleanUpTexture(greenLightTexture_);
+    window.cleanUpTexture(yellowLightTexture_);
+    window.cleanUpTexture(redLightTexture_);
+}

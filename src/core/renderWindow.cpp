@@ -121,8 +121,16 @@ void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, float 
     }
 }
 
-void RenderWindow::renderTrafficLight(int centerX, int centerY, int size, Uint8 r, Uint8 g, Uint8 b){
-    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-    SDL_Rect rect{centerX - size / 2, centerY - size / 2, size, size};
-    SDL_RenderFillRect(renderer, &rect);
+void RenderWindow::renderTrafficLight(SDL_Texture* texture, int centerX, int centerY, int size){
+    int texW, texH;
+    SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+
+    float scale = (size / (float)texW < size / (float)texH)
+                  ? size / (float)texW
+                  : size / (float)texH;
+    int w = (int)roundf(texW * scale);
+    int h = (int)roundf(texH * scale);
+
+    SDL_Rect rect{ centerX - w / 2, centerY - h / 2, w, h };
+    SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
