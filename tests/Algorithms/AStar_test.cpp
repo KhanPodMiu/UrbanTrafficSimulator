@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <filesystem>
+#include <chrono>
 
 TEST(MapTest, MapFileExists)
 {
@@ -265,11 +266,13 @@ TEST_F(AStarTest, BenchmarkBFS)
 {
     RouteRequest request("I1", "I414");
 
+    BFS bfs;
+
     auto start =
         std::chrono::high_resolution_clock::now();
 
     RouteResult result =
-        BFS::findShortestPath(graph, request);
+        bfs.calculateRoute(graph, request);
 
     auto stop =
         std::chrono::high_resolution_clock::now();
@@ -289,7 +292,7 @@ TEST_F(AStarTest, BenchmarkBFS)
         << std::setw(6)
         << duration.count()
         << " us | Expanded: "
-        << BFS::getExpandedNodeCount()
+        << bfs.getExpandedNodeCount()
         << " | Path Length: "
         << result.intersectionIDs.size()
         << "\n";

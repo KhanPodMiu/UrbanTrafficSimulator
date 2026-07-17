@@ -1,10 +1,11 @@
 #pragma once 
 
+#include "algorithms/PathFindingStrategy.hpp"
 #include "graph/Graph.hpp"
 #include "simulation/RouteRequest.hpp"
 #include "simulation/RouteResult.hpp"
 
-class Dijkstra {
+class Dijkstra : public PathFindingStrategy {
 public:
-    static RouteResult findShortestPath(const Graph& graph, const RouteRequest& request);
+    RouteResult calculateRoute(const Graph& graph, const RouteRequest& request) const override;
 };

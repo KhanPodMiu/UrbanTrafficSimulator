@@ -1,4 +1,6 @@
-// #define SDL_MAIN_HANDLED
+#include "algorithms/RoutingManager.hpp"
+#include "algorithms/Dijkstra.hpp"
+
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "core/renderWindow.hpp"
@@ -22,7 +24,7 @@
 
 //=======================================================================================================================================================================
 
-int main(int argc, char* args[]) {
+int main(int argc, char* argv[]) {
 
     //=======================================================================================================================================================================
 
@@ -56,7 +58,40 @@ int main(int argc, char* args[]) {
 
     visualizationEngine.buildRenderCache(graph);
 
-    TrafficLightManager::getInstance().initializeTopology(graph);
+    // Routing Strategy Demo
+
+    RoutingManager routingManager;
+
+    // Chọn thuật toán
+    routingManager.setStrategy(std::make_unique<Dijkstra>());
+    // routingManager.setStrategy(std::make_unique<BFS>());
+    // routingManager.setStrategy(std::make_unique<AStarStrategy>());
+
+    // Tìm đường từ I1 -> I3
+    RouteRequest request("I1", "I3");
+
+    RouteResult result = routingManager.calculateRoute(graph, request);
+
+    if (result.isSuccess)
+    {
+        std::cout << "========== ROUTE ==========\n";
+        std::cout << "Total Cost: "
+                << result.totalCost
+                << "\n\n";
+
+        std::cout << "Path:\n";
+
+        for (const auto& intersectionID : result.intersectionIDs)
+        {
+            std::cout << intersectionID << " ";
+        }
+
+        std::cout << "\n===========================\n";
+    }
+    else
+    {
+        std::cout << "Cannot find route!\n";
+    }
 
     //=======================================================================================================================================================================
 
