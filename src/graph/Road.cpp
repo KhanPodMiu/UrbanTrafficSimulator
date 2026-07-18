@@ -276,30 +276,6 @@ bool Road::calculateTravelCost()
     
     return travelTime;
 
-    /* if (speedLimit <= 0)
-    {
-        // Guard against division by zero; should never happen in normal use
-        // because setSpeedLimit and the constructor both enforce MIN_SPEED_LIMIT.
-        return false;
-    }
-
-    // ── Formula ──────────────────────────────────────────────────────────────
-    //
-    //   travelCost = distance × (100 + congestionLevel) / speedLimit
-    //
-    //   Why integers only?
-    //   • SDL2 works in integer coordinates; mixing floats risks accumulation
-    //     errors when costs are summed over many edges.
-    //   • On a 4 000×4 000 map the maximum numerator is 8 000 × 200 = 1 600 000,
-    //     safely within int32.
-    //   By the way, I(Kevin) guessed this formula will slightly increase our compile and execute our project a little bit. 
-    //
-    //   std::max(1, …) prevents zero-weight edges on very short / fast roads
-    //   (e.g. distance=1, speedLimit=130 → raw result = 0).
-    //   A weight of 0 would allow Dijkstra to visit cycles at no cost.
-    // ─────────────────────────────────────────────────────────────────────────
-    travelCost = std::max(1.0, (distance * (100 + congestionLevel) * 1.0) / speedLimit * 1.0);
-    return true; */
 }
 
 void Road::vehicleEnters(Vehicle* vehicle) {

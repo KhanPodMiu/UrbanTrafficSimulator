@@ -127,7 +127,7 @@ private:
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
     
-    //Added: Queue of vehicles on the road
+    //Added: vector of vehicles on the road
     std::vector <Vehicle*> VehiclesOnRoad; 
     
     // ── traffic light state ──────────────────────────────────────────────────

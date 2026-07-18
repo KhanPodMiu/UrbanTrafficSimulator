@@ -18,7 +18,7 @@ private:
     std::shared_ptr<Intersection> m_destination; 
     std::shared_ptr<RouteOptimizer> m_routeOptimizer;
     Vector2 m_position; 
-
+    
 public:
     Vehicle(const std::string& id, double initialSpeed = 0.0);
     ~Vehicle() = default;
