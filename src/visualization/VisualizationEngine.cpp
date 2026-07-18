@@ -28,13 +28,13 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         return false;
     }
 
-    intersectionTexture_ = window.loadTexture("assets/textures/Intersection/rb1.png");
+    intersectionTexture_ = window.loadTexture("assets/textures/Intersection/Roundabout.png");
     if (intersectionTexture_ == nullptr) {
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
     }
 
-    roadTexture_ = window.loadTexture("assets/textures/Roads/road2.png");
+    roadTexture_ = window.loadTexture("assets/textures/Roads/road_striped.png");
     if (roadTexture_ == nullptr) {
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
