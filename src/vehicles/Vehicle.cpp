@@ -1,11 +1,11 @@
-#include "Vehicle.hpp"
-#include "Intersection.hpp" 
-#include "Road.hpp"        
+#include "vehicles/Vehicle.hpp"
+#include "graph/Intersection.hpp"
+#include "graph/Road.hpp"
 
 #include <string>
 #include <memory>
 #include <vector>
-#include "../utils/vector2i.hpp" 
+#include "utils/vector2i.hpp" 
 
 Vehicle::Vehicle(const std::string& id, double initialSpeed)
     : m_id(id), 

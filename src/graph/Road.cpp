@@ -324,28 +324,3 @@ bool Road::needsTrafficLightAtDestination() const
            type == IntersectionType::ROUNDABOUT;
 }
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Private helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-void Road::switchToNextState()
-{
-    switch (trafficLightState)
-    {
-    case TrafficLightState::GREEN:
-        trafficLightState = TrafficLightState::YELLOW;
-        timeRemaining += yellowDuration;
-        break;
-
-    case TrafficLightState::YELLOW:
-        trafficLightState = TrafficLightState::RED;
-        timeRemaining += redDuration;
-        break;
-
-    case TrafficLightState::RED:
-        trafficLightState = TrafficLightState::GREEN;
-        timeRemaining += greenDuration;
-        break;
-    }
-}

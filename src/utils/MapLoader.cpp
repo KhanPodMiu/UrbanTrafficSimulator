@@ -44,7 +44,6 @@ bool MapLoader::loadFromJson(const std::string& filename, Graph& graph){
     const Json::Value Roads = data["roads"];
     for(const auto& road : Roads){
         std::string roadID = road["id"].asString();
-        int distance = road["distance"].asInt();
 
         auto src = graph.getIntersection(road["source"].asString());
         auto des = graph.getIntersection(road["destination"].asString());
@@ -55,7 +54,7 @@ bool MapLoader::loadFromJson(const std::string& filename, Graph& graph){
         }
 
         if(
-            !graph.addRoad(std::make_shared<Road>(roadID, src.get(), des.get(), distance, Road::MAX_SPEED_LIMIT))
+            !graph.addRoad(std::make_shared<Road>(roadID, src.get(), des.get(), Road::MAX_SPEED_LIMIT))
         )
         {
             std::cerr << "Duplicate road ID\n";
@@ -65,4 +64,3 @@ bool MapLoader::loadFromJson(const std::string& filename, Graph& graph){
 
     return true;
 }
-

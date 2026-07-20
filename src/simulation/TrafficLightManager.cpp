@@ -3,10 +3,10 @@
 #include <string>
 #include <memory>
 #include <cmath>
-#include "../simulation/TrafficLightManager.hpp"
-#include "../graph/Graph.hpp"
-#include "../graph/Intersection.hpp"
-#include "../graph/Road.hpp"
+#include "simulation/TrafficLightManager.hpp"
+#include "graph/Graph.hpp"
+#include "graph/Intersection.hpp"
+#include "graph/Road.hpp"
 
 void normalize(Vector2 &V) {
     double len = std::sqrt(V.x * V.x + V.y * V.y);
@@ -47,6 +47,7 @@ bool TrafficLightManager::applyPhaseStates(IntersectionControl& control) {
     for (size_t i = 0; i < control.phases.size(); ++i) {
         for (auto& road : control.phases[i].roads) {
             if (road) {
+                road->trafficLightEnabled = true;
                 if (i == control.currentPhaseIndex) {
                     road->trafficLightState = control.currentLightState;
                 } else {
@@ -54,7 +55,6 @@ bool TrafficLightManager::applyPhaseStates(IntersectionControl& control) {
                 }
             }
         }
-        
     }
     return true;
 }
