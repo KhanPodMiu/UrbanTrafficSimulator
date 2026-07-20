@@ -1,15 +1,30 @@
 #include "vehicles/Vehicle.hpp"
 
+#include <algorithm>
+
 #include "graph/Intersection.hpp"
 #include "graph/Road.hpp"
 
-Vehicle::Vehicle(const std::string& id, double maxSpeed)
+namespace {
+    // How quickly a vehicle can speed up / slow down toward its current
+    // targetSpeed (set every tick by CollisionManager). Kept as a simple
+    // constant for now; could become a per-VehicleType property later.
+    constexpr double COMFORT_ACCEL = 12.0; // map-units / s^2
+
+    // Sideways offset applied when placing a vehicle on screen, so it renders
+    // on its own side of the road centerline instead of overlapping
+    // oncoming traffic (mirrors the offset logic used for road rendering).
+    constexpr double LANE_OFFSET = 20.0; // map units
+}
+
+Vehicle::Vehicle(const std::string& id, double maxSpeed, double length, VehicleType type)
     : m_id(id),
+      m_type(type),
       m_currentSpeed(0.0),
       m_targetSpeed(maxSpeed),
       m_maxSpeed(maxSpeed),
       m_distanceOnRoad(0.0),
-      m_length(5.0),
+      m_length(length),
       m_finished(false),
       m_currentRoad(nullptr),
       m_destination(nullptr),
@@ -19,9 +34,34 @@ Vehicle::Vehicle(const std::string& id, double maxSpeed)
 {
 }
 
+Vehicle::Vehicle(const std::string& id, double maxSpeed)
+    : Vehicle(id, maxSpeed, 5.0, VehicleType::CAR)
+{
+}
+
 void Vehicle::update(double dt)
 {
+    if (m_finished)
+        return;
+
+    // Smoothly accelerate/decelerate current speed toward the target speed
+    // that CollisionManager computed for this tick (car-following + traffic
+    // lights). This avoids teleport-like instant speed changes.
+    if (m_currentSpeed < m_targetSpeed)
+    {
+        m_currentSpeed = std::min(m_targetSpeed, m_currentSpeed + COMFORT_ACCEL * dt);
+    }
+    else if (m_currentSpeed > m_targetSpeed)
+    {
+        m_currentSpeed = std::max(m_targetSpeed, m_currentSpeed - COMFORT_ACCEL * dt);
+    }
+
+    if (m_currentSpeed < 0.0)
+        m_currentSpeed = 0.0;
+
     m_distanceOnRoad += m_currentSpeed * dt;
+
+    updateWorldPosition();
 }
 
 void Vehicle::assignRoute(const std::shared_ptr<RouteOptimizer>& optimizer)
@@ -29,9 +69,86 @@ void Vehicle::assignRoute(const std::shared_ptr<RouteOptimizer>& optimizer)
     m_routeOptimizer = optimizer;
 }
 
+void Vehicle::updateWorldPosition()
+{
+    if (!m_currentRoad)
+        return;
+
+    const Intersection* src = m_currentRoad->getSourceIntersection();
+    const Intersection* dst = m_currentRoad->getDestinationIntersection();
+
+    if (!src || !dst)
+        return;
+
+    double roadLength = m_currentRoad->getDistance();
+    double t = (roadLength > 0.0) ? (m_distanceOnRoad / roadLength) : 0.0;
+    t = std::clamp(t, 0.0, 1.0);
+
+    double x0 = src->getX();
+    double y0 = src->getY();
+    double x1 = dst->getX();
+    double y1 = dst->getY();
+
+    double dx = x1 - x0;
+    double dy = y1 - y0;
+
+    double baseX = x0 + dx * t;
+    double baseY = y0 + dy * t;
+
+    if (roadLength > 0.0)
+    {
+        // Perpendicular unit vector (right-hand side of travel direction).
+        double nx = -dy / roadLength;
+        double ny = dx / roadLength;
+
+        baseX += nx * LANE_OFFSET;
+        baseY += ny * LANE_OFFSET;
+    }
+
+    m_position = Vector2(static_cast<float>(baseX), static_cast<float>(baseY));
+}
+
+bool Vehicle::tryAdvanceToNextRoad()
+{
+    if (!m_currentRoad)
+        return false;
+
+    if (m_distanceOnRoad < m_currentRoad->getDistance())
+        return false; // still on the current road, nothing to do
+
+    double overflow = m_distanceOnRoad - m_currentRoad->getDistance();
+
+    std::shared_ptr<Road> next = getNextRoad();
+
+    m_currentRoad->vehicleExits(this);
+
+    if (!next)
+    {
+        // No more roads in the route: trip complete.
+        m_finished = true;
+        m_distanceOnRoad = m_currentRoad->getDistance();
+        updateWorldPosition();
+        return true;
+    }
+
+    m_currentRoad = next;
+    m_routeIndex++;
+    m_distanceOnRoad = overflow;
+
+    m_currentRoad->vehicleEnters(this);
+
+    updateWorldPosition();
+    return true;
+}
+
 const std::string& Vehicle::getId() const
 {
     return m_id;
+}
+
+VehicleType Vehicle::getType() const
+{
+    return m_type;
 }
 
 std::shared_ptr<Road> Vehicle::getCurrentRoad() const

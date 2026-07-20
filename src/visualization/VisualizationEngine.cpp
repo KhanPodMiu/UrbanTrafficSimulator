@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 namespace {
     // Trả về đúng texture (Green/Yellow/Red) tương ứng với trạng thái đèn hiện tại.
@@ -19,6 +20,17 @@ namespace {
             case TrafficLightState::RED:    return red;
         }
         return red;
+    }
+
+    // Simple color-coding per vehicle type until dedicated sprites are added.
+    SDL_Color colorForVehicleType(VehicleType type)
+    {
+        switch (type) {
+            case VehicleType::BUS:       return SDL_Color{ 240, 180, 40, 255 };  // vàng cam - bus
+            case VehicleType::EMERGENCY: return SDL_Color{ 235, 45, 45, 255 };   // đỏ - xe ưu tiên
+            case VehicleType::CAR:
+            default:                     return SDL_Color{ 60, 160, 250, 255 }; // xanh dương - xe con
+        }
     }
 }
 
@@ -170,6 +182,39 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
     SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
     SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
     SDL_RenderFillRect(window.getRenderer(), &panel);
+}
+
+void VisualizationEngine::renderVehicles(RenderWindow& window, const Camera& camera, const std::vector<std::shared_ptr<Vehicle>>& vehicles)
+{
+    float zoom = camera.getZoom();
+    SDL_Renderer* renderer = window.getRenderer();
+
+    for (const auto& vehicle : vehicles) {
+        if (!vehicle || vehicle->isFinished())
+            continue;
+
+        Vector2 worldPos = vehicle->getPosition();
+        Vector2 screenPos = applyCamera(worldPos, camera);
+        screenPos.x += Config::PANEL_WIDTH;
+
+        // Scale the vehicle's real length onto screen space, with a floor so
+        // it stays visible even when zoomed far out.
+        float length = static_cast<float>(vehicle->getVehicleLength()) * zoom * 3.0f;
+        float width  = length * 0.5f;
+        length = std::max(length, 6.0f);
+        width  = std::max(width, 4.0f);
+
+        SDL_Color color = colorForVehicleType(vehicle->getType());
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+        SDL_Rect rect;
+        rect.x = static_cast<int>(screenPos.x - length / 2.0f);
+        rect.y = static_cast<int>(screenPos.y - width / 2.0f);
+        rect.w = static_cast<int>(length);
+        rect.h = static_cast<int>(width);
+
+        SDL_RenderFillRect(renderer, &rect);
+    }
 }
 
 void VisualizationEngine::cleanUp(RenderWindow& window)

@@ -384,3 +384,30 @@ const std::unordered_map<std::string, std::shared_ptr<Intersection>>& Graph::get
 const std::unordered_map<std::string, std::shared_ptr<Road>>& Graph::getRoads() const {
     return Roads;
 }
+
+Road* Graph::getRoadBetween(
+    const std::string& sourceID,
+    const std::string& destinationID) const
+{
+    auto it = adjacencyList.find(sourceID);
+
+    if (it == adjacencyList.end())
+        return nullptr;
+
+    for (const auto& road : it->second)
+    {
+        if (road == nullptr)
+            continue;
+
+        const Intersection* destination =
+            road->getDestinationIntersection();
+
+        if (destination != nullptr &&
+            destination->getIntersectionID() == destinationID)
+        {
+            return road.get();
+        }
+    }
+
+    return nullptr;
+}

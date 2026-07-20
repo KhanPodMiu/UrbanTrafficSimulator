@@ -2,6 +2,7 @@
 
 #include "SDL2/SDL.h"
 #include "utils/vector2i.hpp"
+#include "vehicles/Vehicle.hpp"
 #include <vector>
 #include <memory>
 
@@ -9,6 +10,7 @@ class Graph;
 class RenderWindow;
 class Camera;
 class Road;
+class Vehicle;
 
 class VisualizationEngine
 {
@@ -21,6 +23,11 @@ public:
     void buildRenderCache(const Graph& graph);
 
     void render(RenderWindow& window, const Camera& camera);
+
+    // Draws the current dynamic vehicle list. Kept separate from render()
+    // since vehicle positions change every frame while roads/intersections
+    // are cached once in buildRenderCache().
+    void renderVehicles(RenderWindow& window, const Camera& camera, const std::vector<std::shared_ptr<Vehicle>>& vehicles);
 
     void cleanUp(RenderWindow& window);
 

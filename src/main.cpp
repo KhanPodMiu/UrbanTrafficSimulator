@@ -14,6 +14,8 @@
 
 #include "simulation/WorldClock.hpp"
 #include "simulation/TrafficLightManager.hpp"
+#include "simulation/RouteOptimizer.hpp"
+#include "simulation/VehicleManager.hpp"
 #include "visualization/camera.hpp"
 
 #include "graph/Graph.hpp"
@@ -96,6 +98,16 @@ int main(int argc, char* argv[]) {
     }
 
     //=======================================================================================================================================================================
+    // Vehicle spawning / movement / collision-avoidance system.
+    // RouteOptimizer lets vehicles recompute their path if it becomes
+    // congested; VehicleManager owns the fleet and drives spawn -> move ->
+    // collision-avoid -> despawn every frame via VehicleFactory + CollisionManager.
+
+    auto routeOptimizer = std::make_shared<RouteOptimizer>(&routingManager);
+
+    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/40, /*spawnIntervalSeconds=*/1.2);
+
+    //=======================================================================================================================================================================
 
     bool is_game_running = true;
 
@@ -108,6 +120,8 @@ int main(int argc, char* argv[]) {
 
         TrafficLightManager::getInstance().update(clock.getDeltaTime());
 
+        vehicleManager.update(clock.getDeltaTime());
+
         while (SDL_PollEvent(&event)) {
             handleInput(event, is_game_running, camera);
         }
@@ -115,6 +129,7 @@ int main(int argc, char* argv[]) {
         window.clear();
 
         visualizationEngine.render(window, camera);
+        visualizationEngine.renderVehicles(window, camera, vehicleManager.getVehicles());
 
         window.display();
 

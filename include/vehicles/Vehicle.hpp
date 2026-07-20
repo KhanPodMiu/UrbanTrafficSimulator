@@ -10,9 +10,26 @@ class Road;
 class Intersection;
 class RouteOptimizer;
 
+// VehicleType distinguishes the concrete subclasses produced by VehicleFactory
+// (Car / Bus / EmergencyVehicle) without forcing every caller to know about
+// those headers - useful for rendering (choosing a color) and for collision
+// logic (e.g. an EmergencyVehicle ignores red lights).
+enum class VehicleType {
+    CAR,
+    BUS,
+    EMERGENCY
+};
+
 class Vehicle {
+protected:
+    // Protected "full" constructor used by subclasses (Car, Bus, EmergencyVehicle)
+    // to set their own default speed/length/type while still sharing all of
+    // Vehicle's state and behavior (classic inheritance + encapsulation).
+    Vehicle(const std::string& id, double maxSpeed, double length, VehicleType type);
+
 private:
     std::string m_id;
+    VehicleType m_type;
 
     double m_currentSpeed;
     double m_targetSpeed;
@@ -34,15 +51,32 @@ private:
     Vector2 m_position;
 
 public:
+    // Public constructor kept for backward compatibility (existing code / tests
+    // that build a plain Vehicle directly still work exactly as before).
     Vehicle(const std::string& id, double maxSpeed = 15.0);
 
-    ~Vehicle() = default;
+    virtual ~Vehicle() = default;
 
     void update(double dt);
 
     void assignRoute(const std::shared_ptr<RouteOptimizer>& optimizer);
 
+    // Recomputes m_position from m_currentRoad + m_distanceOnRoad (plus a small
+    // lane offset so vehicles don't render on top of the road centerline).
+    void updateWorldPosition();
+
+    // If the vehicle has reached (or passed) the end of its current road,
+    // moves it onto the next road in its route. Returns true if a transition
+    // happened (either onto the next road, or the vehicle finished its trip).
+    bool tryAdvanceToNextRoad();
+
+    // Whether this vehicle type is allowed to enter an intersection despite a
+    // red/yellow light (e.g. emergency vehicles). Default: false.
+    virtual bool ignoresTrafficLights() const { return false; }
+
     const std::string& getId() const;
+
+    VehicleType getType() const;
 
     std::shared_ptr<Road> getCurrentRoad() const;
 
