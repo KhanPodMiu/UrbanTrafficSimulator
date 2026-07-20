@@ -3,9 +3,10 @@
 #define ROAD_HPP
 
 #include <string>
+#include <queue>
 
 class Intersection;
-
+class Vehicle;
 // ─────────────────────────────────────────────────────────────────────────────
 //  TrafficLightState – embedded in Road because each Road owns its own light.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,12 +34,16 @@ public:
     static constexpr int MIN_DURATION            = 1;   // seconds
     static constexpr int MAX_DURATION            = 120; // seconds
 
+    //ADDED ── For BPR Funtion and CongestionLevel ──────────────────────────
+    static constexpr double VEHICLE_HITBOX_SIZE = 5.0; // Length of vehicle hitbox in map units can change after
+    static constexpr double BPR_ALPHA = 0.15;         
+    static constexpr double BPR_BETA = 4.0;          
+
     // ── constructor / destructor ──────────────────────────────────────────────
     Road(
         const std::string& id,
         const Intersection*      source,
         const Intersection*      destination,
-        int                distance,
         int                speedLimit
     );
 
@@ -52,10 +57,10 @@ public:
     const Intersection*      getSourceIntersection()      const;
     const Intersection*      getDestinationIntersection() const;
 
-    int  getDistance()       const;
+    double  getDistance()       const;
     int  getSpeedLimit()     const;
     int  getCongestionLevel()const;
-    int  getTravelCost()     const;
+    double  getTravelCost()     const;
 
     // ── traffic light getters ─────────────────────────────────────────────────
     TrafficLightState getTrafficLightState()  const;
@@ -65,6 +70,9 @@ public:
     int               getGreenDuration()     const;
     int               getYellowDuration()    const;
     int               getRedDuration()       const;
+
+    //ADDED: Function to get total current Vehicle on Road:
+    int               getTotalVehicles() const;
 
     // ── setters ───────────────────────────────────────────────────────────────
     bool setSourceIntersection(const Intersection* source);
@@ -81,7 +89,7 @@ public:
 
     // updateCongestion: sets congestionLevel and recomputes travelCost.
     // Returns false when newCongestionLevel is outside [MIN_CONGESTION, MAX_CONGESTION].
-    bool updateCongestion(int newCongestionLevel);
+    bool updateCongestion();
 
     // calculateTravelCost: recomputes travelCost from current attributes.
     // Called automatically by every setter that touches a relevant attribute.
@@ -105,17 +113,24 @@ public:
     // yield-style right-of-way instead of signals, so they are excluded.
     bool needsTrafficLightAtDestination() const;
 
+    //Added: 2 funtion to update quantity of vehicle on road
+    void vehicleEnters(Vehicle* vehicle); 
+    void vehicleExits();
+
 private:
     std::string   roadId;
 
     const Intersection* sourceIntersection;
     const Intersection* destinationIntersection;
 
-    int distance;        // map units      [MIN_DISTANCE,   MAX_DISTANCE  ]
+    double distance;        // map units      [MIN_DISTANCE,   MAX_DISTANCE  ]
     int speedLimit;      // km/h           [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT]
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
-    int travelCost;      // dimensionless weight, kept in sync by setters
-
+    double travelCost;      // dimensionless weight, kept in sync by setters
+    
+    //Added: vector of vehicles on the road
+    std::vector <Vehicle*> VehiclesOnRoad; 
+    
     // ── traffic light state ──────────────────────────────────────────────────
     TrafficLightState trafficLightState;
     bool              trafficLightEnabled;

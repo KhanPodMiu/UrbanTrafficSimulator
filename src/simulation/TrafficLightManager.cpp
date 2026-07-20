@@ -3,10 +3,10 @@
 #include <string>
 #include <memory>
 #include <cmath>
-#include "simulation/TrafficLightManager.hpp"
-#include "graph/Graph.hpp"
-#include "graph/Intersection.hpp"
-#include "graph/Road.hpp"
+#include "../simulation/TrafficLightManager.hpp"
+#include "../graph/Graph.hpp"
+#include "../graph/Intersection.hpp"
+#include "../graph/Road.hpp"
 
 void normalize(Vector2 &V) {
     double len = std::sqrt(V.x * V.x + V.y * V.y);
@@ -87,7 +87,6 @@ bool TrafficLightManager::initializeTopology(Graph& graph) {
             while (!unassignedRoads.empty()) {
                 SignalPhase newPhase;
                 auto baseRoad = unassignedRoads.front();
-                baseRoad->trafficLightEnabled = true;
                 newPhase.roads.push_back(baseRoad);
                 unassignedRoads.erase(unassignedRoads.begin());
 
@@ -98,7 +97,6 @@ bool TrafficLightManager::initializeTopology(Graph& graph) {
                     double dot = calculateDotProduct(baseDir, compareDir);
 
                     if (dot < -0.8) { 
-                        (*it)->trafficLightEnabled = true;
                         newPhase.roads.push_back(*it); 
                         it = unassignedRoads.erase(it); 
                         break; 
@@ -133,16 +131,6 @@ void TrafficLightManager::update(double dt) {
         } 
         else if (control.currentLightState == TrafficLightState::YELLOW) {
             if (control.timer >= control.yellowDuration) {
-                // All-red clearance: every road at the intersection goes RED
-                // for redDuration before the next phase gets GREEN, giving
-                // vehicles time to clear the intersection.
-                control.currentLightState = TrafficLightState::RED;
-                control.timer = 0.0;
-                applyPhaseStates(control);
-            }
-        }
-        else if (control.currentLightState == TrafficLightState::RED) {
-            if (control.timer >= control.redDuration) {
                 control.currentPhaseIndex = (control.currentPhaseIndex + 1) % control.phases.size();
                 control.currentLightState = TrafficLightState::GREEN;
                 control.timer = 0.0;

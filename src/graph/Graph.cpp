@@ -275,6 +275,12 @@ const std::shared_ptr<Intersection> Graph::getIntersection(const std::string& in
 
 }
 
+void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const {
+    for (const auto& pair : Intersections) {
+        func(pair.second); 
+    }
+}
+
 //ADDED: Call back function
 void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const {
     for (const auto& pair : Intersections) {
