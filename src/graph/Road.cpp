@@ -4,6 +4,10 @@
 
 #include <algorithm> // std::clamp, std::max
 #include <math.h>
+
+#include <algorithm>
+
+#include "vehicles/Vehicle.hpp"
 // ─────────────────────────────────────────────────────────────────────────────
 //  Constructor
 //
@@ -122,7 +126,65 @@ double Road::getTravelCost() const
 
 int Road::getTotalVehicles() const
 {
-    return VehiclesOnRoad.size();
+    return static_cast<int>(m_vehicles.size());
+}
+
+const std::vector<Vehicle*>& Road::getVehicles() const
+{
+    return m_vehicles;
+}
+
+void Road::vehicleEnters(Vehicle* vehicle)
+{
+    if (vehicle == nullptr)
+        return;
+
+    m_vehicles.push_back(vehicle);
+
+    updateCongestion();
+}
+
+void Road::vehicleExits(Vehicle* vehicle)
+{
+    auto it = std::find(
+        m_vehicles.begin(),
+        m_vehicles.end(),
+        vehicle);
+
+    if (it != m_vehicles.end())
+    {
+        m_vehicles.erase(it);
+    }
+
+    updateCongestion();
+}
+
+void Road::sortVehicles()
+{
+    std::sort(
+        m_vehicles.begin(),
+        m_vehicles.end(),
+        [](Vehicle* a, Vehicle* b)
+        {
+            return a->getDistanceOnRoad() >
+                   b->getDistanceOnRoad();
+        });
+}
+
+Vehicle* Road::getVehicleAhead(const Vehicle* vehicle) const
+{
+    for (size_t i = 0; i < m_vehicles.size(); i++)
+    {
+        if (m_vehicles[i] == vehicle)
+        {
+            if (i == 0)
+                return nullptr;
+
+            return m_vehicles[i - 1];
+        }
+    }
+
+    return nullptr;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -261,36 +323,38 @@ bool Road::setRedDuration(int duration)
 
 bool Road::updateCongestion()
 {
-    double maxVehicles = std::max(1.0, distance / VEHICLE_HITBOX_SIZE);
-    double currentVehicles = static_cast<double>(VehiclesOnRoad.size());
-    double exactCongestion = (currentVehicles / maxVehicles) * 100.0;
-    congestionLevel = std::clamp(static_cast<int>(exactCongestion), MIN_CONGESTION, MAX_CONGESTION);
-    travelCost = calculateTravelCost();
+    double capacity = std::max(
+        1.0,
+        distance / VEHICLE_HITBOX_SIZE);
+
+    double ratio = static_cast<double>(m_vehicles.size()) / capacity;
+
+    congestionLevel = std::clamp(
+        static_cast<int>(ratio * 100.0),
+        MIN_CONGESTION,
+        MAX_CONGESTION);
+
+    return calculateTravelCost();
 }
 
 bool Road::calculateTravelCost()
 {
-    double t0 = distance / static_cast<double>(std::max(1, speedLimit));
-    double ratio = static_cast<double>(congestionLevel) / 100.0;
-    double travelTime = t0 * (1.0 + BPR_ALPHA * std::pow(ratio, BPR_BETA));
-    
-    return travelTime;
+    if (speedLimit <= 0)
+        return false;
 
+    double t0 =
+        distance / static_cast<double>(speedLimit);
+
+    double ratio =
+        static_cast<double>(congestionLevel) / 100.0;
+
+    travelCost =
+        t0 *
+        (1.0 + BPR_ALPHA * std::pow(ratio, BPR_BETA));
+
+    return true;
 }
 
-void Road::vehicleEnters(Vehicle* vehicle) {
-    if (vehicle != nullptr) {
-        VehiclesOnRoad.push_back(vehicle);
-        updateCongestion(); 
-    }
-}
-
-void Road::vehicleExits() {
-    if (!VehiclesOnRoad.empty()) {
-        VehiclesOnRoad.erase(VehiclesOnRoad.begin()); 
-        updateCongestion(); 
-    }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Traffic light operations
