@@ -28,8 +28,6 @@ namespace {
         return dist(rng());
     }
 
-    // Weighted vehicle-type roll: mostly cars, some buses, rare emergency
-    // vehicles - mirrors realistic traffic composition.
     VehicleType pickRandomType()
     {
         std::uniform_int_distribution<int> dist(1, 100);
@@ -63,9 +61,6 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnRandomVehicle(
 {
     const auto& intersections = graph.getIntersections();
 
-    // Collect every "usable" intersection (degree > 0, i.e. actually connected
-    // to at least one road) plus the subset that are dead ends, which make for
-    // natural spawn points (as if the vehicle is entering from outside the map).
     std::vector<std::string> allIDs;
     std::vector<std::string> deadEndIDs;
     allIDs.reserve(intersections.size());
@@ -73,7 +68,7 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnRandomVehicle(
     for (const auto& [id, intersection] : intersections)
     {
         if (!intersection || intersection->getDegree() == 0)
-            continue; // isolated intersection, not usable as a route endpoint
+            continue; 
 
         allIDs.push_back(id);
 
@@ -82,13 +77,11 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnRandomVehicle(
     }
 
     if (allIDs.size() < 2)
-        return nullptr; // not enough connected intersections to form a route
+        return nullptr;
 
     const std::vector<std::string>& startPool = !deadEndIDs.empty() ? deadEndIDs : allIDs;
     std::string startID = startPool[randomIndex(startPool.size())];
 
-    // Pick a destination different from the start (a few attempts is enough;
-    // with >=2 usable intersections this will basically always succeed fast).
     std::string destID = startID;
     for (int attempt = 0; attempt < 8 && destID == startID; ++attempt)
     {
@@ -103,8 +96,6 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnRandomVehicle(
     if (!result.isSuccess || result.intersectionIDs.size() < 2)
         return nullptr; // no path between the chosen pair, try again next tick
 
-    // Translate the intersection-ID path into the actual Road objects that
-    // connect each consecutive pair.
     std::vector<std::shared_ptr<Road>> route;
     route.reserve(result.intersectionIDs.size() - 1);
 

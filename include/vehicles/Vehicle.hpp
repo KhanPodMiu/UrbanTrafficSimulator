@@ -51,9 +51,7 @@ private:
     Vector2 m_position;
 
 public:
-    // Public constructor kept for backward compatibility (existing code / tests
-    // that build a plain Vehicle directly still work exactly as before).
-    Vehicle(const std::string& id, double maxSpeed = 15.0);
+    Vehicle(const std::string& id, double maxSpeed = 60.0);
 
     virtual ~Vehicle() = default;
 
@@ -61,17 +59,10 @@ public:
 
     void assignRoute(const std::shared_ptr<RouteOptimizer>& optimizer);
 
-    // Recomputes m_position from m_currentRoad + m_distanceOnRoad (plus a small
-    // lane offset so vehicles don't render on top of the road centerline).
     void updateWorldPosition();
 
-    // If the vehicle has reached (or passed) the end of its current road,
-    // moves it onto the next road in its route. Returns true if a transition
-    // happened (either onto the next road, or the vehicle finished its trip).
     bool tryAdvanceToNextRoad();
 
-    // Whether this vehicle type is allowed to enter an intersection despite a
-    // red/yellow light (e.g. emergency vehicles). Default: false.
     virtual bool ignoresTrafficLights() const { return false; }
 
     const std::string& getId() const;

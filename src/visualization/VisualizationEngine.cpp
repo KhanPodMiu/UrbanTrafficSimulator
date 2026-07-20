@@ -178,10 +178,6 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
         }
     }
 
-    // UI Panel
-    SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
-    SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
-    SDL_RenderFillRect(window.getRenderer(), &panel);
 }
 
 void VisualizationEngine::renderVehicles(RenderWindow& window, const Camera& camera, const std::vector<std::shared_ptr<Vehicle>>& vehicles)

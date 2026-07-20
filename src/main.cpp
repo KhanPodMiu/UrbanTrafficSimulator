@@ -62,50 +62,43 @@ int main(int argc, char* argv[]) {
 
     TrafficLightManager::getInstance().initializeTopology(graph);
 
-    // Routing Strategy Demo
 
     RoutingManager routingManager;
 
-    // Chọn thuật toán
     routingManager.setStrategy(std::make_unique<Dijkstra>());
     // routingManager.setStrategy(std::make_unique<BFS>());
     // routingManager.setStrategy(std::make_unique<AStarStrategy>());
 
-    // Tìm đường từ I1 -> I3
-    RouteRequest request("I1", "I3");
+    // // Tìm đường từ I1 -> I3
+    // RouteRequest request("I1", "I3");
 
-    RouteResult result = routingManager.calculateRoute(graph, request);
+    // RouteResult result = routingManager.calculateRoute(graph, request);
 
-    if (result.isSuccess)
-    {
-        std::cout << "========== ROUTE ==========\n";
-        std::cout << "Total Cost: "
-                << result.totalCost
-                << "\n\n";
+    // if (result.isSuccess)
+    // {
+    //     std::cout << "========== ROUTE ==========\n";
+    //     std::cout << "Total Cost: "
+    //             << result.totalCost
+    //             << "\n\n";
 
-        std::cout << "Path:\n";
+    //     std::cout << "Path:\n";
 
-        for (const auto& intersectionID : result.intersectionIDs)
-        {
-            std::cout << intersectionID << " ";
-        }
+    //     for (const auto& intersectionID : result.intersectionIDs)
+    //     {
+    //         std::cout << intersectionID << " ";
+    //     }
 
-        std::cout << "\n===========================\n";
-    }
-    else
-    {
-        std::cout << "Cannot find route!\n";
-    }
+    //     std::cout << "\n===========================\n";
+    // }
+    // else
+    // {
+    //     std::cout << "Cannot find route!\n";
+    // }
 
-    //=======================================================================================================================================================================
-    // Vehicle spawning / movement / collision-avoidance system.
-    // RouteOptimizer lets vehicles recompute their path if it becomes
-    // congested; VehicleManager owns the fleet and drives spawn -> move ->
-    // collision-avoid -> despawn every frame via VehicleFactory + CollisionManager.
 
     auto routeOptimizer = std::make_shared<RouteOptimizer>(&routingManager);
 
-    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/40, /*spawnIntervalSeconds=*/1.2);
+    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/100, /*spawnIntervalSeconds=*/1.2);
 
     //=======================================================================================================================================================================
 
@@ -130,6 +123,10 @@ int main(int argc, char* argv[]) {
 
         visualizationEngine.render(window, camera);
         visualizationEngine.renderVehicles(window, camera, vehicleManager.getVehicles());
+
+        SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
+        SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
+        SDL_RenderFillRect(window.getRenderer(), &panel);
 
         window.display();
 

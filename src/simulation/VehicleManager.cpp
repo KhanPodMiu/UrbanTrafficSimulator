@@ -55,7 +55,8 @@ void VehicleManager::update(double dt)
                vehicle->getDistanceOnRoad() >= vehicle->getCurrentRoad()->getDistance() &&
                guard++ < 8)
         {
-            vehicle->tryAdvanceToNextRoad();
+            if (!vehicle->tryAdvanceToNextRoad())
+                break; // blocked (e.g. red light) - stop retrying this frame
         }
     }
 

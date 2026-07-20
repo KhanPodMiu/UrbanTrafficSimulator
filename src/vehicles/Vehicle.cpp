@@ -6,14 +6,8 @@
 #include "graph/Road.hpp"
 
 namespace {
-    // How quickly a vehicle can speed up / slow down toward its current
-    // targetSpeed (set every tick by CollisionManager). Kept as a simple
-    // constant for now; could become a per-VehicleType property later.
-    constexpr double COMFORT_ACCEL = 12.0; // map-units / s^2
+    constexpr double COMFORT_ACCEL = 35.0; // map-units / s^2
 
-    // Sideways offset applied when placing a vehicle on screen, so it renders
-    // on its own side of the road centerline instead of overlapping
-    // oncoming traffic (mirrors the offset logic used for road rendering).
     constexpr double LANE_OFFSET = 20.0; // map units
 }
 
@@ -115,6 +109,14 @@ bool Vehicle::tryAdvanceToNextRoad()
 
     if (m_distanceOnRoad < m_currentRoad->getDistance())
         return false; // still on the current road, nothing to do
+
+    if (!m_currentRoad->isGreen() && !ignoresTrafficLights())
+    {
+        m_distanceOnRoad = m_currentRoad->getDistance();
+        m_currentSpeed = 0.0;
+        updateWorldPosition();
+        return false;
+    }
 
     double overflow = m_distanceOnRoad - m_currentRoad->getDistance();
 
