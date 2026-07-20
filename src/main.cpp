@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
 
     auto routeOptimizer = std::make_shared<RouteOptimizer>(&routingManager);
 
-    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/100, /*spawnIntervalSeconds=*/1.2);
+    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/300, /*spawnIntervalSeconds=*/1.2);
 
     //=======================================================================================================================================================================
 

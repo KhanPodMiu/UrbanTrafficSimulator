@@ -1,10 +1,5 @@
 #pragma once
 
-// Single source of truth for layout / window / map / camera / render constants.
-// Domain-specific constants that belong to a class's own business rules
-// (e.g. Road's speed-limit / congestion / signal-duration bounds) are kept
-// inside that class's header instead of here, since they are not related
-// to visualization or window layout.
 namespace Config
 {
     // ---- Window layout -----------------------------------------------

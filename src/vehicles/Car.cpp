@@ -2,7 +2,7 @@
 
 namespace {
     constexpr double CAR_MAX_SPEED = 60.0; // map-units / s
-    constexpr double CAR_LENGTH    = 4.5;  // map units
+    constexpr double CAR_LENGTH    = 5.0;  // map units
 }
 
 Car::Car(const std::string& id)

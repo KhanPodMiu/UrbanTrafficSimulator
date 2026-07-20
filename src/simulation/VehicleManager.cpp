@@ -35,18 +35,13 @@ void VehicleManager::update(double dt)
         trySpawnVehicle();
     }
 
-    // 1) Decide a safe target speed for every vehicle (car-following + lights).
     m_collisionManager->update(m_graph, dt);
 
-    // 2) Integrate motion: accelerate/decelerate toward target speed and move.
     for (auto& vehicle : m_vehicles)
     {
         vehicle->update(dt);
     }
 
-    // 3) Handle road-to-road transitions. Looped (bounded) in case dt is large
-    // enough for a vehicle to cross more than one short road segment in a
-    // single frame.
     for (auto& vehicle : m_vehicles)
     {
         int guard = 0;
@@ -56,7 +51,7 @@ void VehicleManager::update(double dt)
                guard++ < 8)
         {
             if (!vehicle->tryAdvanceToNextRoad())
-                break; // blocked (e.g. red light) - stop retrying this frame
+                break;
         }
     }
 

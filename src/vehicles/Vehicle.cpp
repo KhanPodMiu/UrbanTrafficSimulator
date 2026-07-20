@@ -6,9 +6,8 @@
 #include "graph/Road.hpp"
 
 namespace {
-    constexpr double COMFORT_ACCEL = 35.0; // map-units / s^2
-
-    constexpr double LANE_OFFSET = 20.0; // map units
+    constexpr double COMFORT_ACCEL = 35.0; 
+    constexpr double LANE_OFFSET = 30.0; 
 }
 
 Vehicle::Vehicle(const std::string& id, double maxSpeed, double length, VehicleType type)
@@ -38,9 +37,6 @@ void Vehicle::update(double dt)
     if (m_finished)
         return;
 
-    // Smoothly accelerate/decelerate current speed toward the target speed
-    // that CollisionManager computed for this tick (car-following + traffic
-    // lights). This avoids teleport-like instant speed changes.
     if (m_currentSpeed < m_targetSpeed)
     {
         m_currentSpeed = std::min(m_targetSpeed, m_currentSpeed + COMFORT_ACCEL * dt);
@@ -108,7 +104,7 @@ bool Vehicle::tryAdvanceToNextRoad()
         return false;
 
     if (m_distanceOnRoad < m_currentRoad->getDistance())
-        return false; // still on the current road, nothing to do
+        return false; 
 
     if (!m_currentRoad->isGreen() && !ignoresTrafficLights())
     {
@@ -273,4 +269,18 @@ std::shared_ptr<Road> Vehicle::getNextRoad() const
         return nullptr;
 
     return m_route[m_routeIndex + 1];
+}
+
+double Vehicle::getHeadingAngle() const
+{
+    if (!m_currentRoad)
+        return 0.0;
+
+    const Intersection* src = m_currentRoad->getSourceIntersection();
+    const Intersection* dst = m_currentRoad->getDestinationIntersection();
+
+    double dx = dst->getX() - src->getX();
+    double dy = dst->getY() - src->getY();
+
+    return atan2(dy, dx) * 180.0 / M_PI;
 }

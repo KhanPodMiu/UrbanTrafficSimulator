@@ -10,10 +10,6 @@ class Road;
 class Intersection;
 class RouteOptimizer;
 
-// VehicleType distinguishes the concrete subclasses produced by VehicleFactory
-// (Car / Bus / EmergencyVehicle) without forcing every caller to know about
-// those headers - useful for rendering (choosing a color) and for collision
-// logic (e.g. an EmergencyVehicle ignores red lights).
 enum class VehicleType {
     CAR,
     BUS,
@@ -22,9 +18,6 @@ enum class VehicleType {
 
 class Vehicle {
 protected:
-    // Protected "full" constructor used by subclasses (Car, Bus, EmergencyVehicle)
-    // to set their own default speed/length/type while still sharing all of
-    // Vehicle's state and behavior (classic inheritance + encapsulation).
     Vehicle(const std::string& id, double maxSpeed, double length, VehicleType type);
 
 private:
@@ -114,4 +107,6 @@ public:
     void advanceDistance(double distance);
 
     std::shared_ptr<Road> getNextRoad() const;
+
+    double getHeadingAngle() const;
 };

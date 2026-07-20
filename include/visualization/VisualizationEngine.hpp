@@ -56,6 +56,10 @@ private:
     SDL_Texture* redLightTexture_ = nullptr;
     SDL_Texture* yellowLightTexture_ = nullptr;
 
+    SDL_Texture* carTexture_ = nullptr;
+    SDL_Texture* busTexture_ = nullptr;
+    SDL_Texture* emergencyTexture_ = nullptr;
+
     std::vector<Vector2> intersectionsLocation_;
     std::vector<RoadRenderData> roadsLocation_;
 };

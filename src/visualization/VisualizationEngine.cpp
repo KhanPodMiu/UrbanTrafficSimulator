@@ -34,6 +34,30 @@ namespace {
     }
 }
 
+namespace {
+
+SDL_Texture* vehicleTexture(
+    VehicleType type,
+    SDL_Texture* car,
+    SDL_Texture* bus,
+    SDL_Texture* emergency)
+{
+    switch(type)
+    {
+        case VehicleType::BUS:
+            return bus;
+
+        case VehicleType::EMERGENCY:
+            return emergency;
+
+        case VehicleType::CAR:
+        default:
+            return car;
+    }
+}
+
+}
+
 VisualizationEngine::VisualizationEngine() = default;
 VisualizationEngine::~VisualizationEngine() = default;
 
@@ -82,6 +106,10 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
     }
+
+    carTexture_ = window.loadTexture("assets/textures/Vehicles/car.png");
+    busTexture_ = window.loadTexture("assets/textures/Vehicles/bus.png");
+    emergencyTexture_ = window.loadTexture("assets/textures/Vehicles/emergency.png");
 
     return true;
 }
@@ -180,12 +208,16 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
 
 }
 
-void VisualizationEngine::renderVehicles(RenderWindow& window, const Camera& camera, const std::vector<std::shared_ptr<Vehicle>>& vehicles)
+void VisualizationEngine::renderVehicles(
+    RenderWindow& window,
+    const Camera& camera,
+    const std::vector<std::shared_ptr<Vehicle>>& vehicles)
 {
-    float zoom = camera.getZoom();
     SDL_Renderer* renderer = window.getRenderer();
+    float zoom = camera.getZoom();
 
-    for (const auto& vehicle : vehicles) {
+    for (const auto& vehicle : vehicles)
+    {
         if (!vehicle || vehicle->isFinished())
             continue;
 
@@ -193,23 +225,35 @@ void VisualizationEngine::renderVehicles(RenderWindow& window, const Camera& cam
         Vector2 screenPos = applyCamera(worldPos, camera);
         screenPos.x += Config::PANEL_WIDTH;
 
-        // Scale the vehicle's real length onto screen space, with a floor so
-        // it stays visible even when zoomed far out.
-        float length = static_cast<float>(vehicle->getVehicleLength()) * zoom * 3.0f;
-        float width  = length * 0.5f;
-        length = std::max(length, 6.0f);
-        width  = std::max(width, 4.0f);
+        SDL_Texture* texture = vehicleTexture(
+            vehicle->getType(),
+            carTexture_,
+            busTexture_,
+            emergencyTexture_);
 
-        SDL_Color color = colorForVehicleType(vehicle->getType());
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        float vehicleLength = 100;
+        float vehicleWidth  = 50;
 
-        SDL_Rect rect;
-        rect.x = static_cast<int>(screenPos.x - length / 2.0f);
-        rect.y = static_cast<int>(screenPos.y - width / 2.0f);
-        rect.w = static_cast<int>(length);
-        rect.h = static_cast<int>(width);
+        // Convert world -> screen
+        int screenLength = static_cast<int>(vehicleLength * zoom);
+        int screenWidth  = static_cast<int>(vehicleWidth * zoom);
 
-        SDL_RenderFillRect(renderer, &rect);
+        SDL_Rect dst;
+        dst.w = screenWidth;
+        dst.h = screenLength;
+        dst.x = static_cast<int>(screenPos.x - screenWidth / 2);
+        dst.y = static_cast<int>(screenPos.y - screenLength / 2);
+
+        double angle = vehicle->getHeadingAngle() - 90.0;
+
+        SDL_RenderCopyEx(
+            renderer,
+            texture,
+            nullptr,
+            &dst,
+            angle,
+            nullptr,
+            SDL_FLIP_NONE);
     }
 }
 
@@ -219,8 +263,11 @@ void VisualizationEngine::cleanUp(RenderWindow& window)
     window.cleanUpTexture(intersectionTexture_);
     window.cleanUpTexture(roadTexture_);
 
-    // --- MỚI: dọn dẹp 3 texture đèn ---
     window.cleanUpTexture(greenLightTexture_);
     window.cleanUpTexture(yellowLightTexture_);
     window.cleanUpTexture(redLightTexture_);
+
+    window.cleanUpTexture(carTexture_);
+    window.cleanUpTexture(busTexture_);
+    window.cleanUpTexture(emergencyTexture_);
 }
