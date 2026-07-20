@@ -1,15 +1,16 @@
 #pragma once
 
+#include "algorithms/PathFindingStrategy.hpp"
 #include "graph/Graph.hpp"
 #include "simulation/RouteRequest.hpp"
 #include "simulation/RouteResult.hpp"
 
-class BFS {
+class BFS : public PathFindingStrategy {
 public:
-    static RouteResult findShortestPath(const Graph& graph, const RouteRequest& request);
+    RouteResult calculateRoute(const Graph& graph, const RouteRequest& request) const override;
 
-static size_t getExpandedNodeCount();
+    size_t getExpandedNodeCount() const;
 
 private:
-    static size_t expandedNodeCount;
+    mutable size_t expandedNodeCount = 0;
 };

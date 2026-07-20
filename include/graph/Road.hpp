@@ -25,12 +25,12 @@ public:
     static constexpr int MIN_CONGESTION  = 0;
     static constexpr int MAX_CONGESTION  = 100;
     static constexpr int MIN_DISTANCE    = 1;     // map units
-    static constexpr int MAX_DISTANCE    = 8000;  // ≈ 1.4× map diagonal
+    static constexpr int MAX_DISTANCE    = 66400;  // ≈ 1.4× map diagonal
 
     // ── traffic light duration bounds ────────────────────────────────────────
-    static constexpr int DEFAULT_GREEN_DURATION  = 30;  // seconds
-    static constexpr int DEFAULT_YELLOW_DURATION = 5;   // seconds
-    static constexpr int DEFAULT_RED_DURATION    = 30;  // seconds
+    static constexpr int DEFAULT_GREEN_DURATION  = 10;  // seconds
+    static constexpr int DEFAULT_YELLOW_DURATION = 3;   // seconds
+    static constexpr int DEFAULT_RED_DURATION    = 3;  // seconds
     static constexpr int MIN_DURATION            = 1;   // seconds
     static constexpr int MAX_DURATION            = 120; // seconds
 
@@ -98,18 +98,19 @@ public:
 
     // ── traffic light operations ──────────────────────────────────────────────
 
-    // Advance the traffic light timer by deltaTimeSeconds; auto-switches state.
-    void updateTrafficLight(int deltaTimeSeconds);
-
     // Reset traffic light to GREEN with full timer.
     void resetTrafficLight();
 
-    // Enable / disable the traffic light on this road.
-    void enableTrafficLight();
-    void disableTrafficLight();
+    // NOTE: Road no longer drives its own traffic light timing. TrafficLightManager
+    // is the single source of control for all signalized intersections: it writes
+    // trafficLightState directly (it is a friend of Road) and sets trafficLightEnabled
+    // for roads it manages. The self-driving updateTrafficLight()/switchToNextState()/
+    // enableTrafficLight()/disableTrafficLight() methods that used to exist here were
+    // removed to avoid two competing systems mutating the same state.
 
     // Check whether the destination intersection's type requires a traffic
-    // light (T_INTERSECTION, CROSS, or ROUNDABOUT → true).
+    // light (T_INTERSECTION or CROSS → true). ROUNDABOUT intersections use
+    // yield-style right-of-way instead of signals, so they are excluded.
     bool needsTrafficLightAtDestination() const;
 
     //Added: 2 funtion to update quantity of vehicle on road
@@ -137,9 +138,6 @@ private:
     int               yellowDuration;
     int               redDuration;
     int               timeRemaining;   // countdown timer in seconds
-
-    // Internal helper: cycle to the next state (GREEN→YELLOW→RED→GREEN).
-    void switchToNextState();
 };
 
 #endif // ROAD_HPP

@@ -281,6 +281,13 @@ void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Interse
     }
 }
 
+//ADDED: Call back function
+void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const {
+    for (const auto& pair : Intersections) {
+        func(pair.second); 
+    }
+}
+
 
 const std::shared_ptr<Road> Graph::getRoad(const std::string& roadID) const {
 
@@ -374,4 +381,12 @@ bool Graph::isValid() const {
 
     return true; 
 
+}
+
+const std::unordered_map<std::string, std::shared_ptr<Intersection>>& Graph::getIntersections() const {
+    return Intersections;
+}
+
+const std::unordered_map<std::string, std::shared_ptr<Road>>& Graph::getRoads() const {
+    return Roads;
 }

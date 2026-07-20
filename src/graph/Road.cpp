@@ -296,37 +296,10 @@ void Road::vehicleExits() {
 //  Traffic light operations
 // ─────────────────────────────────────────────────────────────────────────────
 
-void Road::updateTrafficLight(int deltaTimeSeconds)
-{
-    if (!trafficLightEnabled || deltaTimeSeconds <= 0)
-    {
-        return;
-    }
-
-    timeRemaining -= deltaTimeSeconds;
-
-    // Handle multiple state transitions if deltaTime is large
-    while (timeRemaining <= 0)
-    {
-        switchToNextState();
-    }
-}
-
 void Road::resetTrafficLight()
 {
     trafficLightState = TrafficLightState::GREEN;
     timeRemaining = greenDuration;
-}
-
-void Road::enableTrafficLight()
-{
-    trafficLightEnabled = true;
-    resetTrafficLight();
-}
-
-void Road::disableTrafficLight()
-{
-    trafficLightEnabled = false;
 }
 
 bool Road::needsTrafficLightAtDestination() const
@@ -342,8 +315,9 @@ bool Road::needsTrafficLightAtDestination() const
         return false;
     }
 
-    // Intersections with degree >= 3 (T_INTERSECTION, CROSS, ROUNDABOUT)
-    // typically need traffic lights.  DEAD_END (1) and STRAIGHT (2) do not.
+    // Only T_INTERSECTION and CROSS get signalized traffic lights.
+    // ROUNDABOUT uses yield-style right-of-way instead, and DEAD_END (1) /
+    // STRAIGHT (2) never need one.
     IntersectionType type = destinationIntersection->getType();
     return type == IntersectionType::T_INTERSECTION ||
            type == IntersectionType::CROSS ||

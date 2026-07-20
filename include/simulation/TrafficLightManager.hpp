@@ -27,9 +27,9 @@ private:
         size_t currentPhaseIndex = 0;             
         TrafficLightState currentLightState;      
         double timer = 0.0;                      
-        static constexpr int greenDuration = 30.0;
-        static constexpr int yellowDuration = 5.0;
-        static constexpr int redDuration = 30.0; 
+        static constexpr int greenDuration  = Road::DEFAULT_GREEN_DURATION;
+        static constexpr int yellowDuration = Road::DEFAULT_YELLOW_DURATION;
+        static constexpr int redDuration    = Road::DEFAULT_RED_DURATION;
     };
    
     std::vector<IntersectionControl> m_signalizedIntersections;

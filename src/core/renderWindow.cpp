@@ -120,3 +120,17 @@ void RenderWindow::renderRoad(SDL_Texture* texture, const Vector2& start, float 
         SDL_RenderCopyEx(renderer, texture, &srcRect, &dstRect, angle, &pivot, SDL_FLIP_VERTICAL);
     }
 }
+
+void RenderWindow::renderTrafficLight(SDL_Texture* texture, int centerX, int centerY, int size){
+    int texW, texH;
+    SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+
+    float scale = (size / (float)texW < size / (float)texH)
+                  ? size / (float)texW
+                  : size / (float)texH;
+    int w = (int)roundf(texW * scale);
+    int h = (int)roundf(texH * scale);
+
+    SDL_Rect rect{ centerX - w / 2, centerY - h / 2, w, h };
+    SDL_RenderCopy(renderer, texture, nullptr, &rect);
+}

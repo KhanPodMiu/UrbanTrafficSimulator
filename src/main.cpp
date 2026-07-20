@@ -1,3 +1,6 @@
+#include "algorithms/RoutingManager.hpp"
+#include "algorithms/Dijkstra.hpp"
+
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "core/renderWindow.hpp"
@@ -10,6 +13,7 @@
 #include "visualization/VisualizationEngine.hpp"
 
 #include "simulation/WorldClock.hpp"
+#include "simulation/TrafficLightManager.hpp"
 #include "visualization/camera.hpp"
 
 #include "graph/Graph.hpp"
@@ -20,7 +24,7 @@
 
 //=======================================================================================================================================================================
 
-int main(int argc, char* args[]) {
+int main(int argc, char* argv[]) {
 
     //=======================================================================================================================================================================
 
@@ -47,12 +51,49 @@ int main(int argc, char* args[]) {
     camera.setZoom(Config::INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/LangDaiHoc.json", graph)){
+    if(!MapLoader::loadFromJson("assets/maps/DinhDocLap.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }
 
     visualizationEngine.buildRenderCache(graph);
+
+    TrafficLightManager::getInstance().initializeTopology(graph);
+
+    // Routing Strategy Demo
+
+    RoutingManager routingManager;
+
+    // Chọn thuật toán
+    routingManager.setStrategy(std::make_unique<Dijkstra>());
+    // routingManager.setStrategy(std::make_unique<BFS>());
+    // routingManager.setStrategy(std::make_unique<AStarStrategy>());
+
+    // Tìm đường từ I1 -> I3
+    RouteRequest request("I1", "I3");
+
+    RouteResult result = routingManager.calculateRoute(graph, request);
+
+    if (result.isSuccess)
+    {
+        std::cout << "========== ROUTE ==========\n";
+        std::cout << "Total Cost: "
+                << result.totalCost
+                << "\n\n";
+
+        std::cout << "Path:\n";
+
+        for (const auto& intersectionID : result.intersectionIDs)
+        {
+            std::cout << intersectionID << " ";
+        }
+
+        std::cout << "\n===========================\n";
+    }
+    else
+    {
+        std::cout << "Cannot find route!\n";
+    }
 
     //=======================================================================================================================================================================
 
@@ -64,6 +105,8 @@ int main(int argc, char* args[]) {
 
         Uint64 frameStart = SDL_GetPerformanceCounter();
         clock.update();
+
+        TrafficLightManager::getInstance().update(clock.getDeltaTime());
 
         while (SDL_PollEvent(&event)) {
             handleInput(event, is_game_running, camera);
@@ -95,6 +138,3 @@ int main(int argc, char* args[]) {
     return 0;
 }
 
-// int main() {
-//     return 0;
-// }

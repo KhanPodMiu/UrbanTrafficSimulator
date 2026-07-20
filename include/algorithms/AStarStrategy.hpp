@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "algorithms/PathFindingStrategy.hpp"
 #include "graph/Graph.hpp"
 #include "simulation/RouteRequest.hpp"
 #include "simulation/RouteResult.hpp"
@@ -15,14 +16,14 @@
 //     DivideSpeed
 // };
 
-class AStarStrategy
+class AStarStrategy : public PathFindingStrategy
 {
 public:
     // explicit AStarStrategy(
     //     HeuristicType heuristic =
     //         HeuristicType::Euclidean);
     AStarStrategy() = default;
-    RouteResult calculateRoute(const Graph& graph, const RouteRequest& request);
+    RouteResult calculateRoute(const Graph& graph, const RouteRequest& request) const override;
     std::size_t getExpandedNodeCount() const {
         return expandedNodes;
     }
@@ -41,7 +42,7 @@ private:
         double h;
         double f;
     };
-    double lastTravelCost = 0.0;
+    mutable double lastTravelCost = 0.0;
     struct Compare
     {
         bool operator()(const Node& lhs, const Node& rhs) const {
@@ -57,6 +58,6 @@ private:
         const std::unordered_map<std::string,std::string>& cameFrom,
         const std::string& start,
         const std::string& goal) const;
-    std::size_t expandedNodes = 0;
+    mutable std::size_t expandedNodes = 0;
 };
 

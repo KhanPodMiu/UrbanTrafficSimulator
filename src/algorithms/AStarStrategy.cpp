@@ -15,10 +15,6 @@
 // {
 // }
 
-double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
-    return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY()) / Road::MAX_SPEED_LIMIT;
-}
-
 //========= Use for benchmarking heuristics ========
 // double AStarStrategy::heuristic(
 //     const Intersection& current,
@@ -51,6 +47,9 @@ double AStarStrategy::heuristic(const Intersection& current, const Intersection&
 
 //     return 0.0;
 // }
+double AStarStrategy::heuristic(const Intersection& current, const Intersection& goal) const {
+    return std::hypot(current.getX() - goal.getX(), current.getY() - goal.getY()) / Road::MAX_SPEED_LIMIT;
+}
 
 RouteResult AStarStrategy::reconstructPath(
     const std::unordered_map<std::string,std::string>& cameFrom,
@@ -58,7 +57,6 @@ RouteResult AStarStrategy::reconstructPath(
     const std::string& goal) const
 {
     std::vector<std::string> path;
-
     std::string current = goal;
 
     path.push_back(current);
@@ -66,7 +64,6 @@ RouteResult AStarStrategy::reconstructPath(
     while(current != start)
     {
         auto it = cameFrom.find(current);
-
         if(it == cameFrom.end())
             return RouteResult();
 
@@ -82,7 +79,7 @@ RouteResult AStarStrategy::reconstructPath(
 
 RouteResult AStarStrategy::calculateRoute(
     const Graph& graph,
-    const RouteRequest& request)
+    const RouteRequest& request) const
 {
     expandedNodes = 0;
     lastTravelCost = 0.0;
@@ -96,20 +93,14 @@ RouteResult AStarStrategy::calculateRoute(
     using OpenSet = std::priority_queue<Node, std::vector<Node>, Compare>;
     OpenSet openSet;
 
-    std::unordered_map<std::string,double> gScore;
-    std::unordered_map<std::string,std::string> cameFrom;
+    std::unordered_map<std::string, double> gScore;
+    std::unordered_map<std::string, std::string> cameFrom;
 
     constexpr double INF = std::numeric_limits<double>::infinity();
     gScore[start->getIntersectionID()] = 0.0;
 
     const double h = heuristic(*start, *goal);
-    openSet.push(
-    {
-        start->getIntersectionID(),
-        0.0,
-        h,
-        h
-    });
+    openSet.push({start->getIntersectionID(), 0.0, h, h});
     while(!openSet.empty())
     {
         const Node current = openSet.top();
@@ -152,6 +143,5 @@ RouteResult AStarStrategy::calculateRoute(
             }
         }
     }
-
     return RouteResult();
 }
