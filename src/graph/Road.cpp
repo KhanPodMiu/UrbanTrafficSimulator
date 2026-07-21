@@ -3,7 +3,7 @@
 #include <stdexcept> // to use invalid_argument in line 31, 39
 
 #include <algorithm> // std::clamp, std::max
-
+#include <math.h>
 // ─────────────────────────────────────────────────────────────────────────────
 //  Constructor
 //
@@ -17,13 +17,11 @@ Road::Road(
     const std::string& id,
     const Intersection*      source,
     const Intersection*      destination,
-    int                distance,
     int                speedLimit)
     :
     roadId(id),
     sourceIntersection(source),
     destinationIntersection(destination),
-    distance(distance),
     speedLimit(speedLimit),
     congestionLevel(MIN_CONGESTION),
     travelCost(0),
@@ -34,12 +32,12 @@ Road::Road(
     redDuration(DEFAULT_RED_DURATION),
     timeRemaining(DEFAULT_GREEN_DURATION)
 {   
+      
         // ── id validation ────────────────────────────────────────────────────────
     if (id.empty())
     {
         throw std::invalid_argument("Road: id must not be empty");
     }
-
     // ── intersection nullptr validation ──────────────────────────────────────
     // Consistent with setSourceIntersection / setDestinationIntersection which
     // reject nullptr.  A Road without endpoints is not meaningful.
@@ -55,6 +53,9 @@ Road::Road(
             "Road \"" + id + "\": destination intersection must not be nullptr");
     }
 
+    distance = sqrt( (destination-> getX() - source->getX()) * (destination-> getX() - source->getX()) +
+                (destination-> getY() - source->getY()) * (destination-> getY() - source->getY()) )
+                ;
     // ── distance validation ──────────────────────────────────────────────────
     if (distance < MIN_DISTANCE || distance > MAX_DISTANCE)
     {
@@ -99,7 +100,7 @@ const Intersection* Road::getDestinationIntersection() const
     return destinationIntersection;
 }
 
-int Road::getDistance() const
+double Road::getDistance() const
 {
     return distance;
 }
@@ -114,9 +115,14 @@ int Road::getCongestionLevel() const
     return congestionLevel;
 }
 
-int Road::getTravelCost() const
+double Road::getTravelCost() const
 {
     return travelCost;
+}
+
+int Road::getTotalVehicles() const
+{
+    return VehiclesOnRoad.size();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -253,47 +259,37 @@ bool Road::setRedDuration(int duration)
 //  Road operations
 // ─────────────────────────────────────────────────────────────────────────────
 
-bool Road::updateCongestion(int newCongestionLevel)
+bool Road::updateCongestion()
 {
-    if (newCongestionLevel < MIN_CONGESTION || newCongestionLevel > MAX_CONGESTION)
-    {
-        return false;
-    }
-
-    congestionLevel = newCongestionLevel;
-    if (!calculateTravelCost())
-    {
-        return false;
-    }
-    return true;
+    double maxVehicles = std::max(1.0, distance / VEHICLE_HITBOX_SIZE);
+    double currentVehicles = static_cast<double>(VehiclesOnRoad.size());
+    double exactCongestion = (currentVehicles / maxVehicles) * 100.0;
+    congestionLevel = std::clamp(static_cast<int>(exactCongestion), MIN_CONGESTION, MAX_CONGESTION);
+    travelCost = calculateTravelCost();
 }
 
 bool Road::calculateTravelCost()
 {
-    if (speedLimit <= 0)
-    {
-        // Guard against division by zero; should never happen in normal use
-        // because setSpeedLimit and the constructor both enforce MIN_SPEED_LIMIT.
-        return false;
-    }
+    double t0 = distance / static_cast<double>(std::max(1, speedLimit));
+    double ratio = static_cast<double>(congestionLevel) / 100.0;
+    double travelTime = t0 * (1.0 + BPR_ALPHA * std::pow(ratio, BPR_BETA));
+    
+    return travelTime;
 
-    // ── Formula ──────────────────────────────────────────────────────────────
-    //
-    //   travelCost = distance × (100 + congestionLevel) / speedLimit
-    //
-    //   Why integers only?
-    //   • SDL2 works in integer coordinates; mixing floats risks accumulation
-    //     errors when costs are summed over many edges.
-    //   • On a 4 000×4 000 map the maximum numerator is 8 000 × 200 = 1 600 000,
-    //     safely within int32.
-    //   By the way, I(Kevin) guessed this formula will slightly increase our compile and execute our project a little bit. 
-    //
-    //   std::max(1, …) prevents zero-weight edges on very short / fast roads
-    //   (e.g. distance=1, speedLimit=130 → raw result = 0).
-    //   A weight of 0 would allow Dijkstra to visit cycles at no cost.
-    // ─────────────────────────────────────────────────────────────────────────
-    travelCost = std::max(1, (distance * (100 + congestionLevel)) / speedLimit);
-    return true;
+}
+
+void Road::vehicleEnters(Vehicle* vehicle) {
+    if (vehicle != nullptr) {
+        VehiclesOnRoad.push_back(vehicle);
+        updateCongestion(); 
+    }
+}
+
+void Road::vehicleExits() {
+    if (!VehiclesOnRoad.empty()) {
+        VehiclesOnRoad.erase(VehiclesOnRoad.begin()); 
+        updateCongestion(); 
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -324,5 +320,32 @@ bool Road::needsTrafficLightAtDestination() const
     // STRAIGHT (2) never need one.
     IntersectionType type = destinationIntersection->getType();
     return type == IntersectionType::T_INTERSECTION ||
-           type == IntersectionType::CROSS;
+           type == IntersectionType::CROSS ||
+           type == IntersectionType::ROUNDABOUT;
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Private helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Road::switchToNextState()
+{
+    switch (trafficLightState)
+    {
+    case TrafficLightState::GREEN:
+        trafficLightState = TrafficLightState::YELLOW;
+        timeRemaining += yellowDuration;
+        break;
+
+    case TrafficLightState::YELLOW:
+        trafficLightState = TrafficLightState::RED;
+        timeRemaining += redDuration;
+        break;
+
+    case TrafficLightState::RED:
+        trafficLightState = TrafficLightState::GREEN;
+        timeRemaining += greenDuration;
+        break;
+    }
 }

@@ -4,11 +4,12 @@
 #include <string>
 #include <memory>
 #include <cmath>
-#include "utils/vector2i.hpp"
-#include "graph/Road.hpp"
+#include "../utils/vector2i.hpp"
 
 class Graph;
 class Intersection;
+class Road;
+enum class TrafficLightState; 
 enum class IntersectionType;
 
 class TrafficLightManager {
