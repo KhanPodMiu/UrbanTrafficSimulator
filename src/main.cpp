@@ -51,11 +51,7 @@ int main(int argc, char* argv[]) {
     camera.setZoom(Config::INITIAL_CAMERA_SCALE);
 
     Graph graph;
-<<<<<<< HEAD
-    if(!MapLoader::loadFromJson("assets/maps/NguyenVanCu2.json", graph)){
-=======
-    if(!MapLoader::loadFromJson("assets/maps/DinhDocLap.json", graph)){
->>>>>>> ddda97181b7052cb2eba2da6ce50a9fd3d1aaca0
+    if(!MapLoader::loadFromJson("assets/maps/khapkhap.json", graph)){
         std::cerr << "Cannot load map\n";
         return 1;
     }

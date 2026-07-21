@@ -35,7 +35,7 @@ Vector2 VisualizationEngine::applyCamera(const Vector2& worldPos, const Camera& 
 
 bool VisualizationEngine::loadAssets(RenderWindow& window)
 {
-    mapBackground_ = window.loadTexture("assets/textures/BG.png");
+    mapBackground_ = window.loadTexture("assets/textures/map.png");
     if (mapBackground_ == nullptr) {
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
@@ -131,7 +131,22 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
     Vector2 worldOrigin(0, 0);
     Vector2 bgPos = applyCamera(worldOrigin, camera);
     bgPos.x += Config::PANEL_WIDTH;
-    window.render(mapBackground_, bgPos, zoom);
+    //window.render(mapBackground_, bgPos, zoom);
+
+    // Background
+    SDL_Rect backgroundDestination = {
+    static_cast<int>(std::lround(bgPos.x)),
+    static_cast<int>(std::lround(bgPos.y)),
+    static_cast<int>(std::lround(Config::MAP_WIDTH * zoom)),
+    static_cast<int>(std::lround(Config::MAP_HEIGHT * zoom))
+    };
+
+    SDL_RenderCopy(
+    window.getRenderer(),
+    mapBackground_,
+    nullptr,
+    &backgroundDestination
+    );
 
     for (const auto& road : roadsLocation_) {
         Vector2 shiftedStart(road.start.x + road.offsetX, road.start.y + road.offsetY);
