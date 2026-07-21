@@ -1,7 +1,7 @@
 #include "vehicles/EmergencyVehicle.hpp"
 
 namespace {
-    constexpr double EMERGENCY_MAX_SPEED = 90.0; // map-units / s
+    constexpr double EMERGENCY_MAX_SPEED = 300.0; // map-units / s
     constexpr double EMERGENCY_LENGTH    = 5.0;  // map units
 }
 

@@ -1,7 +1,7 @@
 #include "vehicles/Bus.hpp"
 
 namespace {
-    constexpr double BUS_MAX_SPEED = 40.0; // map-units / s
+    constexpr double BUS_MAX_SPEED = 60.0; // map-units / s
     constexpr double BUS_LENGTH    = 5.0; // map units
 }
 
