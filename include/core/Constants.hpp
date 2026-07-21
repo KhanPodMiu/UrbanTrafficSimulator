@@ -25,7 +25,7 @@ namespace Config
     constexpr float INITIAL_CAMERA_SCALE = WINDOW_WIDTH / MAP_WIDTH;
 
     // ---- Rendering ------------------------------------------------------
-    constexpr int ROUNDABOUT_RADIUS = 150;
+    constexpr int ROUNDABOUT_RADIUS = 80;
     constexpr int ROAD_WIDTH        = 80;
 
     // ---- Simulation timing ------------------------------------------------
