@@ -29,4 +29,7 @@ public:
     void forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const;
     const std::unordered_map<std::string, std::shared_ptr<Intersection>>& getIntersections() const;
     const std::unordered_map<std::string, std::shared_ptr<Road>>& getRoads() const;
+
+    Road* getRoadBetween(const std::string& sourceID, const std::string& destinationID) const;
+
 };

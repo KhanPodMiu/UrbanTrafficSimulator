@@ -281,12 +281,6 @@ void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Interse
     }
 }
 
-//ADDED: Call back function
-void Graph::forEachIntersection(std::function<void(const std::shared_ptr<Intersection>&)> func) const {
-    for (const auto& pair : Intersections) {
-        func(pair.second); 
-    }
-}
 
 
 const std::shared_ptr<Road> Graph::getRoad(const std::string& roadID) const {
@@ -389,4 +383,31 @@ const std::unordered_map<std::string, std::shared_ptr<Intersection>>& Graph::get
 
 const std::unordered_map<std::string, std::shared_ptr<Road>>& Graph::getRoads() const {
     return Roads;
+}
+
+Road* Graph::getRoadBetween(
+    const std::string& sourceID,
+    const std::string& destinationID) const
+{
+    auto it = adjacencyList.find(sourceID);
+
+    if (it == adjacencyList.end())
+        return nullptr;
+
+    for (const auto& road : it->second)
+    {
+        if (road == nullptr)
+            continue;
+
+        const Intersection* destination =
+            road->getDestinationIntersection();
+
+        if (destination != nullptr &&
+            destination->getIntersectionID() == destinationID)
+        {
+            return road.get();
+        }
+    }
+
+    return nullptr;
 }

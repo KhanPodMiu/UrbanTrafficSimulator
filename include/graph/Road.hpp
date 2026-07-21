@@ -4,6 +4,8 @@
 
 #include <string>
 #include <queue>
+#include <vector>
+#include <algorithm>
 
 class Intersection;
 class Vehicle;
@@ -74,6 +76,17 @@ public:
     //ADDED: Function to get total current Vehicle on Road:
     int               getTotalVehicles() const;
 
+    // ===== Vehicle Management =====
+    const std::vector<Vehicle*>& getVehicles() const;
+
+    Vehicle* getVehicleAhead(const Vehicle* vehicle) const;
+
+    void sortVehicles();
+
+    void vehicleEnters(Vehicle* vehicle);
+
+    void vehicleExits(Vehicle* vehicle);
+
     // ── setters ───────────────────────────────────────────────────────────────
     bool setSourceIntersection(const Intersection* source);
     bool setDestinationIntersection(const Intersection* destination);
@@ -113,9 +126,6 @@ public:
     // yield-style right-of-way instead of signals, so they are excluded.
     bool needsTrafficLightAtDestination() const;
 
-    //Added: 2 funtion to update quantity of vehicle on road
-    void vehicleEnters(Vehicle* vehicle); 
-    void vehicleExits();
 
 private:
     std::string   roadId;
@@ -128,8 +138,7 @@ private:
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
     
-    //Added: vector of vehicles on the road
-    std::vector <Vehicle*> VehiclesOnRoad; 
+    std::vector<Vehicle*> m_vehicles;
     
     // ── traffic light state ──────────────────────────────────────────────────
     TrafficLightState trafficLightState;

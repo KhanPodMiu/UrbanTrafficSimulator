@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 namespace {
     // Trả về đúng texture (Green/Yellow/Red) tương ứng với trạng thái đèn hiện tại.
@@ -20,6 +21,41 @@ namespace {
         }
         return red;
     }
+
+    // Simple color-coding per vehicle type until dedicated sprites are added.
+    SDL_Color colorForVehicleType(VehicleType type)
+    {
+        switch (type) {
+            case VehicleType::BUS:       return SDL_Color{ 240, 180, 40, 255 };  // vàng cam - bus
+            case VehicleType::EMERGENCY: return SDL_Color{ 235, 45, 45, 255 };   // đỏ - xe ưu tiên
+            case VehicleType::CAR:
+            default:                     return SDL_Color{ 60, 160, 250, 255 }; // xanh dương - xe con
+        }
+    }
+}
+
+namespace {
+
+SDL_Texture* vehicleTexture(
+    VehicleType type,
+    SDL_Texture* car,
+    SDL_Texture* bus,
+    SDL_Texture* emergency)
+{
+    switch(type)
+    {
+        case VehicleType::BUS:
+            return bus;
+
+        case VehicleType::EMERGENCY:
+            return emergency;
+
+        case VehicleType::CAR:
+        default:
+            return car;
+    }
+}
+
 }
 
 VisualizationEngine::VisualizationEngine() = default;
@@ -70,6 +106,10 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
     }
+
+    carTexture_ = window.loadTexture("assets/textures/Vehicles/car.png");
+    busTexture_ = window.loadTexture("assets/textures/Vehicles/bus.png");
+    emergencyTexture_ = window.loadTexture("assets/textures/Vehicles/emergency.png");
 
     return true;
 }
@@ -181,10 +221,55 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
         }
     }
 
-    // UI Panel
-    SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
-    SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
-    SDL_RenderFillRect(window.getRenderer(), &panel);
+}
+
+void VisualizationEngine::renderVehicles(
+    RenderWindow& window,
+    const Camera& camera,
+    const std::vector<std::shared_ptr<Vehicle>>& vehicles)
+{
+    SDL_Renderer* renderer = window.getRenderer();
+    float zoom = camera.getZoom();
+
+    for (const auto& vehicle : vehicles)
+    {
+        if (!vehicle || vehicle->isFinished())
+            continue;
+
+        Vector2 worldPos = vehicle->getPosition();
+        Vector2 screenPos = applyCamera(worldPos, camera);
+        screenPos.x += Config::PANEL_WIDTH;
+
+        SDL_Texture* texture = vehicleTexture(
+            vehicle->getType(),
+            carTexture_,
+            busTexture_,
+            emergencyTexture_);
+
+        float vehicleLength = 100;
+        float vehicleWidth  = 50;
+
+        // Convert world -> screen
+        int screenLength = static_cast<int>(vehicleLength * zoom);
+        int screenWidth  = static_cast<int>(vehicleWidth * zoom);
+
+        SDL_Rect dst;
+        dst.w = screenWidth;
+        dst.h = screenLength;
+        dst.x = static_cast<int>(screenPos.x - screenWidth / 2);
+        dst.y = static_cast<int>(screenPos.y - screenLength / 2);
+
+        double angle = vehicle->getHeadingAngle() - 90.0;
+
+        SDL_RenderCopyEx(
+            renderer,
+            texture,
+            nullptr,
+            &dst,
+            angle,
+            nullptr,
+            SDL_FLIP_NONE);
+    }
 }
 
 void VisualizationEngine::cleanUp(RenderWindow& window)
@@ -193,8 +278,11 @@ void VisualizationEngine::cleanUp(RenderWindow& window)
     window.cleanUpTexture(intersectionTexture_);
     window.cleanUpTexture(roadTexture_);
 
-    // --- MỚI: dọn dẹp 3 texture đèn ---
     window.cleanUpTexture(greenLightTexture_);
     window.cleanUpTexture(yellowLightTexture_);
     window.cleanUpTexture(redLightTexture_);
+
+    window.cleanUpTexture(carTexture_);
+    window.cleanUpTexture(busTexture_);
+    window.cleanUpTexture(emergencyTexture_);
 }
