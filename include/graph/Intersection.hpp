@@ -46,6 +46,7 @@ public:
     bool addIncomingRoad(const Road* road);
     bool addOutgoingRoad(const Road* road);
     bool removeIncomingRoad(const Road* road);
+    //A
     bool removeOutgoingRoad(const Road* road);
 };
 

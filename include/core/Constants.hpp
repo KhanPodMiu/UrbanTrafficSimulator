@@ -12,9 +12,6 @@ namespace Config
     constexpr int WINDOW_HEIGHT = 900;
     constexpr int PANEL_WIDTH   = 400;
 
-    // Camera viewport = window area minus the left UI panel.
-    // Derived instead of duplicated so it can never drift from WINDOW_WIDTH/PANEL_WIDTH.
-    // (1600 - 400 = 1200, same numeric value as the original hard-coded constant.)
     constexpr int VIEW_PORT_WIDTH  = WINDOW_WIDTH - PANEL_WIDTH;
     constexpr int VIEW_PORT_HEIGHT = WINDOW_HEIGHT;
 
@@ -25,11 +22,6 @@ namespace Config
     // ---- Camera behavior ------------------------------------------------
     constexpr float MOVE_SPEED = 40.0f;
 
-    // NOTE: preserved exactly as in the original main.cpp. WINDOW_WIDTH and
-    // MAP_WIDTH are both int, so this is integer division and always
-    // evaluates to 0.0f before being clamped up to MINZOOM inside
-    // Camera::setZoom(). This looks like a pre-existing bug, but per
-    // instructions this refactor does not change any logic/behavior.
     constexpr float INITIAL_CAMERA_SCALE = WINDOW_WIDTH / MAP_WIDTH;
 
     // ---- Rendering ------------------------------------------------------
@@ -39,4 +31,6 @@ namespace Config
     // ---- Simulation timing ------------------------------------------------
     constexpr double TARGET_FPS        = 30.0;
     constexpr double TARGET_FRAME_TIME = 1.0 / TARGET_FPS;
+
+    constexpr int TRAFFIC_LIGHT_MARKER_SIZE = 100;
 }

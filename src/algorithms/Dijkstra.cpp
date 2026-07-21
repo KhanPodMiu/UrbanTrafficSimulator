@@ -11,13 +11,13 @@
 
 struct NodeIntersection {
     std::string ID;
-    int weight;
+    double weight;
     bool operator < (const NodeIntersection& other) const { 
         return weight > other.weight; 
     }
 };
 
-RouteResult Dijkstra::findShortestPath(const Graph& graph, const RouteRequest& request) {
+RouteResult Dijkstra::calculateRoute(const Graph& graph, const RouteRequest& request) const {
     std::string start = request.startIntersectionID;
     std::string dest = request.destinationIntersectionID;
     std::vector<std::string> path;
@@ -29,7 +29,7 @@ RouteResult Dijkstra::findShortestPath(const Graph& graph, const RouteRequest& r
 
     std::priority_queue <NodeIntersection> pq;
     //std::unordered_map<std::string, bool> visited;            
-    std::unordered_map<std::string, int> cost;
+    std::unordered_map<std::string, double> cost;
     std::unordered_map<std::string, std::string> trace;
 
     cost[start] = 0;
@@ -39,7 +39,7 @@ RouteResult Dijkstra::findShortestPath(const Graph& graph, const RouteRequest& r
     {
         NodeIntersection currentIntersection = pq.top();
         std::string currentID = currentIntersection.ID;
-        int currentCost = currentIntersection.weight;
+        double currentCost = currentIntersection.weight;
         pq.pop();
         
         if (currentID == dest) break;
@@ -58,8 +58,8 @@ RouteResult Dijkstra::findShortestPath(const Graph& graph, const RouteRequest& r
             if (!neighborIntersection) continue;
             std::string neighborID = neighborIntersection->getIntersectionID();
 
-            int neighborCost = road->getTravelCost();
-            int newCost = currentCost + neighborCost;
+            double neighborCost = road->getTravelCost();
+            double newCost = currentCost + neighborCost;
 
             if (cost.find(neighborID) == cost.end() || newCost < cost[neighborID]) {
                 cost[neighborID] = newCost;
