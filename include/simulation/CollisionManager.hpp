@@ -8,7 +8,7 @@ class Vehicle;
 
 class CollisionManager {
 public:
-    static constexpr double MIN_GAP = 70.0; // map units
+    static constexpr double MIN_GAP = 100.0; // map units
 
     static constexpr double TIME_HEADWAY = 1.6; // seconds
 
