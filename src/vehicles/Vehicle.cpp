@@ -1,6 +1,7 @@
 #include "vehicles/Vehicle.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 #include "graph/Intersection.hpp"
 #include "graph/Road.hpp"
