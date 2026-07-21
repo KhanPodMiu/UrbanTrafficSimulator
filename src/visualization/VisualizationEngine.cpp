@@ -249,7 +249,6 @@ void VisualizationEngine::renderVehicles(
         float vehicleLength = 100;
         float vehicleWidth  = 50;
 
-        // Convert world -> screen
         int screenLength = static_cast<int>(vehicleLength * zoom);
         int screenWidth  = static_cast<int>(vehicleWidth * zoom);
 

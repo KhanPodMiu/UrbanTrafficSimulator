@@ -5642,18 +5642,6 @@
             "distance": 1453
         },
         {
-            "id": "R655",
-            "source": "I259",
-            "destination": "I259",
-            "distance": 12579
-        },
-        {
-            "id": "R656",
-            "source": "I259",
-            "destination": "I259",
-            "distance": 12579
-        },
-        {
             "id": "R657",
             "source": "I259",
             "destination": "I260",
@@ -6666,18 +6654,6 @@
             "source": "I328",
             "destination": "I327",
             "distance": 400
-        },
-        {
-            "id": "R826",
-            "source": "I328",
-            "destination": "I328",
-            "distance": 2872
-        },
-        {
-            "id": "R827",
-            "source": "I328",
-            "destination": "I328",
-            "distance": 2872
         },
         {
             "id": "R828",

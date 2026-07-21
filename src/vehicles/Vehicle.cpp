@@ -7,7 +7,7 @@
 
 namespace {
     constexpr double COMFORT_ACCEL = 35.0; 
-    constexpr double LANE_OFFSET = 30.0; 
+    constexpr double LANE_OFFSET = 40.0; 
 }
 
 Vehicle::Vehicle(const std::string& id, double maxSpeed, double length, VehicleType type)
