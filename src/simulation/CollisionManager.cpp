@@ -66,27 +66,24 @@ void CollisionManager::updateRoad(const std::shared_ptr<Road>& road) const
             }
         }
 
-        // Traffic light / stop line only applies to whichever vehicle is at
-        // the front of the MAIN lane (a vehicle out on the shoulder has
-        // already committed to passing and isn't queueing at the light here).
         if (!vehicle->isInPassingLane() && !seenMainLaneFront &&
             !green && !vehicle->ignoresTrafficLights() && !vehicle->isCommittedToIntersection())
         {
-            double distanceToIntersection =
-                roadLength - vehicle->getDistanceOnRoad();
+            double distanceToStopLine =
+                roadLength - vehicle->getDistanceOnRoad() - 200.0;
 
             double currentSpeed = vehicle->getCurrentSpeed();
-            double stoppingDistance = (currentSpeed * currentSpeed) / (2.0 * COMFORT_DECELERATION);
+            double stoppingDistance = (currentSpeed * currentSpeed) / (2.0 * EMERGENCY_DECELERATION);
 
-            if (distanceToIntersection <= 0.0 || distanceToIntersection < stoppingDistance)
+            if (currentSpeed > 20.0 && (distanceToStopLine <= 0.0 || distanceToStopLine < stoppingDistance))
             {
                 vehicle->setCommittedToIntersection(true);
             }
-            else if (distanceToIntersection <= STOP_REACTION_DISTANCE)
+            else if (distanceToStopLine <= STOP_REACTION_DISTANCE)
             {
                 desiredSpeed = std::min(
                     desiredSpeed,
-                    computeStopLineSpeed(distanceToIntersection));
+                    computeStopLineSpeed(distanceToStopLine));
             }
         }
 

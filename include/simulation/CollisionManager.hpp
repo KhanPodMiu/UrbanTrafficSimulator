@@ -15,6 +15,7 @@ public:
     static constexpr double STOP_REACTION_DISTANCE = 120.0; 
 
     static constexpr double COMFORT_DECELERATION = 30.0; 
+    static constexpr double EMERGENCY_DECELERATION = 40.0;
     void update(const Graph& graph, double dt) const;
 
 private:

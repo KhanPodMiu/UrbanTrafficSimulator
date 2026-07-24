@@ -112,9 +112,10 @@ bool Vehicle::tryAdvanceToNextRoad()
     if (m_distanceOnRoad < m_currentRoad->getDistance())
         return false; 
 
-    if (!m_currentRoad->isGreen() && !ignoresTrafficLights() && !m_committedToIntersection && m_currentSpeed <= 0.1)
+    if (!m_currentRoad->isGreen() && !ignoresTrafficLights() && !m_committedToIntersection)
     {
         m_distanceOnRoad = m_currentRoad->getDistance();
+        m_currentSpeed = 0.0;
         updateWorldPosition();
         return false;
     }
