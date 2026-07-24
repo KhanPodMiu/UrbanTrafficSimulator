@@ -22,10 +22,16 @@ void CollisionManager::updateRoad(const std::shared_ptr<Road>& road) const
 {
     road->sortVehicles();
 
+    // Sorted with index 0 = vehicle furthest along the road (closest to the
+    // intersection / stop line).
     const auto& vehicles = road->getVehicles();
     const double roadLength = road->getDistance();
     const double speedLimit = static_cast<double>(road->getSpeedLimit());
     const bool green = road->isGreen();
+
+    Vehicle* mainLaneLeader = nullptr;
+    Vehicle* passingLaneLeader = nullptr;
+    bool seenMainLaneFront = false; // has the main lane's front vehicle been assigned yet?
 
     for (size_t i = 0; i < vehicles.size(); ++i)
     {
@@ -35,22 +41,58 @@ void CollisionManager::updateRoad(const std::shared_ptr<Road>& road) const
 
         double desiredSpeed = std::min(vehicle->getMaxSpeed(), speedLimit);
 
-        if (i > 0)
+        Vehicle* leader = vehicle->isInPassingLane() ? passingLaneLeader : mainLaneLeader;
+
+        if (leader)
         {
-            Vehicle* leader = vehicles[i - 1];
             double bumperGap = (leader->getDistanceOnRoad() - leader->getVehicleLength())
                               - vehicle->getDistanceOnRoad();
 
-            desiredSpeed = std::min(desiredSpeed, computeCarFollowingSpeed(vehicle, leader, bumperGap));
+            double followSpeed = computeCarFollowingSpeed(vehicle, leader, bumperGap);
+
+            if (!vehicle->isInPassingLane() &&
+                vehicle->canOvertakeBlockedTraffic() &&
+                followSpeed < desiredSpeed - 0.5)
+            {
+                // The vehicle ahead is slowing us down: pull out to the
+                // shoulder instead of following it. From this point on this
+                // vehicle is no longer part of the main lane's queue/gap
+                // chain, so it doesn't inherit that leader's speed cap.
+                vehicle->setInPassingLane(true);
+            }
+            else
+            {
+                desiredSpeed = std::min(desiredSpeed, followSpeed);
+            }
         }
 
-        if (i == 0 && !green && !vehicle->ignoresTrafficLights())
+        if (!vehicle->isInPassingLane() && !seenMainLaneFront &&
+            !green && !vehicle->ignoresTrafficLights() && !vehicle->isCommittedToIntersection())
         {
-            double distanceToStopLine = roadLength - vehicle->getDistanceOnRoad() - 200.0f;
-            if (distanceToStopLine < STOP_REACTION_DISTANCE)
+            double distanceToStopLine =
+                roadLength - vehicle->getDistanceOnRoad() - 200.0;
+
+            double currentSpeed = vehicle->getCurrentSpeed();
+            double stoppingDistance = (currentSpeed * currentSpeed) / (2.0 * EMERGENCY_DECELERATION);
+
+            if (currentSpeed > 20.0 && (distanceToStopLine <= 0.0 || distanceToStopLine < stoppingDistance))
             {
-                desiredSpeed = std::min(desiredSpeed, computeStopLineSpeed(distanceToStopLine));
+                vehicle->setCommittedToIntersection(true);
             }
+            else if (distanceToStopLine <= STOP_REACTION_DISTANCE)
+            {
+                desiredSpeed = std::min(
+                    desiredSpeed,
+                    computeStopLineSpeed(distanceToStopLine));
+            }
+        }
+
+        if (vehicle->isInPassingLane())
+            passingLaneLeader = vehicle;
+        else
+        {
+            mainLaneLeader = vehicle;
+            seenMainLaneFront = true;
         }
 
         vehicle->setTargetSpeed(std::max(0.0, desiredSpeed));
