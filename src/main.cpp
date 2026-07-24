@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2/SDL_ttf.h"
 #include "core/renderWindow.hpp"
 #include "core/Constants.hpp"
 
@@ -17,6 +18,7 @@
 #include "simulation/RouteOptimizer.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "visualization/camera.hpp"
+#include "render/StatisticsPanel.hpp"
 
 #include "graph/Graph.hpp"
 #include "graph/Intersection.hpp"
@@ -34,6 +36,12 @@ int main(int argc, char* argv[]) {
         std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
         return 1;
     }
+    
+    if (TTF_Init() != 0) {
+        std::cerr << "TTF_Init failed: " << TTF_GetError()<< std::endl;
+        SDL_Quit();
+        return 1;
+    }
 
     RenderWindow window("Urban Traffic", Config::WINDOW_WIDTH, Config::WINDOW_HEIGHT);
 
@@ -41,6 +49,21 @@ int main(int argc, char* argv[]) {
 
     VisualizationEngine visualizationEngine;
     if (!visualizationEngine.loadAssets(window)) {
+        return 1;
+    }
+    //======================================================================================================================================================================
+
+    StatisticsPanel statisticsPanel;
+
+    if (!statisticsPanel.loadAssets(window))
+    {
+        std::cerr << "Cannot load StatisticsPanel assets"
+                << std::endl;
+
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        SDL_Quit();
+
         return 1;
     }
 
@@ -124,15 +147,17 @@ int main(int argc, char* argv[]) {
         visualizationEngine.render(window, camera);
         visualizationEngine.renderVehicles(window, camera, vehicleManager.getVehicles());
 
-        SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
-        SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
-        SDL_RenderFillRect(window.getRenderer(), &panel);
+        // SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
+        // SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
+        // SDL_RenderFillRect(window.getRenderer(), &panel);
+
+        statisticsPanel.render(window,clock.getSimulationTime());
 
         window.display();
 
         Uint64 frameEnd = SDL_GetPerformanceCounter();
         double frameDuration = static_cast<double>(frameEnd - frameStart) /
-                               static_cast<double>(SDL_GetPerformanceFrequency());
+                         static_cast<double>(SDL_GetPerformanceFrequency());
 
         if (frameDuration < Config::TARGET_FRAME_TIME) {
             Uint32 delayMs = static_cast<Uint32>((Config::TARGET_FRAME_TIME - frameDuration) * 1000.0);
@@ -141,11 +166,12 @@ int main(int argc, char* argv[]) {
     }
 
     //=======================================================================================================================================================================
-
+    statisticsPanel.cleanUp(window);
     visualizationEngine.cleanUp(window);
 
     window.cleanUp();
 
+    TTF_Quit();
     SDL_Quit();
     return 0;
 }

@@ -83,7 +83,7 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         return false;
     }
 
-    roadTexture_ = window.loadTexture("assets/textures/Roads/road_striped.png");
+    roadTexture_ = window.loadTexture("assets/textures/Roads/road.png");
     if (roadTexture_ == nullptr) {
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
