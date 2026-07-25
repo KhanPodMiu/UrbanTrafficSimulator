@@ -23,6 +23,9 @@ public:
     void update(double dt);
 
     const std::vector<std::shared_ptr<Vehicle>>& getVehicles() const;
+    
+    //Added: For click spawn
+    void spawnVehicleAtIntersection(const std::string& intersectionID);
 
 private:
     void trySpawnVehicle();

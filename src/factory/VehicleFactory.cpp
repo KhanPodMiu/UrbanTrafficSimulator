@@ -135,3 +135,67 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnRandomVehicle(
 
     return vehicle;
 }
+
+//Added
+std::shared_ptr<Vehicle> VehicleFactory::spawnVehicleFrom(
+    const Graph& graph,
+    const RoutingManager& routingManager,
+    const std::shared_ptr<RouteOptimizer>& optimizer,
+    int idNumber,
+    const std::string& startIntersectionID)
+{
+    auto destNode = graph.getRandomIntersectionExcept(startIntersectionID);
+    if (!destNode) return nullptr;
+
+    std::string destID = destNode->getIntersectionID();
+
+    RouteRequest request(startIntersectionID, destID);
+    RouteResult route = routingManager.calculateRoute(graph, request);
+
+    if (!route.isSuccess || route.intersectionIDs.size() < 2) {
+        return nullptr;
+    }
+
+    std::string vehicleIdStr = "V_" + std::to_string(idNumber);
+    auto vehicle = createVehicle(pickRandomType(), vehicleIdStr); 
+
+    if (vehicle) {
+        std::vector<std::shared_ptr<Road>> roadPath;
+
+        for (size_t i = 0; i < route.intersectionIDs.size() - 1; ++i) {
+            const std::string& currNode = route.intersectionIDs[i];
+            const std::string& nextNode = route.intersectionIDs[i+1];
+            
+            const auto& connectedRoads = graph.getConnectedRoads(currNode);
+            
+            for (const auto& road : connectedRoads) {
+                if (road && road->getDestinationIntersection() && 
+                    road->getDestinationIntersection()->getIntersectionID() == nextNode) {
+                    roadPath.push_back(road);
+                    break;
+                }
+            }
+        }
+        
+  
+        if (!roadPath.empty()) {
+            vehicle->setRoute(roadPath); 
+            vehicle->setCurrentRoad(roadPath.front());
+            vehicle->setDestination(graph.getIntersection(destID));
+            vehicle->setDistanceOnRoad(0.0);
+            vehicle->setCurrentSpeed(0.0);
+            vehicle->setTargetSpeed(vehicle->getMaxSpeed());
+
+            if (optimizer) {
+                vehicle->assignRoute(optimizer);
+            }
+
+            roadPath.front()->vehicleEnters(vehicle.get());
+            vehicle->updateWorldPosition(); 
+        } else {
+            return nullptr;
+        }
+    }
+
+    return vehicle;
+}
