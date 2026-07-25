@@ -3,6 +3,7 @@
 #include "SDL2/SDL.h"
 #include "utils/vector2i.hpp"
 #include "vehicles/Vehicle.hpp"
+#include <filesystem>
 #include <vector>
 #include <memory>
 
@@ -18,7 +19,7 @@ public:
     VisualizationEngine();
     ~VisualizationEngine();
 
-    bool loadAssets(RenderWindow& window);
+    bool loadAssets(RenderWindow& window, const std::filesystem::path& assetsRoot);
 
     void buildRenderCache(const Graph& graph);
 

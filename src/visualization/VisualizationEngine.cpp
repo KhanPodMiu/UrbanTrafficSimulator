@@ -69,47 +69,74 @@ Vector2 VisualizationEngine::applyCamera(const Vector2& worldPos, const Camera& 
     return Vector2(screenX, screenY);
 }
 
-bool VisualizationEngine::loadAssets(RenderWindow& window)
+bool VisualizationEngine::loadAssets(RenderWindow& window, const std::filesystem::path& assetsRoot)
 {
-    mapBackground_ = window.loadTexture("assets/textures/map.png");
+    auto loadTexture = [&](const std::filesystem::path& path) {
+        return window.loadTexture(path.string().c_str());
+    };
+
+    std::filesystem::path path = assetsRoot / "textures" / "map.png";
+    mapBackground_ = loadTexture(path);
     if (mapBackground_ == nullptr) {
-        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
         return false;
     }
 
-    intersectionTexture_ = window.loadTexture("assets/textures/Intersection/Roundabout.png");
+    path = assetsRoot / "textures" / "Intersection" / "Roundabout.png";
+    intersectionTexture_ = loadTexture(path);
     if (intersectionTexture_ == nullptr) {
-        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
         return false;
     }
 
-    roadTexture_ = window.loadTexture("assets/textures/Roads/road_striped.png");
+    path = assetsRoot / "textures" / "Roads" / "road_striped.png";
+    roadTexture_ = loadTexture(path);
     if (roadTexture_ == nullptr) {
-        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
         return false;
     }
 
-    greenLightTexture_ = window.loadTexture("assets/textures/TrafficLight/Green_light.png");
+    path = assetsRoot / "textures" / "TrafficLight" / "Green_light.png";
+    greenLightTexture_ = loadTexture(path);
     if (greenLightTexture_ == nullptr) {
-        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
         return false;
     }
 
-    yellowLightTexture_ = window.loadTexture("assets/textures/TrafficLight/Yellow_light.png");
+    path = assetsRoot / "textures" / "TrafficLight" / "Yellow_light.png";
+    yellowLightTexture_ = loadTexture(path);
     if (yellowLightTexture_ == nullptr) {
-        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
         return false;
     }
 
-    redLightTexture_ = window.loadTexture("assets/textures/TrafficLight/Red_light.png");
+    path = assetsRoot / "textures" / "TrafficLight" / "Red_light.png";
+    redLightTexture_ = loadTexture(path);
     if (redLightTexture_ == nullptr) {
-        std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
         return false;
     }
 
-    carTexture_ = window.loadTexture("assets/textures/Vehicles/car.png");
-    busTexture_ = window.loadTexture("assets/textures/Vehicles/bus.png");
-    emergencyTexture_ = window.loadTexture("assets/textures/Vehicles/emergency.png");
+    path = assetsRoot / "textures" / "Vehicles" / "car.png";
+    carTexture_ = loadTexture(path);
+    if (carTexture_ == nullptr) {
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
+        return false;
+    }
+
+    path = assetsRoot / "textures" / "Vehicles" / "bus.png";
+    busTexture_ = loadTexture(path);
+    if (busTexture_ == nullptr) {
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
+        return false;
+    }
+
+    path = assetsRoot / "textures" / "Vehicles" / "emergency.png";
+    emergencyTexture_ = loadTexture(path);
+    if (emergencyTexture_ == nullptr) {
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
+        return false;
+    }
 
     return true;
 }

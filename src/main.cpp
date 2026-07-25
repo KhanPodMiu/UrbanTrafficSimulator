@@ -23,6 +23,41 @@
 #include "graph/Road.hpp"
 
 #include <iostream>
+#include <filesystem>
+
+static std::filesystem::path getExecutableDir() {
+    char* basePath = SDL_GetBasePath();
+    if (basePath) {
+        std::filesystem::path path(basePath);
+        SDL_free(basePath);
+        return path;
+    }
+    return std::filesystem::current_path();
+}
+
+static std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath) {
+    namespace fs = std::filesystem;
+
+    fs::path cwd = fs::current_path();
+    fs::path exeDir = getExecutableDir();
+
+    fs::path candidate = cwd / relativePath;
+    if (fs::exists(candidate)) {
+        return fs::canonical(candidate);
+    }
+
+    candidate = exeDir / relativePath;
+    if (fs::exists(candidate)) {
+        return fs::canonical(candidate);
+    }
+
+    candidate = exeDir.parent_path() / relativePath;
+    if (fs::exists(candidate)) {
+        return fs::canonical(candidate);
+    }
+
+    return relativePath;
+}
 
 //=======================================================================================================================================================================
 
@@ -35,12 +70,29 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        std::cerr << "IMG_Init failed: " << IMG_GetError() << "\n";
+        SDL_Quit();
+        return 1;
+    }
+
     RenderWindow window("Urban Traffic", Config::WINDOW_WIDTH, Config::WINDOW_HEIGHT);
 
     //=======================================================================================================================================================================
 
     VisualizationEngine visualizationEngine;
-    if (!visualizationEngine.loadAssets(window)) {
+    const std::filesystem::path assetsRoot = resolveAssetPath("assets");
+    if (!std::filesystem::exists(assetsRoot)) {
+        std::cerr << "Assets directory not found: " << assetsRoot << "\n";
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    if (!visualizationEngine.loadAssets(window, assetsRoot)) {
+        IMG_Quit();
         return 1;
     }
 
@@ -53,8 +105,9 @@ int main(int argc, char* argv[]) {
     camera.setZoom(Config::INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/khapkhap.json", graph)){
-        std::cerr << "Cannot load map\n";
+    const std::filesystem::path mapFilePath = resolveAssetPath("assets/maps/khapkhap.json");
+    if(!MapLoader::loadFromJson(mapFilePath.string(), graph)){
+        std::cerr << "Cannot load map: " << mapFilePath << "\n";
         return 1;
     }
 
@@ -116,7 +169,7 @@ int main(int argc, char* argv[]) {
         vehicleManager.update(clock.getDeltaTime());
 
         while (SDL_PollEvent(&event)) {
-            handleInput(event, is_game_running, camera);
+            handleInput(event, is_game_running, camera, graph, vehicleManager);
         }
 
         window.clear();
@@ -145,7 +198,7 @@ int main(int argc, char* argv[]) {
     visualizationEngine.cleanUp(window);
 
     window.cleanUp();
-
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }
