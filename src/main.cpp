@@ -153,6 +153,11 @@ int main(int argc, char* argv[]) {
                     clock.start();
                     break;
 
+                case PanelCommand::SpeedChanged:
+                    clock.setSpeedMultiplier(
+                        statisticsPanel.getSelectedSpeedMultiplier());
+                    break;
+
                 case PanelCommand::None:
                     break;
             }

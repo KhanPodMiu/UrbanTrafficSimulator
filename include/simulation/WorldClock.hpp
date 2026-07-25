@@ -9,13 +9,16 @@ public:
     void start();
     void pause();
     void reset();
+    void setSpeedMultiplier(double multiplier);
     bool isRunning() const;
     double getDeltaTime() const;
     double getSimulationTime() const;
+    double getSpeedMultiplier() const;
 
 private:
     Uint64 lastCounter;
     double deltaTime;
     double simulationTime;
+    double speedMultiplier;
     bool running;
 };
