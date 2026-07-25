@@ -21,6 +21,7 @@ public:
     ~VehicleManager();
 
     void update(double dt);
+    void reset();
 
     const std::vector<std::shared_ptr<Vehicle>>& getVehicles() const;
 

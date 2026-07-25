@@ -132,14 +132,38 @@ int main(int argc, char* argv[]) {
     while(is_game_running){
 
         Uint64 frameStart = SDL_GetPerformanceCounter();
-        clock.update();
-
-        TrafficLightManager::getInstance().update(clock.getDeltaTime());
-
-        vehicleManager.update(clock.getDeltaTime());
 
         while (SDL_PollEvent(&event)) {
             handleInput(event, is_game_running, camera);
+
+            switch (statisticsPanel.handleEvent(event))
+            {
+                case PanelCommand::Start:
+                    clock.start();
+                    break;
+
+                case PanelCommand::Pause:
+                    clock.pause();
+                    break;
+
+                case PanelCommand::Restart:
+                    clock.reset();
+                    vehicleManager.reset();
+                    TrafficLightManager::getInstance().reset();
+                    clock.start();
+                    break;
+
+                case PanelCommand::None:
+                    break;
+            }
+        }
+
+        clock.update();
+
+        if (clock.isRunning())
+        {
+            TrafficLightManager::getInstance().update(clock.getDeltaTime());
+            vehicleManager.update(clock.getDeltaTime());
         }
 
         window.clear();
