@@ -77,13 +77,13 @@ void spawnVehicleAt(const Vector2& clickPos,
     auto startNode = graph.findNearestIntersection(mousePos, 300.0f);
     if (startNode) 
     {
-        std::cout << "[DEBUG] Found intersection: " << startNode->getIntersectionID() << std::endl;
+        /* std::cout << "[DEBUG] Found intersection: " << startNode->getIntersectionID() << std::endl; */
         vehicleManager.spawnVehicleAtIntersection(startNode->getIntersectionID());
         return;
     }
     else
     {
-        std::cout << "[DEBUG] Missed click, checking for nearest road..." << std::endl;
+        /* std::cout << "[DEBUG] Missed click, checking for nearest road..." << std::endl; */
     }
 
     auto clickedRoad = graph.findNearestRoad(mousePos, 100.0f);
