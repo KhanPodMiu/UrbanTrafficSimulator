@@ -37,7 +37,7 @@ public:
     static constexpr int MAX_DURATION            = 120; // seconds
 
     //ADDED ── For BPR Funtion and CongestionLevel ──────────────────────────
-    static constexpr double VEHICLE_HITBOX_SIZE = 5.0; // Length of vehicle hitbox in map units can change after
+    static constexpr double VEHICLE_HITBOX_SIZE = 100.0; // Length of vehicle hitbox in map units can change after
     static constexpr double BPR_ALPHA = 0.15;         
     static constexpr double BPR_BETA = 4.0;          
 
