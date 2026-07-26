@@ -2,6 +2,7 @@
 
 #include <random>
 #include <vector>
+//#include <iostream> //For cout debug
 
 #include "algorithms/RoutingManager.hpp"
 #include "graph/Graph.hpp"
@@ -13,6 +14,7 @@
 #include "vehicles/Bus.hpp"
 #include "vehicles/Car.hpp"
 #include "vehicles/EmergencyVehicle.hpp"
+
 
 namespace {
     std::mt19937& rng()
@@ -115,6 +117,26 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnRandomVehicle(
     if (route.empty())
         return nullptr;
 
+    //Added: Prevent spawning vehicle exceed road capacity 
+    //Prevent spawning vehicle when the previous one not yet exit the intersection
+
+    auto firstRoad = route.front();
+    const auto& vehiclesOnFirstRoad = firstRoad->getVehicles();
+
+    double roadLength = firstRoad->getDistance();
+    int roadCapacity = static_cast<int>(roadLength / Road::VEHICLE_HITBOX_SIZE);
+
+    if (static_cast<int>(vehiclesOnFirstRoad.size()) >= roadCapacity) {
+        return nullptr; 
+    }
+
+    if (!vehiclesOnFirstRoad.empty()) {
+        auto lastVehicle = vehiclesOnFirstRoad.back();
+        if (lastVehicle->getDistanceOnRoad() < Road::VEHICLE_HITBOX_SIZE) {
+            return nullptr; 
+        }
+    }
+    
     VehicleType type = pickRandomType();
     std::string id = "V" + std::to_string(idNumber);
 
@@ -177,21 +199,56 @@ std::shared_ptr<Vehicle> VehicleFactory::spawnVehicleFrom(
             }
         }
         
-  
-        if (!roadPath.empty()) {
-            vehicle->setRoute(roadPath); 
-            vehicle->setCurrentRoad(roadPath.front());
-            vehicle->setDestination(graph.getIntersection(destID));
-            vehicle->setDistanceOnRoad(0.0);
-            vehicle->setCurrentSpeed(0.0);
-            vehicle->setTargetSpeed(vehicle->getMaxSpeed());
 
-            if (optimizer) {
-                vehicle->assignRoute(optimizer);
+        if (!roadPath.empty()) {
+            auto firstRoad = roadPath.front(); 
+
+            const auto& vehiclesOnFirstRoad = firstRoad->getVehicles(); 
+
+            double roadLength = firstRoad->getDistance(); 
+            int roadCapacity = static_cast<int>(roadLength / Road::VEHICLE_HITBOX_SIZE);
+
+            /* std::cout << "[DEBUG] Duong " << firstRoad->getRoadId() 
+            << " | Road lenght " << roadLength 
+            << " | Capacity: " << roadCapacity 
+            << " | Current vehilce: " << vehiclesOnFirstRoad.size() << std::endl; */
+
+            if (static_cast<int>(vehiclesOnFirstRoad.size()) >= roadCapacity) {
+
+                /* std::cout << "[DEBUG] Spawn denied: Reach maximum " << firstRoad->getRoadId() 
+                          << " vehicle (" << roadCapacity << " cars)!" << std::endl; */
+
+                return nullptr; 
             }
 
-            roadPath.front()->vehicleEnters(vehicle.get());
-            vehicle->updateWorldPosition(); 
+            bool isSafeToSpawn = true;
+            if (!vehiclesOnFirstRoad.empty()) {
+                auto lastVehicle = vehiclesOnFirstRoad.back(); 
+                if (lastVehicle->getDistanceOnRoad() < Road::VEHICLE_HITBOX_SIZE) {
+                    isSafeToSpawn = false; 
+                }
+            }
+
+            if (isSafeToSpawn) {
+                vehicle->setRoute(roadPath); 
+                vehicle->setCurrentRoad(firstRoad);
+                vehicle->setDestination(graph.getIntersection(destID));
+                vehicle->setDistanceOnRoad(0.0);
+                vehicle->setCurrentSpeed(0.0);
+                vehicle->setTargetSpeed(vehicle->getMaxSpeed());
+
+                if (optimizer) {
+                    vehicle->assignRoute(optimizer);
+                }
+
+                firstRoad->vehicleEnters(vehicle.get());
+                vehicle->updateWorldPosition(); 
+            } else {
+
+                /* std::cout << "[DEBUG] Wait for more spawn" << std::endl; */
+                
+                return nullptr; 
+            }
         } else {
             return nullptr;
         }
