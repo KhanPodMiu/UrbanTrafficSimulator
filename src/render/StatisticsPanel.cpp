@@ -372,7 +372,7 @@ void StatisticsPanel::renderText(
         return;
     }
 
-    const SDL_Color textColor{0, 0, 0, 0};
+    const SDL_Color textColor{31, 72, 93, 255};
 
     SDL_Surface* textSurface = TTF_RenderText_Blended(
         font,
