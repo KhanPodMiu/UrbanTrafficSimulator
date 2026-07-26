@@ -7,27 +7,29 @@ WorldClock::WorldClock()
       speedMultiplier(1.0),
       running(true) {}
 
-void WorldClock::update() {
-    if (!running) {
+void WorldClock::update()
+{
+    if (!running)
+    {
         deltaTime = 0.0;
         return;
     }
 
-    Uint64 currentCounter = SDL_GetPerformanceCounter();
-    Uint64 counterElapsed = currentCounter - lastCounter;
-    
+    const Uint64 currentCounter = SDL_GetPerformanceCounter();
+    const Uint64 counterElapsed = currentCounter - lastCounter;
     const double realDeltaTime =
         static_cast<double>(counterElapsed) /
         static_cast<double>(SDL_GetPerformanceFrequency());
 
     deltaTime = realDeltaTime * speedMultiplier;
     simulationTime += deltaTime;
-    
     lastCounter = currentCounter;
 }
 
-void WorldClock::start() {
-    if (running) {
+void WorldClock::start()
+{
+    if (running)
+    {
         return;
     }
 
@@ -37,36 +39,44 @@ void WorldClock::start() {
     running = true;
 }
 
-void WorldClock::pause() {
+void WorldClock::pause()
+{
     running = false;
     deltaTime = 0.0;
     lastCounter = SDL_GetPerformanceCounter();
 }
 
-void WorldClock::reset() {
+void WorldClock::reset()
+{
     simulationTime = 0.0;
     deltaTime = 0.0;
     lastCounter = SDL_GetPerformanceCounter();
 }
 
-void WorldClock::setSpeedMultiplier(double multiplier) {
-    if (multiplier > 0.0) {
+void WorldClock::setSpeedMultiplier(double multiplier)
+{
+    if (multiplier > 0.0)
+    {
         speedMultiplier = multiplier;
     }
 }
 
-bool WorldClock::isRunning() const {
+bool WorldClock::isRunning() const
+{
     return running;
 }
 
-double WorldClock::getDeltaTime() const {
+double WorldClock::getDeltaTime() const
+{
     return deltaTime;
 }
 
-double WorldClock::getSimulationTime() const {
+double WorldClock::getSimulationTime() const
+{
     return simulationTime;
 }
 
-double WorldClock::getSpeedMultiplier() const {
+double WorldClock::getSpeedMultiplier() const
+{
     return speedMultiplier;
 }
