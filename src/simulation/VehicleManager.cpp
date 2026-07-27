@@ -1,7 +1,7 @@
 #include "simulation/VehicleManager.hpp"
 
 #include <algorithm>
-
+#include <iostream>
 #include "factory/VehicleFactory.hpp"
 #include "graph/Road.hpp"
 #include "simulation/CollisionManager.hpp"
@@ -84,4 +84,27 @@ void VehicleManager::removeFinishedVehicles()
 const std::vector<std::shared_ptr<Vehicle>>& VehicleManager::getVehicles() const
 {
     return m_vehicles;
+}
+
+void VehicleManager::spawnVehicleAtIntersection(const std::string& intersectionID) 
+{    
+    auto newVehicle = VehicleFactory::spawnVehicleFrom(
+        m_graph, 
+        m_routingManager, 
+        m_routeOptimizer, 
+        m_nextVehicleId, 
+        intersectionID
+    );
+
+
+    if (newVehicle) {
+
+        /* std::cout << "[DEBUG] Create vehicle success: " << newVehicle->getId() << std::endl;  */
+
+        m_vehicles.push_back(newVehicle); 
+        m_nextVehicleId++;
+    } else {
+        
+        /* std::cout << "[DEBUG] Error: Cannot created vehicle !" << std::endl;  */
+    }
 }
