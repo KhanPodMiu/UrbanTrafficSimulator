@@ -17,6 +17,10 @@ include_directories(include)
 # --------------------------------
 
 find_package(SDL2 REQUIRED)
+
+include_directories(/opt/homebrew/include)
+
+
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
