@@ -16,7 +16,7 @@ public:
         const RoutingManager& routingManager,
         std::shared_ptr<RouteOptimizer> optimizer,
         int maxVehicles = 40,
-        double spawnIntervalSeconds = 1.2);
+        double spawnIntervalSeconds = 0.5f);
 
     ~VehicleManager();
 
