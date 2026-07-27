@@ -332,46 +332,8 @@ Once the simulator starts, users can:
 # 📸 Screenshots
 
 <p align="center">
-  <img src="docs/diagrams/uml_class_diagram.svg">
+  <img src="docs/screenshots/Screen.png">
 </p>
-
-Suggested images:
-
-* Main interface
-* Camera system
-* Vehicle movement
-* Traffic congestion
-* Emergency vehicle
-* Algorithm switching
-
----
-
-# 📊 Future Improvements
-
-Possible future enhancements include:
-
-* More vehicle types
-* Smarter AI traffic behaviors
-* Weather simulation
-* Pedestrian simulation
-* Public transportation scheduling
-* Performance optimization for larger city maps
-* Additional routing algorithms
-
----
-
-
-# 📌 Course Information
-
-This project was developed as part of the **Object-Oriented Programming** course.
-
-The project emphasizes:
-
-* Object-Oriented Design
-* Software Engineering Practices
-* Graph Algorithms
-* Design Patterns
-* Team Collaboration using Git and Jira
 
 ---
 
