@@ -11,7 +11,7 @@ namespace Config
     constexpr int VIEW_PORT_HEIGHT = WINDOW_HEIGHT;
 
     // ---- Map (world) dimensions ---------------------------------------
-    constexpr int MAP_WIDTH  = 53400;
+    constexpr int MAP_WIDTH  = 53000;
     constexpr int MAP_HEIGHT = 40000;
 
     // ---- Camera behavior ------------------------------------------------
