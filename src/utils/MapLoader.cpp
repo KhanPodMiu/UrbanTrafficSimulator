@@ -47,6 +47,14 @@ bool MapLoader::loadFromJson(const std::string& filename, Graph& graph){
         }
     }
 
+    // 2. Reset trạng thái VIP của tất cả đường hiện tại về false trước khi apply file mới
+    for (auto& [id, roadPtr] : graph.getRoads()) {
+        if (roadPtr) {
+            roadPtr->setVIPExclusive(false);
+        }
+    }
+
+    // 3. Tải hoặc cập nhật trạng thái Roads
     const Json::Value Roads = data["roads"];
     for(const auto& road : Roads){
         std::string roadID = road["id"].asString();
@@ -72,8 +80,7 @@ bool MapLoader::loadFromJson(const std::string& filename, Graph& graph){
         newRoad->setVIPExclusive(isBanned); 
 
         if (!graph.addRoad(newRoad)) {
-            std::cerr << "Duplicate road ID\n";
-            return false;
+            std::cerr << "[WARNING] Duplicate road ID skipped: " << roadID << "\n";
         }
     }
 

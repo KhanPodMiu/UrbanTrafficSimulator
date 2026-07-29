@@ -23,3 +23,6 @@ struct AppContext {
 std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath);
 void handleInput(SDL_Event& event, AppContext &Game);
 void spawnVehicleAt(const Vector2& clickPos, Graph& graph, VehicleManager& vehicleManager);
+
+//helper function
+bool switchBannedRoute(int routeID, AppContext &Game);
