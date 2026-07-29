@@ -1,0 +1,24 @@
+{
+  "map_id": "khapkhap",
+  "intersections": [],
+  "roads": [
+    { "id": "R845", "source": "I338", "destination": "I112", "distance": 856,  "isVIPExclusive": true },
+
+    { "id": "R291", "source": "I112", "destination": "I308", "distance": 1780, "isVIPExclusive": true },
+    { "id": "R292", "source": "I112", "destination": "I308", "distance": 2185, "isVIPExclusive": true },
+    { "id": "R293", "source": "I112", "destination": "I308", "distance": 2886, "isVIPExclusive": true },
+
+    { "id": "R775", "source": "I308", "destination": "I312", "distance": 1007, "isVIPExclusive": true },
+
+    { "id": "R785", "source": "I312", "destination": "I256", "distance": 1468, "isVIPExclusive": true },
+    { "id": "R786", "source": "I312", "destination": "I256", "distance": 1761, "isVIPExclusive": true },
+
+    { "id": "R641", "source": "I256", "destination": "I101", "distance": 907,  "isVIPExclusive": true },
+
+    { "id": "R264", "source": "I101", "destination": "I99",  "distance": 2013, "isVIPExclusive": true },
+
+    { "id": "R258", "source": "I99",  "destination": "I100", "distance": 1085, "isVIPExclusive": true },
+
+    { "id": "R260", "source": "I100", "destination": "I229", "distance": 381,  "isVIPExclusive": true }
+  ]
+}

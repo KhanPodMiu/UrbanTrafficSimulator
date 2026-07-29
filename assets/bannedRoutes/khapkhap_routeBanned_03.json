@@ -1,0 +1,21 @@
+{
+  "map_id": "khapkhap",
+  "intersections": [],
+  "roads": [
+    { "id": "R340", "source": "I134", "destination": "I251", "distance": 521,  "isVIPExclusive": true },
+
+    { "id": "R625", "source": "I251", "destination": "I250", "distance": 1761, "isVIPExclusive": true },
+
+    { "id": "R618", "source": "I250", "destination": "I160", "distance": 727,  "isVIPExclusive": true },
+
+    { "id": "R394", "source": "I160", "destination": "I247", "distance": 387,  "isVIPExclusive": true },
+
+    { "id": "R609", "source": "I247", "destination": "I132", "distance": 1477, "isVIPExclusive": true },
+
+    { "id": "R335", "source": "I132", "destination": "I133", "distance": 387,  "isVIPExclusive": true },
+
+    { "id": "R339", "source": "I133", "destination": "I134", "distance": 1179, "isVIPExclusive": true },
+    
+    { "id": "R342", "source": "I134", "destination": "I2",   "distance": 1180, "isVIPExclusive": true }
+  ]
+}
