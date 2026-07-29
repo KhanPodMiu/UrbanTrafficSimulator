@@ -126,6 +126,8 @@ public:
     // yield-style right-of-way instead of signals, so they are excluded.
     bool needsTrafficLightAtDestination() const;
 
+    void setVIPExclusive(bool exclusive);
+    bool isVIPExclusive() const;
 
 private:
     std::string   roadId;
@@ -137,7 +139,8 @@ private:
     int speedLimit;      // km/h           [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT]
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
-    
+    bool isTrumpRoute = false; 
+
     std::vector<Vehicle*> m_vehicles;
     
     // ── traffic light state ──────────────────────────────────────────────────
