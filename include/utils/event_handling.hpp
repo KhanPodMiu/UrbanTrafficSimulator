@@ -7,6 +7,19 @@
 #include "simulation/VehicleManager.hpp"
 #include "simulation/RouteOptimizer.hpp"
 #include "utils/vector2i.hpp"
+#include <filesystem>
 
-void handleInput(SDL_Event& event, bool& isRunning, Camera& camera, Graph& graph, VehicleManager& vehicleManager);
+class VisualizationEngine;
+
+struct AppContext {
+    bool& isRunning;
+    Camera& camera;
+    Graph& graph;
+    VehicleManager& vehicleManager;
+    VisualizationEngine& visualizationEngine;
+    bool& isBannedState;
+};
+
+std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath);
+void handleInput(SDL_Event& event, AppContext &Game);
 void spawnVehicleAt(const Vector2& clickPos, Graph& graph, VehicleManager& vehicleManager);
