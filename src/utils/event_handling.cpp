@@ -8,13 +8,16 @@
 #include "utils/vector2i.hpp"
 #include "core/Constants.hpp"
 #include <iostream>
+#include <filesystem>
+#include "utils/MapLoader.hpp"                    
+#include "visualization/VisualizationEngine.hpp"
 
-void handleInput(SDL_Event& event, bool& isRunning, Camera& camera, Graph& graph, VehicleManager& vehicleManager)
+void handleInput(SDL_Event& event, AppContext &Game)
 {
- 
+
     if (event.type == SDL_QUIT)
     {
-        isRunning = false;
+        Game.isRunning = false;
         return;
     }
 
@@ -23,13 +26,13 @@ void handleInput(SDL_Event& event, bool& isRunning, Camera& camera, Graph& graph
         float screenX = static_cast<float>(event.button.x) - Config::PANEL_WIDTH; 
         float screenY = static_cast<float>(event.button.y);
 
-        if (screenX < 0) return; 
+        if (screenX < 0) return;
 
-        Vector2 worldPos;
-        worldPos.x = camera.getX() + (screenX / camera.getZoom());
-        worldPos.y = camera.getY() + (screenY / camera.getZoom());
-     
-        spawnVehicleAt(worldPos, graph, vehicleManager);
+            Vector2 worldPos;
+            worldPos.x = Game.camera.getX() + (screenX / Game.camera.getZoom());
+            worldPos.y = Game.camera.getY() + (screenY / Game.camera.getZoom());
+            
+            spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
     }
 
     if (event.type == SDL_KEYDOWN)
@@ -37,31 +40,53 @@ void handleInput(SDL_Event& event, bool& isRunning, Camera& camera, Graph& graph
         switch(event.key.keysym.sym)
         {
             case SDLK_ESCAPE:
-                isRunning = false;
+                Game.isRunning = false;
                 break;
+
+            case SDLK_b: { 
+                std::string mapFile = Game.isBannedState ? "assets/maps/khapkhap.json" 
+                                                        : "assets/bannedRoutes/khapkhap_routeBanned.json";
                 
+                std::filesystem::path mapPath = resolveAssetPath(mapFile);
+                if (MapLoader::loadFromJson(mapPath.string(), Game.graph)) {
+                    // Đảo ngược trạng thái cờ
+                    Game.isBannedState = !Game.isBannedState;
+                    
+                    Game.visualizationEngine.buildRenderCache(Game.graph);
+                    
+                    if (Game.isBannedState) {
+                        //std::cout << "Da KICH HOAT tuyen duong cam!\n";
+                    } else {
+                       // std::cout << "Da TAT tuyen duong cam (Tro ve trang thai ban dau)!\n";
+                    }
+                } else {
+                    std::cerr << "Loi: Khong the load file map!\n";
+                }
+                break;
+            }
+
             case SDLK_w: 
-                camera.subY(); 
+                Game.camera.subY(); 
                 break;
 
             case SDLK_a: 
-                camera.subX(); 
+                Game.camera.subX(); 
                 break;
 
             case SDLK_s: 
-                camera.addY(); 
+                Game.camera.addY(); 
                 break;
 
             case SDLK_d: 
-                camera.addX(); 
+                Game.camera.addX(); 
                 break;
 
             case SDLK_q: 
-                camera.zoomOut(); 
+                Game.camera.zoomOut(); 
                 break;
 
             case SDLK_e: 
-                camera.zoomIn(); 
+                Game.camera.zoomIn(); 
                 break;
         }
     }
