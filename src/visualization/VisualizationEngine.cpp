@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <limits>
 
 namespace {
     // Trả về đúng texture (Green/Yellow/Red) tương ứng với trạng thái đèn hiện tại.
@@ -36,6 +37,12 @@ namespace {
 
 namespace {
 
+constexpr float VEHICLE_RENDER_LENGTH = 100.0f;
+constexpr float VEHICLE_RENDER_WIDTH = 50.0f;
+constexpr float MIN_VEHICLE_HIT_HALF_WIDTH = 8.0f;
+constexpr float MIN_VEHICLE_HIT_HALF_LENGTH = 10.0f;
+constexpr float MIN_INTERSECTION_HIT_RADIUS = 10.0f;
+
 SDL_Texture* vehicleTexture(
     VehicleType type,
     SDL_Texture* car,
@@ -54,6 +61,50 @@ SDL_Texture* vehicleTexture(
         default:
             return car;
     }
+}
+
+SDL_Point rotatePoint(
+    float localX,
+    float localY,
+    float centerX,
+    float centerY,
+    double angleDegrees)
+{
+    const double radians = angleDegrees * M_PI / 180.0;
+    const double cosAngle = std::cos(radians);
+    const double sinAngle = std::sin(radians);
+
+    return SDL_Point{
+        static_cast<int>(std::lround(
+            centerX + localX * cosAngle - localY * sinAngle)),
+        static_cast<int>(std::lround(
+            centerY + localX * sinAngle + localY * cosAngle))
+    };
+}
+
+void drawCircle(
+    SDL_Renderer* renderer,
+    int centerX,
+    int centerY,
+    int radius)
+{
+    constexpr int SEGMENTS = 64;
+    SDL_Point points[SEGMENTS + 1];
+
+    for (int i = 0; i <= SEGMENTS; ++i)
+    {
+        const double angle =
+            2.0 * M_PI * static_cast<double>(i) /
+            static_cast<double>(SEGMENTS);
+        points[i] = SDL_Point{
+            centerX + static_cast<int>(
+                std::lround(radius * std::cos(angle))),
+            centerY + static_cast<int>(
+                std::lround(radius * std::sin(angle)))
+        };
+    }
+
+    SDL_RenderDrawLines(renderer, points, SEGMENTS + 1);
 }
 
 }
@@ -77,7 +128,7 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         return false;
     }
 
-    intersectionTexture_ = window.loadTexture("assets/textures/Intersection/Roundabout.png");
+    intersectionTexture_ = window.loadTexture("assets/textures/Intersection/intersection.png");
     if (intersectionTexture_ == nullptr) {
         std::cerr << "\nHey.. recheck the IMG PATH" << SDL_GetError();
         return false;
@@ -122,8 +173,9 @@ void VisualizationEngine::buildRenderCache(const Graph& graph)
     roadsLocation_.clear();
 
     for (const auto& [intersectionID, intersection] : graph.getIntersections()) {
-        Vector2 temp(intersection->getX() - Config::ROUNDABOUT_RADIUS,
-                     intersection->getY() - Config::ROUNDABOUT_RADIUS);
+        IntersectionRenderData temp;
+        temp.center = Vector2(intersection->getX(), intersection->getY());
+        temp.intersection = intersection;
         intersectionsLocation_.push_back(temp);
     }
 
@@ -199,7 +251,10 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
 
     // Intersection
     for (const auto& intersection : intersectionsLocation_) {
-        Vector2 renderPos = applyCamera(intersection, camera);
+        Vector2 topLeft(
+            intersection.center.x - Config::ROUNDABOUT_RADIUS,
+            intersection.center.y - Config::ROUNDABOUT_RADIUS);
+        Vector2 renderPos = applyCamera(topLeft, camera);
         renderPos.x += Config::PANEL_WIDTH;
         window.render(intersectionTexture_, renderPos, zoom, Config::ROUNDABOUT_RADIUS * zoom);
     }
@@ -246,11 +301,8 @@ void VisualizationEngine::renderVehicles(
             busTexture_,
             emergencyTexture_);
 
-        float vehicleLength = 100;
-        float vehicleWidth  = 50;
-
-        int screenLength = static_cast<int>(vehicleLength * zoom);
-        int screenWidth  = static_cast<int>(vehicleWidth * zoom);
+        int screenLength = static_cast<int>(VEHICLE_RENDER_LENGTH * zoom);
+        int screenWidth  = static_cast<int>(VEHICLE_RENDER_WIDTH * zoom);
 
         SDL_Rect dst;
         dst.w = screenWidth;
@@ -268,6 +320,146 @@ void VisualizationEngine::renderVehicles(
             angle,
             nullptr,
             SDL_FLIP_NONE);
+    }
+}
+
+std::shared_ptr<Vehicle> VisualizationEngine::pickVehicle(
+    const Camera& camera,
+    const std::vector<std::shared_ptr<Vehicle>>& vehicles,
+    int mouseX,
+    int mouseY) const
+{
+    std::shared_ptr<Vehicle> closestVehicle;
+    double closestDistanceSquared = std::numeric_limits<double>::max();
+    const float zoom = camera.getZoom();
+    const float halfWidth = std::max(
+        MIN_VEHICLE_HIT_HALF_WIDTH,
+        VEHICLE_RENDER_WIDTH * zoom * 0.5f);
+    const float halfLength = std::max(
+        MIN_VEHICLE_HIT_HALF_LENGTH,
+        VEHICLE_RENDER_LENGTH * zoom * 0.5f);
+
+    for (const auto& vehicle : vehicles)
+    {
+        if (!vehicle || vehicle->isFinished())
+            continue;
+
+        Vector2 screenPosition = applyCamera(vehicle->getPosition(), camera);
+        screenPosition.x += Config::PANEL_WIDTH;
+
+        const double dx = static_cast<double>(mouseX) - screenPosition.x;
+        const double dy = static_cast<double>(mouseY) - screenPosition.y;
+        const double angle =
+            (vehicle->getHeadingAngle() - 90.0) * M_PI / 180.0;
+        const double cosAngle = std::cos(angle);
+        const double sinAngle = std::sin(angle);
+        const double localX = dx * cosAngle + dy * sinAngle;
+        const double localY = -dx * sinAngle + dy * cosAngle;
+
+        if (std::abs(localX) > halfWidth ||
+            std::abs(localY) > halfLength)
+        {
+            continue;
+        }
+
+        const double distanceSquared = dx * dx + dy * dy;
+        if (distanceSquared < closestDistanceSquared)
+        {
+            closestDistanceSquared = distanceSquared;
+            closestVehicle = vehicle;
+        }
+    }
+
+    return closestVehicle;
+}
+
+std::shared_ptr<Intersection> VisualizationEngine::pickIntersection(
+    const Camera& camera,
+    int mouseX,
+    int mouseY) const
+{
+    std::shared_ptr<Intersection> closestIntersection;
+    double closestDistanceSquared = std::numeric_limits<double>::max();
+    const float hitRadius = std::max(
+        MIN_INTERSECTION_HIT_RADIUS,
+        Config::ROUNDABOUT_RADIUS * camera.getZoom());
+    const double hitRadiusSquared =
+        static_cast<double>(hitRadius) * hitRadius;
+
+    for (const auto& renderData : intersectionsLocation_)
+    {
+        if (!renderData.intersection)
+            continue;
+
+        Vector2 screenPosition = applyCamera(renderData.center, camera);
+        screenPosition.x += Config::PANEL_WIDTH;
+
+        const double dx = static_cast<double>(mouseX) - screenPosition.x;
+        const double dy = static_cast<double>(mouseY) - screenPosition.y;
+        const double distanceSquared = dx * dx + dy * dy;
+
+        if (distanceSquared <= hitRadiusSquared &&
+            distanceSquared < closestDistanceSquared)
+        {
+            closestDistanceSquared = distanceSquared;
+            closestIntersection = renderData.intersection;
+        }
+    }
+
+    return closestIntersection;
+}
+
+void VisualizationEngine::renderSelectionHighlight(
+    RenderWindow& window,
+    const Camera& camera,
+    const std::shared_ptr<Vehicle>& selectedVehicle,
+    const std::shared_ptr<Intersection>& selectedIntersection) const
+{
+    SDL_Renderer* renderer = window.getRenderer();
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 255, 214, 48, 255);
+
+    if (selectedVehicle && !selectedVehicle->isFinished())
+    {
+        Vector2 center = applyCamera(selectedVehicle->getPosition(), camera);
+        center.x += Config::PANEL_WIDTH;
+
+        const float halfWidth = std::max(
+            5.0f,
+            VEHICLE_RENDER_WIDTH * camera.getZoom() * 0.5f + 3.0f);
+        const float halfLength = std::max(
+            7.0f,
+            VEHICLE_RENDER_LENGTH * camera.getZoom() * 0.5f + 3.0f);
+        const double angle = selectedVehicle->getHeadingAngle() - 90.0;
+
+        SDL_Point outline[5] = {
+            rotatePoint(-halfWidth, -halfLength, center.x, center.y, angle),
+            rotatePoint(halfWidth, -halfLength, center.x, center.y, angle),
+            rotatePoint(halfWidth, halfLength, center.x, center.y, angle),
+            rotatePoint(-halfWidth, halfLength, center.x, center.y, angle),
+            rotatePoint(-halfWidth, -halfLength, center.x, center.y, angle)
+        };
+        SDL_RenderDrawLines(renderer, outline, 5);
+        return;
+    }
+
+    if (selectedIntersection)
+    {
+        Vector2 center(
+            selectedIntersection->getX(),
+            selectedIntersection->getY());
+        center = applyCamera(center, camera);
+        center.x += Config::PANEL_WIDTH;
+
+        const int radius = std::max(
+            12,
+            static_cast<int>(std::lround(
+                Config::ROUNDABOUT_RADIUS * camera.getZoom() + 5.0f)));
+        drawCircle(
+            renderer,
+            static_cast<int>(std::lround(center.x)),
+            static_cast<int>(std::lround(center.y)),
+            radius);
     }
 }
 

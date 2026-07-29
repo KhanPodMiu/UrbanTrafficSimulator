@@ -1,6 +1,6 @@
 #include "algorithms/RoutingManager.hpp"
 #include "algorithms/Dijkstra.hpp"
-
+    
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
@@ -18,6 +18,7 @@
 #include "simulation/RouteOptimizer.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "visualization/camera.hpp"
+#include "render/EntityInfoPanel.hpp"
 #include "render/StatisticsPanel.hpp"
 
 #include "graph/Graph.hpp"
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
         return 1;
     }
-    
+
     if (TTF_Init() != 0) {
         std::cerr << "TTF_Init failed: " << TTF_GetError()<< std::endl;
         SDL_Quit();
@@ -64,6 +65,18 @@ int main(int argc, char* argv[]) {
         window.cleanUp();
         SDL_Quit();
 
+        return 1;
+    }
+
+    EntityInfoPanel entityInfoPanel;
+    if (!entityInfoPanel.loadAssets())
+    {
+        std::cerr << "Cannot load EntityInfoPanel assets" << std::endl;
+        statisticsPanel.cleanUp(window);
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        TTF_Quit();
+        SDL_Quit();
         return 1;
     }
 
@@ -136,7 +149,10 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&event)) {
             handleInput(event, is_game_running, camera);
 
-            switch (statisticsPanel.handleEvent(event))
+            const PanelCommand panelCommand =
+                statisticsPanel.handleEvent(event);
+
+            switch (panelCommand)
             {
                 case PanelCommand::Start:
                     clock.start();
@@ -150,6 +166,7 @@ int main(int argc, char* argv[]) {
                     clock.reset();
                     vehicleManager.reset();
                     TrafficLightManager::getInstance().reset();
+                    entityInfoPanel.clearSelection();
                     clock.start();
                     break;
 
@@ -158,8 +175,48 @@ int main(int argc, char* argv[]) {
                         statisticsPanel.getSelectedSpeedMultiplier());
                     break;
 
+                case PanelCommand::AlgorithmChanged:
                 case PanelCommand::None:
                     break;
+            }
+
+            if (event.type == SDL_MOUSEBUTTONUP &&
+                event.button.button == SDL_BUTTON_LEFT &&
+                event.button.x >= Config::PANEL_WIDTH &&
+                !entityInfoPanel.containsPoint(
+                    event.button.x,
+                    event.button.y))
+            {
+                const std::shared_ptr<Vehicle> selectedVehicle =
+                    visualizationEngine.pickVehicle(
+                        camera,
+                        vehicleManager.getVehicles(),
+                        event.button.x,
+                        event.button.y);
+
+                if (selectedVehicle)
+                {
+                    entityInfoPanel.selectVehicle(selectedVehicle);
+                }
+                else
+                {
+                    const std::shared_ptr<Intersection>
+                        selectedIntersection =
+                            visualizationEngine.pickIntersection(
+                                camera,
+                                event.button.x,
+                                event.button.y);
+
+                    if (selectedIntersection)
+                    {
+                        entityInfoPanel.selectIntersection(
+                            selectedIntersection);
+                    }
+                    else
+                    {
+                        entityInfoPanel.clearSelection();
+                    }
+                }
             }
         }
 
@@ -175,6 +232,12 @@ int main(int argc, char* argv[]) {
 
         visualizationEngine.render(window, camera);
         visualizationEngine.renderVehicles(window, camera, vehicleManager.getVehicles());
+        visualizationEngine.renderSelectionHighlight(
+            window,
+            camera,
+            entityInfoPanel.getSelectedVehicle(),
+            entityInfoPanel.getSelectedIntersection());
+        entityInfoPanel.render(window);
 
         // SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
         // SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
@@ -195,6 +258,7 @@ int main(int argc, char* argv[]) {
     }
 
     //=======================================================================================================================================================================
+    entityInfoPanel.cleanUp();
     statisticsPanel.cleanUp(window);
     visualizationEngine.cleanUp(window);
 

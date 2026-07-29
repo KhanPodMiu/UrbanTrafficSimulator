@@ -107,10 +107,10 @@ void Vehicle::updateWorldPosition()
 bool Vehicle::tryAdvanceToNextRoad()
 {
     if (!m_currentRoad)
-        return false;
+        return false; 
 
     if (m_distanceOnRoad < m_currentRoad->getDistance())
-        return false; 
+        return false;
 
     if (!m_currentRoad->isGreen() && !ignoresTrafficLights() && !m_committedToIntersection)
     {
@@ -218,6 +218,25 @@ const std::vector<std::shared_ptr<Road>>& Vehicle::getRoute() const
 size_t Vehicle::getRouteIndex() const
 {
     return m_routeIndex;
+}
+
+std::string Vehicle::getSourceIntersectionId() const
+{
+    if (m_route.empty() || !m_route.front())
+        return "";
+
+    const Intersection* source = m_route.front()->getSourceIntersection();
+    return source != nullptr ? source->getIntersectionID() : "";
+}
+
+std::string Vehicle::getDestinationIntersectionId() const
+{
+    return m_destination != nullptr ? m_destination->getIntersectionID() : "";
+}
+
+std::string Vehicle::getCurrentRoadId() const
+{
+    return m_currentRoad != nullptr ? m_currentRoad->getRoadId() : "";
 }
 
 void Vehicle::setCurrentRoad(const std::shared_ptr<Road>& road)

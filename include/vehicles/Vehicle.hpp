@@ -103,6 +103,12 @@ public:
 
     size_t getRouteIndex() const;
 
+    std::string getSourceIntersectionId() const;
+
+    std::string getDestinationIntersectionId() const;
+
+    std::string getCurrentRoadId() const;
+
     void setCurrentRoad(const std::shared_ptr<Road>& road);
 
     void setDestination(const std::shared_ptr<Intersection>& destination);
