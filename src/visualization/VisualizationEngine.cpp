@@ -96,6 +96,13 @@ bool VisualizationEngine::loadAssets(RenderWindow& window, const std::filesystem
         return false;
     }
 
+    path = assetsRoot / "textures" / "Roads" / "road_banned.png";
+    bannedRoadTexture_ = loadTexture(path);
+    if (bannedRoadTexture_ == nullptr) {
+        std::cerr << "Failed to load texture: " << path << "\n" << SDL_GetError();
+        return false;
+    }
+    
     path = assetsRoot / "textures" / "TrafficLight" / "Green_light.png";
     greenLightTexture_ = loadTexture(path);
     if (greenLightTexture_ == nullptr) {
@@ -213,7 +220,7 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
     mapBackground_,
     nullptr,
     &backgroundDestination
-    );
+    ); 
 
     for (const auto& road : roadsLocation_) {
         Vector2 shiftedStart(road.start.x + road.offsetX, road.start.y + road.offsetY);
@@ -221,7 +228,12 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
         Vector2 renderPos = applyCamera(shiftedStart, camera);
         renderPos.x += Config::PANEL_WIDTH;
 
-        window.renderRoad(roadTexture_, renderPos, road.length * zoom, Config::ROAD_WIDTH * zoom, road.angle);
+        // Chọn texture tương ứng: đường cấm (VIP) dùng bannedRoadTexture_, ngược lại dùng roadTexture_
+        SDL_Texture* currentRoadTex = (road.road && road.road->isVIPExclusive()) 
+                                      ? bannedRoadTexture_ 
+                                      : roadTexture_;
+
+        window.renderRoad(currentRoadTex, renderPos, road.length * zoom, Config::ROAD_WIDTH * zoom, road.angle);
     }
 
     // Intersection
@@ -303,6 +315,7 @@ void VisualizationEngine::cleanUp(RenderWindow& window)
     window.cleanUpTexture(mapBackground_);
     window.cleanUpTexture(intersectionTexture_);
     window.cleanUpTexture(roadTexture_);
+    window.cleanUpTexture(bannedRoadTexture_); // Giải phóng texture đường cấm
 
     window.cleanUpTexture(greenLightTexture_);
     window.cleanUpTexture(yellowLightTexture_);

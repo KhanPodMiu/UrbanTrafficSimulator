@@ -52,6 +52,7 @@ private:
     SDL_Texture* mapBackground_ = nullptr;
     SDL_Texture* intersectionTexture_ = nullptr;
     SDL_Texture* roadTexture_ = nullptr;
+    SDL_Texture* bannedRoadTexture_ = nullptr; //Add for TrumpRoad
 
     SDL_Texture* greenLightTexture_ = nullptr;
     SDL_Texture* redLightTexture_ = nullptr;
