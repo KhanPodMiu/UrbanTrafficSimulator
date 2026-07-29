@@ -35,7 +35,7 @@ static std::filesystem::path getExecutableDir() {
     return std::filesystem::current_path();
 }
 
-static std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath) {
+std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath) {
     namespace fs = std::filesystem;
 
     fs::path cwd = fs::current_path();
@@ -156,6 +156,16 @@ int main(int argc, char* argv[]) {
     //=======================================================================================================================================================================
 
     bool is_game_running = true;
+    bool is_banned_state = false; 
+
+    AppContext appContext{
+        is_game_running, 
+        camera, 
+        graph, 
+        vehicleManager, 
+        visualizationEngine, 
+        is_banned_state
+    };
 
     //=======================================================================================================================================================================
 
@@ -169,7 +179,7 @@ int main(int argc, char* argv[]) {
         vehicleManager.update(clock.getDeltaTime());
 
         while (SDL_PollEvent(&event)) {
-            handleInput(event, is_game_running, camera, graph, vehicleManager);
+            handleInput(event, appContext);
         }
 
         window.clear();
