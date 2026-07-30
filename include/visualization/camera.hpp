@@ -16,8 +16,12 @@ public:
     float getY() const;
     float getZoom() const;
 
-    void zoomIn();
-    void zoomOut();
+    void setX(float newX);
+    void setY(float newY);
+    void offsetPosition(float dx, float dy);
+
+    void zoomIn(float centerX = -1, float centerY = -1);
+    void zoomOut(float centerX = -1, float centerY = -1);
 
     void addX();
     void addY();
