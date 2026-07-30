@@ -16,13 +16,16 @@ public:
         const RoutingManager& routingManager,
         std::shared_ptr<RouteOptimizer> optimizer,
         int maxVehicles = 40,
-        double spawnIntervalSeconds = 1.2);
+        double spawnIntervalSeconds = 0.5f);
 
     ~VehicleManager();
 
     void update(double dt);
 
     const std::vector<std::shared_ptr<Vehicle>>& getVehicles() const;
+    
+    //Added: For click spawn
+    void spawnVehicleAtIntersection(const std::string& intersectionID);
 
 private:
     void trySpawnVehicle();

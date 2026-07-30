@@ -1,6 +1,16 @@
 #include "utils/event_handling.hpp"
+#include "utils/vector2i.hpp"
+#include "SDL2/SDL_image.h"
+#include "graph/Intersection.hpp" 
+#include "graph/Road.hpp"
+#include "simulation/VehicleManager.hpp"
+#include "simulation/RouteOptimizer.hpp"
+#include "utils/vector2i.hpp"
+#include "core/Constants.hpp"
+#include <iostream>
 
-void handleInput(SDL_Event& event,bool& isRunning, Camera& camera)
+void handleInput(SDL_Event& event, bool& isRunning, Camera& camera,
+                 Graph& graph, VehicleManager& vehicleManager)
 {
     if (event.type == SDL_QUIT)
     {
@@ -12,61 +22,88 @@ void handleInput(SDL_Event& event,bool& isRunning, Camera& camera)
     static int lastMouseX = 0;
     static int lastMouseY = 0;
 
+    // Mouse wheel -> zoom
     if (event.type == SDL_MOUSEWHEEL)
     {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
-        
-        if (event.wheel.y > 0) {
+
+        if (event.wheel.y > 0)
             camera.zoomIn(static_cast<float>(mouseX), static_cast<float>(mouseY));
-        } else if (event.wheel.y < 0) {
+        else if (event.wheel.y < 0)
             camera.zoomOut(static_cast<float>(mouseX), static_cast<float>(mouseY));
-        }
+
         return;
     }
 
+    // Mouse pressed
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
-        if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_MIDDLE)
+        if (event.button.button == SDL_BUTTON_LEFT)
+        {
+            // Spawn vehicle
+            float screenX = static_cast<float>(event.button.x) - Config::PANEL_WIDTH;
+            float screenY = static_cast<float>(event.button.y);
+
+            if (screenX >= 0)
+            {
+                Vector2 worldPos;
+                worldPos.x = camera.getX() + screenX / camera.getZoom();
+                worldPos.y = camera.getY() + screenY / camera.getZoom();
+
+                spawnVehicleAt(worldPos, graph, vehicleManager);
+            }
+
+            // Start dragging
+            isDragging = true;
+            lastMouseX = event.button.x;
+            lastMouseY = event.button.y;
+        }
+        else if (event.button.button == SDL_BUTTON_MIDDLE)
         {
             isDragging = true;
             lastMouseX = event.button.x;
             lastMouseY = event.button.y;
         }
+
         return;
     }
 
+    // Mouse released
     if (event.type == SDL_MOUSEBUTTONUP)
     {
-        if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_MIDDLE)
+        if (event.button.button == SDL_BUTTON_LEFT ||
+            event.button.button == SDL_BUTTON_MIDDLE)
         {
             isDragging = false;
         }
+
         return;
     }
 
+    // Drag camera
     if (event.type == SDL_MOUSEMOTION)
     {
         if (isDragging)
         {
             int dx = event.motion.x - lastMouseX;
             int dy = event.motion.y - lastMouseY;
-            
-            // Pan camera opposite to mouse drag direction, scaled by zoom
-            camera.offsetPosition(-static_cast<float>(dx) / camera.getZoom(), -static_cast<float>(dy) / camera.getZoom());
-            
+
+            camera.offsetPosition(
+                -static_cast<float>(dx) / camera.getZoom(),
+                -static_cast<float>(dy) / camera.getZoom());
+
             lastMouseX = event.motion.x;
             lastMouseY = event.motion.y;
         }
+
         return;
     }
 
     if (event.type != SDL_KEYDOWN)
-    {
         return;
-    }
 
-    switch(event.key.keysym.sym)
+    switch (event.key.keysym.sym)
     {
         case SDLK_ESCAPE:
             isRunning = false;
