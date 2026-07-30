@@ -134,3 +134,34 @@ void handleInput(SDL_Event& event, bool& isRunning, Camera& camera,
             break;
     }
 }
+
+void spawnVehicleAt(const Vector2& clickPos, 
+                    Graph& graph, 
+                    VehicleManager& vehicleManager)
+                     
+{
+    Vector2 mousePos(static_cast<float>(clickPos.x), static_cast<float>(clickPos.y));
+
+    auto startNode = graph.findNearestIntersection(mousePos, 300.0f);
+    if (startNode) 
+    {
+        /* std::cout << "[DEBUG] Found intersection: " << startNode->getIntersectionID() << std::endl; */
+        vehicleManager.spawnVehicleAtIntersection(startNode->getIntersectionID());
+        return;
+    }
+    else
+    {
+        /* std::cout << "[DEBUG] Missed click, checking for nearest road..." << std::endl; */
+    }
+
+    auto clickedRoad = graph.findNearestRoad(mousePos, 100.0f);
+    if (clickedRoad)
+    {
+        const Intersection* nextIntersection = clickedRoad->getDestinationIntersection();
+        if (nextIntersection) 
+        {
+            vehicleManager.spawnVehicleAtIntersection(nextIntersection->getIntersectionID());
+        }
+    }
+}
+
