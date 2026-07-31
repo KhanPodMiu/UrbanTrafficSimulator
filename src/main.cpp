@@ -4,7 +4,6 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
-#include "SDL2/SDL_ttf.h"
 #include "core/renderWindow.hpp"
 #include "core/Constants.hpp"
 
@@ -19,8 +18,6 @@
 #include "simulation/RouteOptimizer.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "visualization/camera.hpp"
-#include "render/EntityInfoPanel.hpp"
-#include "render/StatisticsPanel.hpp"
 #include "render/EntityInfoPanel.hpp"
 #include "render/StatisticsPanel.hpp"
 
@@ -70,7 +67,7 @@ std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath
 int main(int argc, char* argv[]) {
 
     //=======================================================================================================================================================================
-
+    // --- SDL initialization section ---
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
         return 1;
@@ -88,17 +85,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    if (TTF_Init() != 0) {
-        std::cerr << "TTF_Init failed: " << TTF_GetError()<< std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
     RenderWindow window("Urban Traffic", Config::WINDOW_WIDTH, Config::WINDOW_HEIGHT);
 
     //=======================================================================================================================================================================
-
-    VisualizationEngine visualizationEngine;
+    // --- Asset loading section ---
     VisualizationEngine visualizationEngine;
     if (!visualizationEngine.loadAssets(window)) {
         std::cerr << "Cannot load VisualizationEngine assets" << std::endl;
@@ -132,63 +122,9 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 1;
     }
-    //======================================================================================================================================================================
-
-    StatisticsPanel statisticsPanel;
-
-    if (!statisticsPanel.loadAssets(window))
-    {
-        std::cerr << "Cannot load StatisticsPanel assets"
-                << std::endl;
-
-        visualizationEngine.cleanUp(window);
-        window.cleanUp();
-        SDL_Quit();
-
-        return 1;
-    }
-
-    EntityInfoPanel entityInfoPanel;
-    if (!entityInfoPanel.loadAssets())
-    {
-        std::cerr << "Cannot load EntityInfoPanel assets" << std::endl;
-        statisticsPanel.cleanUp(window);
-        visualizationEngine.cleanUp(window);
-        window.cleanUp();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-    //======================================================================================================================================================================
-
-    StatisticsPanel statisticsPanel;
-
-    if (!statisticsPanel.loadAssets(window))
-    {
-        std::cerr << "Cannot load StatisticsPanel assets"
-                << std::endl;
-
-        visualizationEngine.cleanUp(window);
-        window.cleanUp();
-        SDL_Quit();
-
-        return 1;
-    }
-
-    EntityInfoPanel entityInfoPanel;
-    if (!entityInfoPanel.loadAssets())
-    {
-        std::cerr << "Cannot load EntityInfoPanel assets" << std::endl;
-        statisticsPanel.cleanUp(window);
-        visualizationEngine.cleanUp(window);
-        window.cleanUp();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
 
     //=======================================================================================================================================================================
-
+    // --- Simulation setup section (clock, camera, graph, routing, vehicles) ---
     SDL_Event event;
     WorldClock clock;
     Camera camera;
@@ -268,6 +204,7 @@ int main(int argc, char* argv[]) {
 
         Uint64 frameStart = SDL_GetPerformanceCounter();
 
+        // --- Main game loop sections (event handling) ---
         while (SDL_PollEvent(&event)) {
             handleInput(event, appContext);
 
@@ -342,6 +279,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // --- Main game loop sections (simulation update) ---
         clock.update();
 
         if (clock.isRunning())
@@ -349,12 +287,9 @@ int main(int argc, char* argv[]) {
             TrafficLightManager::getInstance().update(clock.getDeltaTime());
 
             vehicleManager.update(clock.getDeltaTime());
-
-                while (SDL_PollEvent(&event)) {
-                handleInput(event, appContext);
-            }
         }
 
+        // --- Main game loop sections (rendering) ---
         window.clear();
 
         visualizationEngine.render(window, camera);
@@ -371,24 +306,12 @@ int main(int argc, char* argv[]) {
         // SDL_RenderFillRect(window.getRenderer(), &panel);
 
         statisticsPanel.render(window,clock.getSimulationTime());
-        visualizationEngine.renderSelectionHighlight(
-            window,
-            camera,
-            entityInfoPanel.getSelectedVehicle(),
-            entityInfoPanel.getSelectedIntersection());
-        entityInfoPanel.render(window);
-
-        // SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
-        // SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
-        // SDL_RenderFillRect(window.getRenderer(), &panel);
-
-        statisticsPanel.render(window,clock.getSimulationTime());
 
         window.display();
 
+        // --- Main game loop sections (frame rate limiter) ---
         Uint64 frameEnd = SDL_GetPerformanceCounter();
         double frameDuration = static_cast<double>(frameEnd - frameStart) /
-                         static_cast<double>(SDL_GetPerformanceFrequency());
                          static_cast<double>(SDL_GetPerformanceFrequency());
 
         if (frameDuration < Config::TARGET_FRAME_TIME) {
@@ -398,8 +321,8 @@ int main(int argc, char* argv[]) {
     }
 
     //=======================================================================================================================================================================
+    // --- Cleanup section ---
     entityInfoPanel.cleanUp();
-    statisticsPanel.cleanUp(window);    entityInfoPanel.cleanUp();
     statisticsPanel.cleanUp(window);
     visualizationEngine.cleanUp(window);
 
