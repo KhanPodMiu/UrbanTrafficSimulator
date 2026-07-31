@@ -18,6 +18,12 @@ private:
 public:
     Graph();
     ~Graph();
+
+    Graph(const Graph&) = delete;
+    Graph& operator=(const Graph&) = delete;
+    Graph(Graph&& other) noexcept;
+    Graph& operator=(Graph&& other) noexcept;
+    
     bool addIntersection(std::shared_ptr <Intersection> intersection);
     bool removeIntersection(const std::string& intersectionID);
     bool addRoad(std::shared_ptr <Road> road);

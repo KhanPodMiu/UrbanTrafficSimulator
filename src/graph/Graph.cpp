@@ -16,6 +16,10 @@
 
 #include <cmath>
 
+#include <unordered_set>
+
+#include <utility>
+
 #include <algorithm>
 
 
@@ -94,8 +98,6 @@ bool Graph::addRoad(std::shared_ptr <Road> nRoad) {
         return false;
 
     }
-
-    
 
     srcIt->second->addOutgoingRoad(nRoad.get());
 
@@ -236,6 +238,8 @@ bool Graph::removeRoad(const std::string& roadID) {
     }
 
 
+    //Detach endpoint when deleting a road.
+    r->detachEndpoints();
 
     Roads.erase(itRoad);
 
@@ -311,7 +315,8 @@ bool Graph::isValid() const {
 
     }
 
-
+    //Check the correct Intersection object.
+    std::unordered_set<std::string> directedEdges;
 
     for (const auto& pair : Roads) {
 
@@ -336,6 +341,8 @@ bool Graph::isValid() const {
         std::string destID = dest->getIntersectionID();
 
 
+        const auto sourceIt = Intersections.find(sourceID);
+        const auto destinationIt = Intersections.find(destID);
 
         if (Intersections.find(sourceID) == Intersections.end() || 
 
@@ -345,6 +352,12 @@ bool Graph::isValid() const {
 
         }
 
+        if (!directedEdges.insert(
+                sourceID + '\x1f' + destID).second) {
+
+            return false;
+
+        }
 
 
         const auto& connectedRoads = adjacencyList.at(sourceID);
