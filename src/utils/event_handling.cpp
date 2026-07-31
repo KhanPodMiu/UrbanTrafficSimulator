@@ -46,9 +46,12 @@ bool switchBannedRoute(int routeID, AppContext &Game)
     
     if (MapLoader::loadFromJson(mapPath.string(), Game.graph)) {
         Game.isBannedState = (routeID != 0);
+        const int reroutedVehicles =
+            Game.vehicleManager.rerouteVehiclesAroundBannedRoads();
         Game.visualizationEngine.buildRenderCache(Game.graph);
         std::cout << "[INFO] Successfully loaded route ID: " << routeID 
-                  << " (" << filePath << ")\n";
+                  << " (" << filePath << "), rerouted vehicles: "
+                  << reroutedVehicles << "\n";
         return true;
     }
 
