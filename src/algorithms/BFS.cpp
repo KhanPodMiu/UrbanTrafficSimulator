@@ -46,7 +46,7 @@ RouteResult BFS::calculateRoute(const Graph& graph, const RouteRequest& request)
         std::vector<std::shared_ptr<Road>> connectedRoads = graph.getConnectedRoads(currentID);
         for (const auto& road : connectedRoads) {
 
-            if (!road) continue;
+            if (!road || road->isVIPExclusive()) continue;
             const Intersection* neighborIntersection = road->getDestinationIntersection();
 
             if (!neighborIntersection) continue;
@@ -82,4 +82,4 @@ RouteResult BFS::calculateRoute(const Graph& graph, const RouteRequest& request)
 size_t BFS::getExpandedNodeCount() const
 {
     return expandedNodeCount;
-}
+}
