@@ -64,19 +64,6 @@ void handleInput(SDL_Event& event, AppContext &Game)
         return;
     }
 
-    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-    {
-        float screenX = static_cast<float>(event.button.x) - Config::PANEL_WIDTH; 
-        float screenY = static_cast<float>(event.button.y);
-
-        if (screenX < 0) return;
-
-        Vector2 worldPos;
-        worldPos.x = Game.camera.getX() + (screenX / Game.camera.getZoom());
-        worldPos.y = Game.camera.getY() + (screenY / Game.camera.getZoom());
-        
-        spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
-    }
 
     if (event.type == SDL_KEYDOWN)
     {
@@ -85,6 +72,21 @@ void handleInput(SDL_Event& event, AppContext &Game)
             case SDLK_ESCAPE:
                 Game.isRunning = false;
                 break;
+            case SDLK_v: {
+                int mouseX, mouseY;
+                SDL_GetMouseState(&mouseX, &mouseY);
+
+                float screenX = static_cast<float>(mouseX) - Config::PANEL_WIDTH; 
+                float screenY = static_cast<float>(mouseY);
+                if (screenX >= 0) {
+                    Vector2 worldPos;
+                    worldPos.x = Game.camera.getX() + (screenX / Game.camera.getZoom());
+                    worldPos.y = Game.camera.getY() + (screenY / Game.camera.getZoom());
+                    
+                    spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
+                }
+                break;
+            }
 
             case SDLK_1: switchBannedRoute(1, Game); break;
             case SDLK_2: switchBannedRoute(2, Game); break;
@@ -131,7 +133,7 @@ void handleInput(SDL_Event& event, AppContext &Game)
 void spawnVehicleAt(const Vector2& clickPos, 
                     Graph& graph, 
                     VehicleManager& vehicleManager)
-                     
+
 {
     Vector2 mousePos(static_cast<float>(clickPos.x), static_cast<float>(clickPos.y));
 
@@ -157,4 +159,3 @@ void spawnVehicleAt(const Vector2& clickPos,
         }
     }
 }
-
