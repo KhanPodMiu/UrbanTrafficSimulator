@@ -12,6 +12,7 @@ class RenderWindow;
 class Camera;
 class Road;
 class Vehicle;
+class Intersection;
 
 class VisualizationEngine
 {
@@ -19,7 +20,7 @@ public:
     VisualizationEngine();
     ~VisualizationEngine();
 
-    bool loadAssets(RenderWindow& window, const std::filesystem::path& assetsRoot);
+    bool loadAssets(RenderWindow& window);
 
     void buildRenderCache(const Graph& graph);
 
@@ -30,9 +31,32 @@ public:
     // are cached once in buildRenderCache().
     void renderVehicles(RenderWindow& window, const Camera& camera, const std::vector<std::shared_ptr<Vehicle>>& vehicles);
 
+    std::shared_ptr<Vehicle> pickVehicle(
+        const Camera& camera,
+        const std::vector<std::shared_ptr<Vehicle>>& vehicles,
+        int mouseX,
+        int mouseY) const;
+
+    std::shared_ptr<Intersection> pickIntersection(
+        const Camera& camera,
+        int mouseX,
+        int mouseY) const;
+
+    void renderSelectionHighlight(
+        RenderWindow& window,
+        const Camera& camera,
+        const std::shared_ptr<Vehicle>& selectedVehicle,
+        const std::shared_ptr<Intersection>& selectedIntersection) const;
+
     void cleanUp(RenderWindow& window);
 
 private:
+    struct IntersectionRenderData
+    {
+        Vector2 center;
+        std::shared_ptr<Intersection> intersection;
+    };
+
     struct RoadRenderData
     {
         Vector2 start;
@@ -52,7 +76,7 @@ private:
     SDL_Texture* mapBackground_ = nullptr;
     SDL_Texture* intersectionTexture_ = nullptr;
     SDL_Texture* roadTexture_ = nullptr;
-    SDL_Texture* bannedRoadTexture_ = nullptr; //Add for TrumpRoad
+    SDL_Texture* bannedRoadTexture_ = nullptr;
 
     SDL_Texture* greenLightTexture_ = nullptr;
     SDL_Texture* redLightTexture_ = nullptr;
@@ -62,6 +86,6 @@ private:
     SDL_Texture* busTexture_ = nullptr;
     SDL_Texture* emergencyTexture_ = nullptr;
 
-    std::vector<Vector2> intersectionsLocation_;
+    std::vector<IntersectionRenderData> intersectionsLocation_;
     std::vector<RoadRenderData> roadsLocation_;
 };
