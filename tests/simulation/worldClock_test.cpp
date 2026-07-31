@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
-#include <unistd.h>
+// Replaced POSIX unistd.h and usleep with std::thread and std::chrono for Windows compatibility
+#include <chrono>
+#include <thread>
 #include "simulation/WorldClock.hpp"
 
 TEST(WorldClockTest, Initialization)
@@ -25,7 +27,7 @@ TEST(WorldClockTest, UpdateTime)
     WorldClock clock;
 
     // Sleep for a short duration to allow time to pass
-    usleep(100000); // 100 milliseconds
+    std::this_thread::sleep_for(std::chrono::microseconds(100000)); // 100 milliseconds
 
     clock.update();
 
@@ -37,7 +39,7 @@ TEST(WorldClockTest, UpdateTime)
     EXPECT_LT(dt, 0.2);
     EXPECT_DOUBLE_EQ(dt, simTime);
 
-    usleep(50000); // 50 milliseconds
+    std::this_thread::sleep_for(std::chrono::microseconds(50000)); // 50 milliseconds
     
     clock.update();
     
@@ -58,7 +60,7 @@ TEST(WorldClockTest, PauseStopsSimulationTime)
 
     WorldClock clock;
 
-    usleep(50000);
+    std::this_thread::sleep_for(std::chrono::microseconds(50000));
     clock.update();
     const double timeBeforePause = clock.getSimulationTime();
 
@@ -66,7 +68,7 @@ TEST(WorldClockTest, PauseStopsSimulationTime)
     EXPECT_FALSE(clock.isRunning());
     EXPECT_DOUBLE_EQ(clock.getDeltaTime(), 0.0);
 
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::microseconds(100000));
     clock.update();
 
     EXPECT_DOUBLE_EQ(clock.getDeltaTime(), 0.0);
@@ -82,15 +84,15 @@ TEST(WorldClockTest, StartResumesWithoutPausedTimeJump)
 
     WorldClock clock;
 
-    usleep(50000);
+    std::this_thread::sleep_for(std::chrono::microseconds(50000));
     clock.update();
     const double timeBeforePause = clock.getSimulationTime();
 
     clock.pause();
-    usleep(100000);
+    std::this_thread::sleep_for(std::chrono::microseconds(100000));
     clock.start();
 
-    usleep(50000);
+    std::this_thread::sleep_for(std::chrono::microseconds(50000));
     clock.update();
 
     EXPECT_TRUE(clock.isRunning());
@@ -111,7 +113,7 @@ TEST(WorldClockTest, ResetClearsSimulationTime)
 
     WorldClock clock;
 
-    usleep(50000);
+    std::this_thread::sleep_for(std::chrono::microseconds(50000));
     clock.update();
     EXPECT_GT(clock.getSimulationTime(), 0.0);
 
@@ -131,7 +133,7 @@ TEST(WorldClockTest, SpeedMultiplierScalesDeltaTime)
     WorldClock clock;
     clock.setSpeedMultiplier(2.0);
 
-    usleep(50000);
+    std::this_thread::sleep_for(std::chrono::microseconds(50000));
     clock.update();
 
     EXPECT_TRUE(clock.getSpeedMultiplier() == 2.0);
