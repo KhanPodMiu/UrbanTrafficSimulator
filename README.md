@@ -19,6 +19,17 @@ The project demonstrates the application of **Object-Oriented Programming**, **g
 
 ---
 
+## Team Members
+
+| No. | Student ID | Full Name | GitHub |
+|:---:|:----------:|-----------|--------|
+| 1 | 25127274 | Võ Lê Nam Khánh Ann | KhanPodMiu |
+| 2 | 25127230 | Đặng Nguyễn Yến Phương | itsyippie |
+| 3 | 25127440 | Huỳnh Chí Nhân | hchinhan |
+| 4 | 25127018 | Nguyễn Phúc Gia Bảo | Kevincrazy678 |
+
+---
+
 # 🛠️ Technologies
 
 | Category             | Technology   |
