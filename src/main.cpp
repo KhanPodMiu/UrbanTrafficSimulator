@@ -100,19 +100,8 @@ int main(int argc, char* argv[]) {
 
     VisualizationEngine visualizationEngine;
     VisualizationEngine visualizationEngine;
-    const std::filesystem::path assetsRoot = resolveAssetPath("assets");
-
-    if (!std::filesystem::exists(assetsRoot)) {
-        std::cerr << "Assets directory not found: " << assetsRoot << "\n";
-        visualizationEngine.cleanUp(window);
-        window.cleanUp();
-        TTF_Quit();
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    if (!visualizationEngine.loadAssets(window, assetsRoot)) {
+    if (!visualizationEngine.loadAssets(window)) {
+        std::cerr << "Cannot load VisualizationEngine assets" << std::endl;
         visualizationEngine.cleanUp(window);
         window.cleanUp();
         TTF_Quit();
@@ -280,7 +269,7 @@ int main(int argc, char* argv[]) {
         Uint64 frameStart = SDL_GetPerformanceCounter();
 
         while (SDL_PollEvent(&event)) {
-            handleInput(event, is_game_running, camera);
+            handleInput(event, appContext);
 
             const PanelCommand panelCommand =
                 statisticsPanel.handleEvent(event);
