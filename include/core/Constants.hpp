@@ -5,7 +5,7 @@ namespace Config
     // ---- Window layout -----------------------------------------------
     constexpr int WINDOW_WIDTH  = 1600;
     constexpr int WINDOW_HEIGHT = 900;
-    constexpr int PANEL_WIDTH   = 434;
+    constexpr int PANEL_WIDTH   = 400;
 
     constexpr int VIEW_PORT_WIDTH  = WINDOW_WIDTH - PANEL_WIDTH;
     constexpr int VIEW_PORT_HEIGHT = WINDOW_HEIGHT;

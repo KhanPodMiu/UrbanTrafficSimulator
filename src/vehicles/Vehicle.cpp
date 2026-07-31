@@ -9,9 +9,6 @@
 namespace {
     constexpr double COMFORT_ACCEL = 35.0; 
     constexpr double LANE_OFFSET = 40.0; 
-    // Extra lateral offset (added on top of LANE_OFFSET) applied while a
-    // vehicle has pulled out into the shoulder to get around blocked traffic.
-    constexpr double PASSING_LANE_OFFSET = 40.0;
 }
 
 Vehicle::Vehicle(const std::string& id, double maxSpeed, double length, VehicleType type)
@@ -95,10 +92,8 @@ void Vehicle::updateWorldPosition()
         double nx = -dy / roadLength;
         double ny = dx / roadLength;
 
-        double offset = LANE_OFFSET + (m_isPassing ? PASSING_LANE_OFFSET : 0.0);
-
-        baseX += nx * offset;
-        baseY += ny * offset;
+        baseX += nx * LANE_OFFSET;
+        baseY += ny * LANE_OFFSET;
     }
 
     m_position = Vector2(static_cast<float>(baseX), static_cast<float>(baseY));
@@ -107,12 +102,12 @@ void Vehicle::updateWorldPosition()
 bool Vehicle::tryAdvanceToNextRoad()
 {
     if (!m_currentRoad)
-        return false; 
-
-    if (m_distanceOnRoad < m_currentRoad->getDistance())
         return false;
 
-    if (!m_currentRoad->isGreen() && !ignoresTrafficLights() && !m_committedToIntersection)
+    if (m_distanceOnRoad < m_currentRoad->getDistance())
+        return false; 
+
+    if (!m_currentRoad->isGreen() && !ignoresTrafficLights())
     {
         m_distanceOnRoad = m_currentRoad->getDistance();
         m_currentSpeed = 0.0;
@@ -142,8 +137,6 @@ bool Vehicle::tryAdvanceToNextRoad()
     m_currentRoad->vehicleEnters(this);
 
     updateWorldPosition();
-    m_committedToIntersection = false;
-    m_isPassing = false; // fresh road, fresh lane
     return true;
 }
 
@@ -220,25 +213,6 @@ size_t Vehicle::getRouteIndex() const
     return m_routeIndex;
 }
 
-std::string Vehicle::getSourceIntersectionId() const
-{
-    if (m_route.empty() || !m_route.front())
-        return "";
-
-    const Intersection* source = m_route.front()->getSourceIntersection();
-    return source != nullptr ? source->getIntersectionID() : "";
-}
-
-std::string Vehicle::getDestinationIntersectionId() const
-{
-    return m_destination != nullptr ? m_destination->getIntersectionID() : "";
-}
-
-std::string Vehicle::getCurrentRoadId() const
-{
-    return m_currentRoad != nullptr ? m_currentRoad->getRoadId() : "";
-}
-
 void Vehicle::setCurrentRoad(const std::shared_ptr<Road>& road)
 {
     m_currentRoad = road;
@@ -262,30 +236,6 @@ void Vehicle::setCurrentSpeed(double speed)
 void Vehicle::setTargetSpeed(double speed)
 {
     m_targetSpeed = speed;
-}
-
-bool Vehicle::isInPassingLane() const
-{
-    return m_isPassing;
-}
-
-void Vehicle::setInPassingLane(bool passing)
-{
-    // Sticky: once a vehicle has pulled out to pass, it stays out until it
-    // moves onto a different road. We only ever flip it true here; nothing
-    // resets it back to false while still on the same road.
-    if (passing)
-        m_isPassing = true;
-}
-
-bool Vehicle::isCommittedToIntersection() const
-{
-    return m_committedToIntersection;
-}
-
-void Vehicle::setCommittedToIntersection(bool committed)
-{
-    m_committedToIntersection = committed;
 }
 
 void Vehicle::setDistanceOnRoad(double distance)

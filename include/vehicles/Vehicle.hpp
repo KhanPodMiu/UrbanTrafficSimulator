@@ -41,13 +41,6 @@ private:
     std::vector<std::shared_ptr<Road>> m_route;
     size_t m_routeIndex;
 
-    bool m_committedToIntersection = false;
-
-    // Once true, this vehicle is rendered/treated as having pulled out into the
-    // right-hand shoulder lane to get around a slower vehicle ahead. It is
-    // sticky by design: the vehicle does not merge back once it has passed.
-    bool m_isPassing = false;
-
     Vector2 m_position;
 
 public:
@@ -64,16 +57,6 @@ public:
     bool tryAdvanceToNextRoad();
 
     virtual bool ignoresTrafficLights() const { return false; }
-
-    // Whether this vehicle is allowed to pull out around a slower vehicle
-    // blocking its lane instead of slowing down to follow it (e.g. ambulances).
-    virtual bool canOvertakeBlockedTraffic() const { return false; }
-
-    bool isInPassingLane() const;
-    void setInPassingLane(bool passing);
-
-    bool isCommittedToIntersection() const;
-    void setCommittedToIntersection(bool committed);
 
     const std::string& getId() const;
 
@@ -103,12 +86,6 @@ public:
 
     size_t getRouteIndex() const;
 
-    std::string getSourceIntersectionId() const;
-
-    std::string getDestinationIntersectionId() const;
-
-    std::string getCurrentRoadId() const;
-
     void setCurrentRoad(const std::shared_ptr<Road>& road);
 
     void setDestination(const std::shared_ptr<Intersection>& destination);
@@ -132,5 +109,4 @@ public:
     std::shared_ptr<Road> getNextRoad() const;
 
     double getHeadingAngle() const;
-
 };

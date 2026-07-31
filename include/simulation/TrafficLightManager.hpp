@@ -47,7 +47,6 @@ public:
     TrafficLightManager& operator=(const TrafficLightManager&) = delete;
     bool initializeTopology(Graph& graph);
     void update(double dt);
-    void reset();
 };
 
 void normalize(Vector2 &V);

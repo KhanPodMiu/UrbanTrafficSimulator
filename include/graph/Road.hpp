@@ -97,8 +97,6 @@ public:
     bool setGreenDuration(int duration);
     bool setYellowDuration(int duration);
     bool setRedDuration(int duration);
-    void setTrafficLightState(TrafficLightState state);
-    void setTrafficLightEnabled(bool enabled);
 
     // ── road operations ───────────────────────────────────────────────────────
 

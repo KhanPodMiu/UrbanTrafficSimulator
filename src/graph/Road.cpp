@@ -317,16 +317,6 @@ bool Road::setRedDuration(int duration)
     return true;
 }
 
-void Road::setTrafficLightState(TrafficLightState state)
-{
-    trafficLightState = state;
-}
-
-void Road::setTrafficLightEnabled(bool enabled)
-{
-    trafficLightEnabled = enabled;
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 //  Road operations
 // ─────────────────────────────────────────────────────────────────────────────
