@@ -41,6 +41,21 @@ void VehicleManager::reset()
     m_nextVehicleId = 1;
 }
 
+void VehicleManager::reset()
+{
+    for (auto& vehicle : m_vehicles)
+    {
+        if (vehicle && vehicle->getCurrentRoad())
+        {
+            vehicle->getCurrentRoad()->vehicleExits(vehicle.get());
+        }
+    }
+
+    m_vehicles.clear();
+    m_spawnTimer = 0.0;
+    m_nextVehicleId = 1;
+}
+
 void VehicleManager::update(double dt)
 {
     m_spawnTimer += dt;

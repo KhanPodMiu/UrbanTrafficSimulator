@@ -1,8 +1,9 @@
 #include "algorithms/RoutingManager.hpp"
 #include "algorithms/Dijkstra.hpp"
-    
+        
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL_ttf.h"
 #include "core/renderWindow.hpp"
 #include "core/Constants.hpp"
@@ -18,6 +19,8 @@
 #include "simulation/RouteOptimizer.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "visualization/camera.hpp"
+#include "render/EntityInfoPanel.hpp"
+#include "render/StatisticsPanel.hpp"
 #include "render/EntityInfoPanel.hpp"
 #include "render/StatisticsPanel.hpp"
 
@@ -85,10 +88,17 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    if (TTF_Init() != 0) {
+        std::cerr << "TTF_Init failed: " << TTF_GetError()<< std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
     RenderWindow window("Urban Traffic", Config::WINDOW_WIDTH, Config::WINDOW_HEIGHT);
 
     //=======================================================================================================================================================================
 
+    VisualizationEngine visualizationEngine;
     VisualizationEngine visualizationEngine;
     const std::filesystem::path assetsRoot = resolveAssetPath("assets");
 
@@ -130,6 +140,60 @@ int main(int argc, char* argv[]) {
         window.cleanUp();
         TTF_Quit();
         IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    //======================================================================================================================================================================
+
+    StatisticsPanel statisticsPanel;
+
+    if (!statisticsPanel.loadAssets(window))
+    {
+        std::cerr << "Cannot load StatisticsPanel assets"
+                << std::endl;
+
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        SDL_Quit();
+
+        return 1;
+    }
+
+    EntityInfoPanel entityInfoPanel;
+    if (!entityInfoPanel.loadAssets())
+    {
+        std::cerr << "Cannot load EntityInfoPanel assets" << std::endl;
+        statisticsPanel.cleanUp(window);
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    //======================================================================================================================================================================
+
+    StatisticsPanel statisticsPanel;
+
+    if (!statisticsPanel.loadAssets(window))
+    {
+        std::cerr << "Cannot load StatisticsPanel assets"
+                << std::endl;
+
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        SDL_Quit();
+
+        return 1;
+    }
+
+    EntityInfoPanel entityInfoPanel;
+    if (!entityInfoPanel.loadAssets())
+    {
+        std::cerr << "Cannot load EntityInfoPanel assets" << std::endl;
+        statisticsPanel.cleanUp(window);
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        TTF_Quit();
         SDL_Quit();
         return 1;
     }
@@ -318,11 +382,24 @@ int main(int argc, char* argv[]) {
         // SDL_RenderFillRect(window.getRenderer(), &panel);
 
         statisticsPanel.render(window,clock.getSimulationTime());
+        visualizationEngine.renderSelectionHighlight(
+            window,
+            camera,
+            entityInfoPanel.getSelectedVehicle(),
+            entityInfoPanel.getSelectedIntersection());
+        entityInfoPanel.render(window);
+
+        // SDL_SetRenderDrawColor(window.getRenderer(), 40, 40, 40, 255);
+        // SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
+        // SDL_RenderFillRect(window.getRenderer(), &panel);
+
+        statisticsPanel.render(window,clock.getSimulationTime());
 
         window.display();
 
         Uint64 frameEnd = SDL_GetPerformanceCounter();
         double frameDuration = static_cast<double>(frameEnd - frameStart) /
+                         static_cast<double>(SDL_GetPerformanceFrequency());
                          static_cast<double>(SDL_GetPerformanceFrequency());
 
         if (frameDuration < Config::TARGET_FRAME_TIME) {
@@ -333,6 +410,7 @@ int main(int argc, char* argv[]) {
 
     //=======================================================================================================================================================================
     entityInfoPanel.cleanUp();
+    statisticsPanel.cleanUp(window);    entityInfoPanel.cleanUp();
     statisticsPanel.cleanUp(window);
     visualizationEngine.cleanUp(window);
 
