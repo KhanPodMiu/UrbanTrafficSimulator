@@ -85,3 +85,16 @@ coverage/
 *.gcov
 
 project_context.md
+
+.codegraph/
+CLAUDE.md
+AGENTS.md
+CURSOR.md
+GEMINI.md
+PENCODE.md
+
+.claude/
+.codegraph/
+.cursor/
+.gemini/
+.mcp.json

@@ -5,6 +5,7 @@
 
 #include "graph/Intersection.hpp"
 #include "graph/Road.hpp"
+#include "core/Constants.hpp"
 
 namespace {
     constexpr double COMFORT_ACCEL = 35.0; 
@@ -75,7 +76,78 @@ void Vehicle::updateWorldPosition()
         return;
 
     double roadLength = m_currentRoad->getDistance();
-    double t = (roadLength > 0.0) ? (m_distanceOnRoad / roadLength) : 0.0;
+    double dist = m_distanceOnRoad;
+
+    auto calculateRoundaboutArc = [&](const Intersection* r_center, const Intersection* in_src, const Intersection* out_dst, double t_arc) {
+        double R = Config::ROUNDABOUT_RADIUS;
+        
+        double dx0 = r_center->getX() - in_src->getX();
+        double dy0 = r_center->getY() - in_src->getY();
+        double len0 = std::sqrt(dx0*dx0 + dy0*dy0);
+        
+        double dx1 = out_dst->getX() - r_center->getX();
+        double dy1 = out_dst->getY() - r_center->getY();
+        double len1 = std::sqrt(dx1*dx1 + dy1*dy1);
+        
+        if (len0 < 1e-5 || len1 < 1e-5) return false;
+        
+        double p0_x = r_center->getX() - (dx0/len0)*R - (dy0/len0)*LANE_OFFSET;
+        double p0_y = r_center->getY() - (dy0/len0)*R + (dx0/len0)*LANE_OFFSET;
+        
+        double p3_x = r_center->getX() + (dx1/len1)*R - (dy1/len1)*LANE_OFFSET;
+        double p3_y = r_center->getY() + (dy1/len1)*R + (dx1/len1)*LANE_OFFSET;
+        
+        double theta_start = std::atan2(p0_y - r_center->getY(), p0_x - r_center->getX());
+        double theta_end = std::atan2(p3_y - r_center->getY(), p3_x - r_center->getX());
+        
+        if (theta_end >= theta_start) {
+            theta_end -= 2.0 * M_PI;
+        }
+        
+        double theta = theta_start + (theta_end - theta_start) * t_arc;
+        double radius = std::sqrt(R*R + LANE_OFFSET*LANE_OFFSET);
+        
+        m_position = Vector2(static_cast<float>(r_center->getX() + radius * std::cos(theta)),
+                             static_cast<float>(r_center->getY() + radius * std::sin(theta)));
+        return true;
+    };
+
+    double R = Config::ROUNDABOUT_RADIUS;
+    
+    // Check if we are approaching a roundabout
+    if (dst->getType() == IntersectionType::ROUNDABOUT && (roadLength - dist) < R)
+    {
+        std::shared_ptr<Road> nextRoad = getNextRoad();
+        if (nextRoad)
+        {
+            const Intersection* next_dst = nextRoad->getDestinationIntersection();
+            if (next_dst)
+            {
+                double d_arc = R - (roadLength - dist);
+                double t_arc = std::clamp(d_arc / (2.0 * R), 0.0, 0.5);
+                if (calculateRoundaboutArc(dst, src, next_dst, t_arc))
+                    return;
+            }
+        }
+    }
+    // Check if we are leaving a roundabout
+    else if (src->getType() == IntersectionType::ROUNDABOUT && dist < R)
+    {
+        if (m_routeIndex > 0)
+        {
+            std::shared_ptr<Road> prevRoad = m_route[m_routeIndex - 1];
+            const Intersection* prev_src = prevRoad->getSourceIntersection();
+            if (prev_src)
+            {
+                double d_arc = R + dist;
+                double t_arc = std::clamp(d_arc / (2.0 * R), 0.5, 1.0);
+                if (calculateRoundaboutArc(src, prev_src, dst, t_arc))
+                    return;
+            }
+        }
+    }
+
+    double t = (roadLength > 0.0) ? (dist / roadLength) : 0.0;
     t = std::clamp(t, 0.0, 1.0);
 
     double x0 = src->getX();
@@ -107,10 +179,10 @@ void Vehicle::updateWorldPosition()
 bool Vehicle::tryAdvanceToNextRoad()
 {
     if (!m_currentRoad)
-        return false; 
+        return false;
 
     if (m_distanceOnRoad < m_currentRoad->getDistance())
-        return false;
+        return false; 
 
     if (!m_currentRoad->isGreen() && !ignoresTrafficLights() && !m_committedToIntersection)
     {

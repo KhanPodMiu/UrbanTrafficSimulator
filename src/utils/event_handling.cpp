@@ -5,13 +5,15 @@
 #include "graph/Road.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "simulation/RouteOptimizer.hpp"
-#include "utils/vector2i.hpp"
 #include "core/Constants.hpp"
 #include <iostream>
 #include <filesystem>
-#include "utils/MapLoader.hpp"                    
+#include "utils/MapLoader.hpp"
 #include "visualization/VisualizationEngine.hpp"
 
+// Loads a banned-route overlay (or the default map) based on the given routeID.
+// routeID 1..6 select pre-defined banned-route JSON files;
+// routeID 0 (or any other value) reverts to the original map.
 bool switchBannedRoute(int routeID, AppContext &Game) 
 {
     std::string filePath;
@@ -36,7 +38,7 @@ bool switchBannedRoute(int routeID, AppContext &Game)
             filePath = "assets/bannedRoutes/khapkhap_routeBanned.json";
             break;
         default:
-            filePath = "assets/maps/khapkhap.json"; // Trở về map gốc (không cấm đường nào)
+            filePath = "assets/maps/khapkhap.json";
             break;
     }
 
@@ -57,76 +59,156 @@ bool switchBannedRoute(int routeID, AppContext &Game)
 
 void handleInput(SDL_Event& event, AppContext &Game)
 {
-
     if (event.type == SDL_QUIT)
     {
         Game.isRunning = false;
         return;
     }
 
+    static bool isDragging = false;
+    static int lastMouseX = 0;
+    static int lastMouseY = 0;
 
-    if (event.type == SDL_KEYDOWN)
+    if (event.type == SDL_MOUSEWHEEL)
     {
-        switch(event.key.keysym.sym)
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+
+        const float viewportX = static_cast<float>(mouseX) - Config::PANEL_WIDTH;
+        const float viewportY = static_cast<float>(mouseY);
+
+        if (viewportX >= 0)
         {
-            case SDLK_ESCAPE:
-                Game.isRunning = false;
-                break;
-            case SDLK_v: {
-                int mouseX, mouseY;
-                SDL_GetMouseState(&mouseX, &mouseY);
-
-                float screenX = static_cast<float>(mouseX) - Config::PANEL_WIDTH; 
-                float screenY = static_cast<float>(mouseY);
-                if (screenX >= 0) {
-                    Vector2 worldPos;
-                    worldPos.x = Game.camera.getX() + (screenX / Game.camera.getZoom());
-                    worldPos.y = Game.camera.getY() + (screenY / Game.camera.getZoom());
-                    
-                    spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
-                }
-                break;
-            }
-
-            case SDLK_1: switchBannedRoute(1, Game); break;
-            case SDLK_2: switchBannedRoute(2, Game); break;
-            case SDLK_3: switchBannedRoute(3, Game); break;
-            case SDLK_4: switchBannedRoute(4, Game); break;
-            case SDLK_5: switchBannedRoute(5, Game); break;
-            case SDLK_6: switchBannedRoute(6, Game); break;
-
-            case SDLK_0: switchBannedRoute(0, Game); break;
-
-            case SDLK_b: {
-                int nextRoute = Game.isBannedState ? 0 : 6;
-                switchBannedRoute(nextRoute, Game);
-                break;
-            }
-
-            case SDLK_w: 
-                Game.camera.subY(); 
-                break;
-
-            case SDLK_a: 
-                Game.camera.subX(); 
-                break;
-
-            case SDLK_s: 
-                Game.camera.addY(); 
-                break;
-
-            case SDLK_d: 
-                Game.camera.addX(); 
-                break;
-
-            case SDLK_q: 
-                Game.camera.zoomOut(); 
-                break;
-
-            case SDLK_e: 
-                Game.camera.zoomIn(); 
-                break;
+            if (event.wheel.y > 0)
+                Game.camera.zoomIn(viewportX, viewportY);
+            else if (event.wheel.y < 0)
+                Game.camera.zoomOut(viewportX, viewportY);
         }
+
+        return;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN)
+    {
+        if (event.button.button == SDL_BUTTON_LEFT)
+        {
+            const float screenX = static_cast<float>(event.button.x) - Config::PANEL_WIDTH;
+            const float screenY = static_cast<float>(event.button.y);
+
+            if (screenX >= 0)
+            {
+                Vector2 worldPos;
+                worldPos.x = Game.camera.getX() + screenX / Game.camera.getZoom();
+                worldPos.y = Game.camera.getY() + screenY / Game.camera.getZoom();
+                spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
+
+                isDragging = true;
+                lastMouseX = event.button.x;
+                lastMouseY = event.button.y;
+            }
+        }
+        else if (event.button.button == SDL_BUTTON_MIDDLE)
+        {
+            isDragging = true;
+            lastMouseX = event.button.x;
+            lastMouseY = event.button.y;
+        }
+
+        return;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONUP)
+    {
+        if (event.button.button == SDL_BUTTON_LEFT ||
+            event.button.button == SDL_BUTTON_MIDDLE)
+        {
+            isDragging = false;
+        }
+
+        return;
+    }
+
+    if (event.type == SDL_MOUSEMOTION)
+    {
+        if (isDragging)
+        {
+            int dx = event.motion.x - lastMouseX;
+            int dy = event.motion.y - lastMouseY;
+
+            Game.camera.offsetPosition(
+                -static_cast<float>(dx) / Game.camera.getZoom(),
+                -static_cast<float>(dy) / Game.camera.getZoom());
+
+            lastMouseX = event.motion.x;
+            lastMouseY = event.motion.y;
+        }
+
+        return;
+    }
+
+    if (event.type != SDL_KEYDOWN)
+        return;
+
+    switch (event.key.keysym.sym)
+    {
+        case SDLK_ESCAPE:
+            Game.isRunning = false;
+            break;
+
+        case SDLK_v: {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            float screenX = static_cast<float>(mouseX) - Config::PANEL_WIDTH;
+            float screenY = static_cast<float>(mouseY);
+            if (screenX >= 0) {
+                Vector2 worldPos;
+                worldPos.x = Game.camera.getX() + (screenX / Game.camera.getZoom());
+                worldPos.y = Game.camera.getY() + (screenY / Game.camera.getZoom());
+
+                spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
+            }
+            break;
+        }
+
+        case SDLK_1: switchBannedRoute(1, Game); break;
+        case SDLK_2: switchBannedRoute(2, Game); break;
+        case SDLK_3: switchBannedRoute(3, Game); break;
+        case SDLK_4: switchBannedRoute(4, Game); break;
+        case SDLK_5: switchBannedRoute(5, Game); break;
+        case SDLK_6: switchBannedRoute(6, Game); break;
+
+        case SDLK_0: switchBannedRoute(0, Game); break;
+
+        case SDLK_b: {
+            int nextRoute = Game.isBannedState ? 0 : 6;
+            switchBannedRoute(nextRoute, Game);
+            break;
+        }
+
+        case SDLK_w:
+            Game.camera.subY();
+            break;
+
+        case SDLK_a:
+            Game.camera.subX();
+            break;
+
+        case SDLK_s:
+            Game.camera.addY();
+            break;
+
+        case SDLK_d:
+            Game.camera.addX();
+            break;
+
+        case SDLK_q:
+            Game.camera.zoomOut();
+            break;
+
+        case SDLK_e:
+            Game.camera.zoomIn();
+            break;
     }
 }
 
@@ -140,13 +222,8 @@ void spawnVehicleAt(const Vector2& clickPos,
     auto startNode = graph.findNearestIntersection(mousePos, 300.0f);
     if (startNode) 
     {
-        /* std::cout << "[DEBUG] Found intersection: " << startNode->getIntersectionID() << std::endl; */
         vehicleManager.spawnVehicleAtIntersection(startNode->getIntersectionID());
         return;
-    }
-    else
-    {
-        /* std::cout << "[DEBUG] Missed click, checking for nearest road..." << std::endl; */
     }
 
     auto clickedRoad = graph.findNearestRoad(mousePos, 100.0f);

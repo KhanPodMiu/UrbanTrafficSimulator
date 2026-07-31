@@ -139,6 +139,13 @@ void Road::vehicleEnters(Vehicle* vehicle)
     if (vehicle == nullptr)
         return;
 
+    //A vehicle is not allowed to be added to the same road twice.
+    if (std::find(m_vehicles.begin(), m_vehicles.end(), vehicle) !=
+        m_vehicles.end())
+    {
+        return;
+    }
+
     m_vehicles.push_back(vehicle);
 
     updateCongestion();
@@ -165,7 +172,12 @@ void Road::sortVehicles()
         m_vehicles.begin(),
         m_vehicles.end(),
         [](Vehicle* a, Vehicle* b)
-        {
+        {   
+            if (a == nullptr)
+                return false;
+            if (b == nullptr)
+                return true;
+
             return a->getDistanceOnRoad() >
                    b->getDistanceOnRoad();
         });
@@ -251,6 +263,12 @@ bool Road::setDestinationIntersection(const Intersection* destination)
 
     destinationIntersection = destination;
     return true;
+}
+
+void Road::detachEndpoints() noexcept
+{
+    sourceIntersection = nullptr;
+    destinationIntersection = nullptr;
 }
 
 bool Road::setDistance(int distance)
