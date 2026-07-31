@@ -26,21 +26,7 @@ VehicleManager::VehicleManager(
 
 VehicleManager::~VehicleManager() = default;
 
-void VehicleManager::reset()
-{
-    for (auto& vehicle : m_vehicles)
-    {
-        if (vehicle && vehicle->getCurrentRoad())
-        {
-            vehicle->getCurrentRoad()->vehicleExits(vehicle.get());
-        }
-    }
-
-    m_vehicles.clear();
-    m_spawnTimer = 0.0;
-    m_nextVehicleId = 1;
-}
-
+// Resets vehicle manager state and clears active vehicles.
 void VehicleManager::reset()
 {
     for (auto& vehicle : m_vehicles)
