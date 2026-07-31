@@ -25,6 +25,7 @@ public:
 
     const std::vector<std::shared_ptr<Vehicle>>& getVehicles() const;
     void spawnVehicleAtIntersection(const std::string& intersectionID);
+    int rerouteVehiclesAroundBannedRoads();
 
 private:
     void trySpawnVehicle();

@@ -124,3 +124,19 @@ void VehicleManager::spawnVehicleAtIntersection(const std::string& intersectionI
         /* std::cout << "[DEBUG] Error: Cannot created vehicle !" << std::endl;  */
     }
 }
+
+int VehicleManager::rerouteVehiclesAroundBannedRoads()
+{
+    int reroutedCount = 0;
+    for (const auto& vehicle : m_vehicles)
+    {
+        if (vehicle && vehicle->rerouteAroundBannedRoads(
+                m_graph,
+                m_routingManager))
+        {
+            ++reroutedCount;
+        }
+    }
+
+    return reroutedCount;
+}
