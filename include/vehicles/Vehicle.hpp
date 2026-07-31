@@ -9,6 +9,8 @@
 class Road;
 class Intersection;
 class RouteOptimizer;
+class Graph;
+class RoutingManager;
 
 enum class VehicleType {
     CAR,
@@ -62,6 +64,10 @@ public:
     void updateWorldPosition();
 
     bool tryAdvanceToNextRoad();
+
+    bool rerouteAroundBannedRoads(
+        const Graph& graph,
+        const RoutingManager& routingManager);
 
     virtual bool ignoresTrafficLights() const { return false; }
 

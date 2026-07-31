@@ -2,10 +2,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 #include "graph/Intersection.hpp"
+#include "graph/Graph.hpp"
 #include "graph/Road.hpp"
+#include "algorithms/RoutingManager.hpp"
 #include "core/Constants.hpp"
+#include "simulation/RouteRequest.hpp"
 
 namespace {
     constexpr double COMFORT_ACCEL = 35.0; 
@@ -41,6 +45,16 @@ void Vehicle::update(double dt)
 {
     if (m_finished)
         return;
+
+    // A vehicle must never continue driving on a road reserved for the VIP
+    // convoy. Normally it is moved to a detour as soon as the ban appears;
+    // if no detour exists, keep it stopped instead of crossing the closure.
+    if (m_currentRoad && m_currentRoad->isVIPExclusive())
+    {
+        m_currentSpeed = 0.0;
+        m_targetSpeed = 0.0;
+        return;
+    }
 
     if (m_currentSpeed < m_targetSpeed)
     {
@@ -216,6 +230,105 @@ bool Vehicle::tryAdvanceToNextRoad()
     updateWorldPosition();
     m_committedToIntersection = false;
     m_isPassing = false; // fresh road, fresh lane
+    return true;
+}
+
+bool Vehicle::rerouteAroundBannedRoads(
+    const Graph& graph,
+    const RoutingManager& routingManager)
+{
+    if (m_finished || !m_currentRoad || !m_destination)
+        return false;
+
+    const bool currentRoadIsBanned = m_currentRoad->isVIPExclusive();
+    const double currentRoadProgress = m_currentRoad->getDistance() > 0.0
+        ? std::clamp(
+              m_distanceOnRoad / m_currentRoad->getDistance(),
+              0.0,
+              1.0)
+        : 0.0;
+    bool remainingRouteContainsBannedRoad = false;
+    for (size_t i = m_routeIndex; i < m_route.size(); ++i)
+    {
+        if (m_route[i] && m_route[i]->isVIPExclusive())
+        {
+            remainingRouteContainsBannedRoad = true;
+            break;
+        }
+    }
+
+    if (!remainingRouteContainsBannedRoad)
+        return false;
+
+    const Intersection* rerouteStart = currentRoadIsBanned
+        ? m_currentRoad->getSourceIntersection()
+        : m_currentRoad->getDestinationIntersection();
+    if (!rerouteStart)
+        return false;
+
+    const std::string destinationID =
+        m_destination->getIntersectionID();
+    if (rerouteStart->getIntersectionID() == destinationID)
+    {
+        if (currentRoadIsBanned)
+        {
+            m_currentRoad->vehicleExits(this);
+            m_currentRoad.reset();
+            m_route.clear();
+            m_routeIndex = 0;
+            m_finished = true;
+        }
+        else
+        {
+            m_route = {m_currentRoad};
+            m_routeIndex = 0;
+        }
+        return true;
+    }
+
+    const RouteResult routeResult = routingManager.calculateRoute(
+        graph,
+        RouteRequest(rerouteStart->getIntersectionID(), destinationID));
+    if (!routeResult.isSuccess || routeResult.intersectionIDs.size() < 2)
+        return false;
+
+    std::vector<std::shared_ptr<Road>> replacementRoute;
+    replacementRoute.reserve(routeResult.intersectionIDs.size());
+    if (!currentRoadIsBanned)
+        replacementRoute.push_back(m_currentRoad);
+
+    for (size_t i = 0; i + 1 < routeResult.intersectionIDs.size(); ++i)
+    {
+        Road* road = graph.getRoadBetween(
+            routeResult.intersectionIDs[i],
+            routeResult.intersectionIDs[i + 1]);
+        if (!road || road->isVIPExclusive())
+            return false;
+
+        std::shared_ptr<Road> roadPtr = graph.getRoad(road->getRoadId());
+        if (!roadPtr)
+            return false;
+
+        replacementRoute.push_back(roadPtr);
+    }
+
+    if (replacementRoute.empty())
+        return false;
+
+    if (currentRoadIsBanned)
+    {
+        m_currentRoad->vehicleExits(this);
+        m_currentRoad = replacementRoute.front();
+        m_distanceOnRoad =
+            currentRoadProgress * m_currentRoad->getDistance();
+        m_committedToIntersection = false;
+        m_isPassing = false;
+        m_currentRoad->vehicleEnters(this);
+    }
+
+    m_route = std::move(replacementRoute);
+    m_routeIndex = 0;
+    updateWorldPosition();
     return true;
 }
 
