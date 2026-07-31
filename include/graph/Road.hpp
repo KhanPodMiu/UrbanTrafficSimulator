@@ -37,7 +37,7 @@ public:
     static constexpr int MAX_DURATION            = 120; // seconds
 
     //ADDED ── For BPR Funtion and CongestionLevel ──────────────────────────
-    static constexpr double VEHICLE_HITBOX_SIZE = 5.0; // Length of vehicle hitbox in map units can change after
+    static constexpr double VEHICLE_HITBOX_SIZE = 100.0; // Length of vehicle hitbox in map units can change after
     static constexpr double BPR_ALPHA = 0.15;         
     static constexpr double BPR_BETA = 4.0;          
 
@@ -128,6 +128,8 @@ public:
     // yield-style right-of-way instead of signals, so they are excluded.
     bool needsTrafficLightAtDestination() const;
 
+    void setVIPExclusive(bool exclusive);
+    bool isVIPExclusive() const;
 
 private:
     std::string   roadId;
@@ -139,7 +141,8 @@ private:
     int speedLimit;      // km/h           [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT]
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
-    
+    bool isTrumpRoute = false; 
+
     std::vector<Vehicle*> m_vehicles;
     
     // ── traffic light state ──────────────────────────────────────────────────

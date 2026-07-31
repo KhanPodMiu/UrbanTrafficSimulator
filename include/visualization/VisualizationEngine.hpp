@@ -3,6 +3,7 @@
 #include "SDL2/SDL.h"
 #include "utils/vector2i.hpp"
 #include "vehicles/Vehicle.hpp"
+#include <filesystem>
 #include <vector>
 #include <memory>
 
@@ -75,6 +76,7 @@ private:
     SDL_Texture* mapBackground_ = nullptr;
     SDL_Texture* intersectionTexture_ = nullptr;
     SDL_Texture* roadTexture_ = nullptr;
+    SDL_Texture* bannedRoadTexture_ = nullptr;
 
     SDL_Texture* greenLightTexture_ = nullptr;
     SDL_Texture* redLightTexture_ = nullptr;

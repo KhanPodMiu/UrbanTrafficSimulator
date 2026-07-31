@@ -398,3 +398,10 @@ bool Road::needsTrafficLightAtDestination() const
            type == IntersectionType::ROUNDABOUT;
 }
 
+void Road::setVIPExclusive(bool exclusive) {
+    isTrumpRoute = exclusive; 
+}
+
+bool Road::isVIPExclusive() const { 
+    return isTrumpRoute; 
+}

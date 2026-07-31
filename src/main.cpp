@@ -26,6 +26,41 @@
 #include "graph/Road.hpp"
 
 #include <iostream>
+#include <filesystem>
+
+static std::filesystem::path getExecutableDir() {
+    char* basePath = SDL_GetBasePath();
+    if (basePath) {
+        std::filesystem::path path(basePath);
+        SDL_free(basePath);
+        return path;
+    }
+    return std::filesystem::current_path();
+}
+
+std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath) {
+    namespace fs = std::filesystem;
+
+    fs::path cwd = fs::current_path();
+    fs::path exeDir = getExecutableDir();
+
+    fs::path candidate = cwd / relativePath;
+    if (fs::exists(candidate)) {
+        return fs::canonical(candidate);
+    }
+
+    candidate = exeDir / relativePath;
+    if (fs::exists(candidate)) {
+        return fs::canonical(candidate);
+    }
+
+    candidate = exeDir.parent_path() / relativePath;
+    if (fs::exists(candidate)) {
+        return fs::canonical(candidate);
+    }
+
+    return relativePath;
+}
 
 //=======================================================================================================================================================================
 
@@ -37,6 +72,12 @@ int main(int argc, char* argv[]) {
         std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
         return 1;
     }
+    
+    /* if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        std::cerr << "IMG_Init failed: " << IMG_GetError() << "\n";
+        SDL_Quit();
+        return 1;
+    } */
 
     if (TTF_Init() != 0) {
         std::cerr << "TTF_Init failed: " << TTF_GetError()<< std::endl;
@@ -49,33 +90,46 @@ int main(int argc, char* argv[]) {
     //=======================================================================================================================================================================
 
     VisualizationEngine visualizationEngine;
-    if (!visualizationEngine.loadAssets(window)) {
-        return 1;
-    }
-    //======================================================================================================================================================================
+    const std::filesystem::path assetsRoot = resolveAssetPath("assets");
 
-    StatisticsPanel statisticsPanel;
-
-    if (!statisticsPanel.loadAssets(window))
-    {
-        std::cerr << "Cannot load StatisticsPanel assets"
-                << std::endl;
-
+    if (!std::filesystem::exists(assetsRoot)) {
+        std::cerr << "Assets directory not found: " << assetsRoot << "\n";
         visualizationEngine.cleanUp(window);
         window.cleanUp();
+        TTF_Quit();
+        IMG_Quit();
         SDL_Quit();
+        return 1;
+    }
 
+    if (!visualizationEngine.loadAssets(window, assetsRoot)) {
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    StatisticsPanel statisticsPanel;
+    if (!statisticsPanel.loadAssets(window)) {
+        std::cerr << "Cannot load StatisticsPanel assets" << std::endl;
+        visualizationEngine.cleanUp(window);
+        window.cleanUp();
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
         return 1;
     }
 
     EntityInfoPanel entityInfoPanel;
-    if (!entityInfoPanel.loadAssets())
-    {
+    if (!entityInfoPanel.loadAssets()) {
         std::cerr << "Cannot load EntityInfoPanel assets" << std::endl;
         statisticsPanel.cleanUp(window);
         visualizationEngine.cleanUp(window);
         window.cleanUp();
         TTF_Quit();
+        IMG_Quit();
         SDL_Quit();
         return 1;
     }
@@ -89,8 +143,13 @@ int main(int argc, char* argv[]) {
     camera.setZoom(Config::INITIAL_CAMERA_SCALE);
 
     Graph graph;
-    if(!MapLoader::loadFromJson("assets/maps/khapkhap.json", graph)){
+    /* if(!MapLoader::loadFromJson("assets/maps/khapkhap.json", graph)){
         std::cerr << "Cannot load map\n";
+        return 1;
+    } */
+   const std::filesystem::path mapFilePath = resolveAssetPath("assets/maps/khapkhap.json");
+    if(!MapLoader::loadFromJson(mapFilePath.string(), graph)){
+        std::cerr << "Cannot load map: " << mapFilePath << "\n";
         return 1;
     }
 
@@ -139,6 +198,16 @@ int main(int argc, char* argv[]) {
     //=======================================================================================================================================================================
 
     bool is_game_running = true;
+    bool is_banned_state = false; 
+
+    AppContext appContext{
+        is_game_running, 
+        camera, 
+        graph, 
+        vehicleManager, 
+        visualizationEngine, 
+        is_banned_state
+    };
 
     //=======================================================================================================================================================================
 
@@ -225,7 +294,12 @@ int main(int argc, char* argv[]) {
         if (clock.isRunning())
         {
             TrafficLightManager::getInstance().update(clock.getDeltaTime());
+
             vehicleManager.update(clock.getDeltaTime());
+
+                while (SDL_PollEvent(&event)) {
+                handleInput(event, appContext);
+            }
         }
 
         window.clear();
@@ -263,8 +337,8 @@ int main(int argc, char* argv[]) {
     visualizationEngine.cleanUp(window);
 
     window.cleanUp();
-
     TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }
