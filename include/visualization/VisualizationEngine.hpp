@@ -98,6 +98,11 @@ private:
         RenderWindow& window,
         const Camera& camera) const;
 
+    void renderVehicleRoute(
+        RenderWindow& window,
+        const Camera& camera,
+        const Vehicle& vehicle) const;
+
     // ---- Texture handles ----
     SDL_Texture* mapBackground_ = nullptr;
     SDL_Texture* intersectionTexture_ = nullptr;
