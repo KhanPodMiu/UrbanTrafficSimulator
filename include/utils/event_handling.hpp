@@ -6,6 +6,7 @@
 #include "graph/Graph.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "simulation/RouteOptimizer.hpp"
+#include "simulation/BannedRouteManager.hpp"
 #include "utils/vector2i.hpp"
 #include <filesystem>
 
@@ -21,12 +22,8 @@ struct AppContext {
 };
 
 std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath);
+
 void handleInput(SDL_Event& event, AppContext &Game);
 void spawnVehicleAt(const Vector2& clickPos, Graph& graph, VehicleManager& vehicleManager);
-
-// Returns true if the most recently completed mouse gesture was a drag
-// (mouse moved more than a small threshold between press and release).
 bool wasDragAction();
-
-//helper function
 bool switchBannedRoute(int routeID, AppContext &Game);
