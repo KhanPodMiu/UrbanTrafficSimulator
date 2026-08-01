@@ -327,6 +327,7 @@ Once the simulator starts, users can:
 * Switch routing algorithms.
 * Increase simulation speed.
 * Observe congestion and traffic events.
+* Toggle the live traffic heat map to inspect congestion on every road.
 
 ---
 
@@ -337,6 +338,7 @@ Once the simulator starts, users can:
 | **W / A / S / D** | Move the camera around the map |
 | **Q** | Zoom out |
 | **E** | Zoom in |
+| **H** | Toggle the traffic heat map |
 
 ---
 
