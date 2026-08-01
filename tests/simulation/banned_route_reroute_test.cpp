@@ -212,6 +212,43 @@ TEST(BannedRouteRerouteTest, NeverEntersBannedNextRoadWithoutDetour)
     EXPECT_TRUE(bannedNextRoad->getVehicles().empty());
 }
 
+TEST(BannedRouteRerouteTest, RemovesUnreachableClosureFromRemainingPlan)
+{
+    Graph graph;
+    auto a = std::make_shared<Intersection>("A", 0, 0);
+    auto b = std::make_shared<Intersection>("B", 1000, 0);
+    auto d = std::make_shared<Intersection>("D", 2000, 0);
+    graph.addIntersection(a);
+    graph.addIntersection(b);
+    graph.addIntersection(d);
+
+    auto currentRoad = std::make_shared<Road>(
+        "AB", a.get(), b.get(), 60);
+    auto pendingRoad = std::make_shared<Road>(
+        "BD", b.get(), d.get(), 60);
+    graph.addRoad(currentRoad);
+    graph.addRoad(pendingRoad);
+    pendingRoad->setVIPClosurePending(true);
+
+    RoutingManager routingManager{std::make_unique<Dijkstra>()};
+    Vehicle vehicle("no-detour");
+    vehicle.setRoute({currentRoad, pendingRoad});
+    vehicle.setCurrentRoad(currentRoad);
+    vehicle.setDestination(d);
+    vehicle.setDistanceOnRoad(500.0);
+    currentRoad->vehicleEnters(&vehicle);
+
+    ASSERT_TRUE(vehicle.rerouteAroundBannedRoads(
+        graph,
+        routingManager));
+    ASSERT_EQ(vehicle.getRoute().size(), 1U);
+    EXPECT_EQ(vehicle.getRoute()[0], currentRoad);
+    EXPECT_EQ(vehicle.getCurrentRoad(), currentRoad);
+    EXPECT_FALSE(vehicle.getRoute()[0]->isUnavailableForRouting());
+
+    currentRoad->vehicleExits(&vehicle);
+}
+
 TEST(BannedRouteRerouteTest, ChoosesLowestTravelCostAfterForwardExit)
 {
     Graph graph;
