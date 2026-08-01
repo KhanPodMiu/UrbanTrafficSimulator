@@ -254,7 +254,7 @@ void spawnVehicleAt(const Vector2& clickPos,
 {
     Vector2 mousePos(static_cast<float>(clickPos.x), static_cast<float>(clickPos.y));
 
-    auto startNode = graph.findNearestIntersection(mousePos, 300.0f);
+    auto startNode = graph.findNearestIntersection(mousePos, 200.0f);
     if (startNode) 
     {
         vehicleManager.spawnVehicleAtIntersection(startNode->getIntersectionID());
