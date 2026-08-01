@@ -60,6 +60,23 @@ bool switchBannedRoute(int routeID, AppContext &Game)
     return false;
 }
 
+// Minimum pixel distance between press and release to count as a drag
+// rather than a click.
+static constexpr int DRAG_THRESHOLD = 5;
+
+// State shared between handleInput() and wasDragAction().
+static bool isDragging = false;
+static int  lastMouseX = 0;
+static int  lastMouseY = 0;
+static int  dragStartX = 0;
+static int  dragStartY = 0;
+static bool mouseMoved_ = false;   // true when distance > DRAG_THRESHOLD
+
+bool wasDragAction()
+{
+    return mouseMoved_;
+}
+
 void handleInput(SDL_Event& event, AppContext &Game)
 {
     if (event.type == SDL_QUIT)
@@ -67,10 +84,6 @@ void handleInput(SDL_Event& event, AppContext &Game)
         Game.isRunning = false;
         return;
     }
-
-    static bool isDragging = false;
-    static int lastMouseX = 0;
-    static int lastMouseY = 0;
 
     if (event.type == SDL_MOUSEWHEEL)
     {
@@ -103,11 +116,14 @@ void handleInput(SDL_Event& event, AppContext &Game)
                 Vector2 worldPos;
                 worldPos.x = Game.camera.getX() + screenX / Game.camera.getZoom();
                 worldPos.y = Game.camera.getY() + screenY / Game.camera.getZoom();
-                spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
+                //spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
 
                 isDragging = true;
                 lastMouseX = event.button.x;
                 lastMouseY = event.button.y;
+                dragStartX = event.button.x;
+                dragStartY = event.button.y;
+                mouseMoved_ = false;
             }
         }
         else if (event.button.button == SDL_BUTTON_MIDDLE)
@@ -115,6 +131,9 @@ void handleInput(SDL_Event& event, AppContext &Game)
             isDragging = true;
             lastMouseX = event.button.x;
             lastMouseY = event.button.y;
+            dragStartX = event.button.x;
+            dragStartY = event.button.y;
+            mouseMoved_ = false;
         }
 
         return;
@@ -144,6 +163,19 @@ void handleInput(SDL_Event& event, AppContext &Game)
 
             lastMouseX = event.motion.x;
             lastMouseY = event.motion.y;
+
+            // Check if the cumulative distance from the press origin
+            // exceeds the threshold => treat as drag, not click.
+            if (!mouseMoved_)
+            {
+                int totalDx = event.motion.x - dragStartX;
+                int totalDy = event.motion.y - dragStartY;
+                if (totalDx * totalDx + totalDy * totalDy >
+                    DRAG_THRESHOLD * DRAG_THRESHOLD)
+                {
+                    mouseMoved_ = true;
+                }
+            }
         }
 
         return;
