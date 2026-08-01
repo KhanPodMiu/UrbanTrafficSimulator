@@ -31,13 +31,13 @@ StatisticsPanel::StatisticsPanel()
       restartButtonRect_{296, 250, 125, 80},
       speedSliderRect_{59, 330, 340, 110},
       algorithmButtonRects_{
-          SDL_Rect{59, 450, 121, 121},
-          SDL_Rect{153, 450, 121, 121},
-          SDL_Rect{285, 450, 121, 121},
+          SDL_Rect{59, 450, 113, 110},
+          SDL_Rect{172, 450, 113, 110},
+          SDL_Rect{285, 450, 114, 110},
       },
       selectedSpeedIndex_(1),
       speedDragging_(false),
-      selectedAlgorithm_(RoutingAlgorithm::Dijkstra)
+      selectedAlgorithm_(RoutingAlgorithm::DIJKSTRA)
 {
 }
 

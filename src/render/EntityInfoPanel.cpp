@@ -286,7 +286,7 @@ void EntityInfoPanel::renderIntersectionInfo(
     renderText(
         window,
         titleFont_,
-        "INTERSECTION INFORMATION",
+        "INTERSECTION",
         textX,
         panelRect_.y + 18,
         TITLE_COLOR);

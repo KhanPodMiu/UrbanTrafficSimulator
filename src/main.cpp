@@ -1,4 +1,6 @@
 #include "algorithms/RoutingManager.hpp"
+#include "algorithms/AStarStrategy.hpp"
+#include "algorithms/BFS.hpp"
 #include "algorithms/Dijkstra.hpp"
     
 #include "SDL2/SDL.h"
@@ -176,6 +178,25 @@ int main(int argc, char* argv[]) {
                     break;
 
                 case PanelCommand::AlgorithmChanged:
+                    switch (statisticsPanel.getSelectedAlgorithm())
+                    {
+                        case RoutingAlgorithm::BFS:
+                            routingManager.setStrategy(
+                                std::make_unique<BFS>());
+                            break;
+
+                        case RoutingAlgorithm::DIJKSTRA:
+                            routingManager.setStrategy(
+                                std::make_unique<Dijkstra>());
+                            break;
+
+                        case RoutingAlgorithm::AStarStrategy:
+                            routingManager.setStrategy(
+                                std::make_unique<AStarStrategy>());
+                            break;
+                    }
+                    break;
+
                 case PanelCommand::None:
                     break;
             }
