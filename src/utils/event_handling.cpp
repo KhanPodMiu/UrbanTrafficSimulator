@@ -5,6 +5,7 @@
 #include "graph/Road.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "simulation/RouteOptimizer.hpp"
+#include "simulation/PresidentialRouteManager.hpp"
 #include "core/Constants.hpp"
 #include <iostream>
 #include <filesystem>
@@ -46,12 +47,33 @@ bool switchBannedRoute(int routeID, AppContext &Game)
     
     if (MapLoader::loadFromJson(mapPath.string(), Game.graph)) {
         Game.isBannedState = (routeID != 0);
+        /*
+        // Legacy behavior (disabled): this made the closure active and
+        // rerouted vehicles in a single step, leaving no clearance window.
         const int reroutedVehicles =
             Game.vehicleManager.rerouteVehiclesAroundBannedRoads();
+        */
+        int reroutedVehicles = 0;
+        if (routeID != 0)
+        {
+            reroutedVehicles =
+                Game.presidentialRouteManager.beginPreparation();
+        }
+        else
+        {
+            Game.presidentialRouteManager.cancel();
+        }
         Game.visualizationEngine.buildRenderCache(Game.graph);
         std::cout << "[INFO] Successfully loaded route ID: " << routeID 
                   << " (" << filePath << "), rerouted vehicles: "
-                  << reroutedVehicles << "\n";
+                  << reroutedVehicles;
+        if (routeID != 0)
+        {
+            std::cout
+                << ", waiting until the corridor is empty and no vehicle "
+                << "route points into it";
+        }
+        std::cout << "\n";
         return true;
     }
 
