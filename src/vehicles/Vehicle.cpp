@@ -229,7 +229,8 @@ bool Vehicle::tryAdvanceToNextRoad()
     // Never enter a restricted road from an unrestricted one. Normally the
     // ban event has already installed a detour; this guard safely handles the
     // case where no valid detour exists.
-    if (next && next->isVIPExclusive())
+    // if (next && next->isVIPExclusive()) // Legacy: active-only closure.
+    if (next && next->isUnavailableForRouting())
     {
         m_distanceOnRoad = m_currentRoad->getDistance();
         m_currentSpeed = 0.0;
@@ -268,11 +269,13 @@ bool Vehicle::rerouteAroundBannedRoads(
     if (m_finished || !m_currentRoad || !m_destination)
         return false;
 
-    const bool currentRoadIsBanned = m_currentRoad->isVIPExclusive();
+    // const bool currentRoadIsBanned =
+    //     m_currentRoad->isUnavailableForRouting(); // Legacy teleport branch.
     bool remainingRouteContainsBannedRoad = false;
     for (size_t i = m_routeIndex; i < m_route.size(); ++i)
     {
-        if (m_route[i] && m_route[i]->isVIPExclusive())
+        // if (m_route[i] && m_route[i]->isVIPExclusive()) // Legacy.
+        if (m_route[i] && m_route[i]->isUnavailableForRouting())
         {
             remainingRouteContainsBannedRoad = true;
             break;
@@ -304,16 +307,20 @@ bool Vehicle::rerouteAroundBannedRoads(
         RouteRequest(rerouteStart->getIntersectionID(), destinationID));
     if (!routeResult.isSuccess || routeResult.intersectionIDs.size() < 2)
     {
-        // Even without a path to the original destination, an occupant of the
-        // restricted road must still evacuate it. A current-road-only route
-        // lets the vehicle reach the forward endpoint and finish there.
-        if (currentRoadIsBanned)
-        {
-            m_route = {m_currentRoad};
-            m_routeIndex = 0;
-            return true;
-        }
-        return false;
+        /*
+        // Legacy behavior (disabled): a vehicle outside the corridor kept its
+        // old route when no detour existed, so that route still pointed into
+        // a road scheduled for closure.
+        if (!currentRoadIsBanned)
+            return false;
+        */
+
+        // No legal detour exists. End the plan at the current safe road so no
+        // remaining route can point into the presidential corridor. A vehicle
+        // already inside the corridor still reaches its forward endpoint.
+        m_route = {m_currentRoad};
+        m_routeIndex = 0;
+        return true;
     }
 
     std::vector<std::shared_ptr<Road>> replacementRoute;
@@ -325,7 +332,8 @@ bool Vehicle::rerouteAroundBannedRoads(
         Road* road = graph.getRoadBetween(
             routeResult.intersectionIDs[i],
             routeResult.intersectionIDs[i + 1]);
-        if (!road || road->isVIPExclusive())
+        // if (!road || road->isVIPExclusive()) // Legacy: active-only closure.
+        if (!road || road->isUnavailableForRouting())
             return false;
 
         std::shared_ptr<Road> roadPtr = graph.getRoad(road->getRoadId());

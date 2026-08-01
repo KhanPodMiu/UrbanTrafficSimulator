@@ -50,6 +50,7 @@ bool MapLoader::loadFromJson(const std::string& filename, Graph& graph){
     // 2. Reset trạng thái VIP của tất cả đường hiện tại về false trước khi apply file mới
     for (auto& [id, roadPtr] : graph.getRoads()) {
         if (roadPtr) {
+            roadPtr->setVIPClosurePending(false);
             roadPtr->setVIPExclusive(false);
         }
     }
