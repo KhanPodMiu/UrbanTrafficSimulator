@@ -46,15 +46,22 @@ void Vehicle::update(double dt)
     if (m_finished)
         return;
 
-    // A vehicle must never continue driving on a road reserved for the VIP
-    // convoy. Normally it is moved to a detour as soon as the ban appears;
-    // if no detour exists, keep it stopped instead of crossing the closure.
+    /*
+    // Legacy behavior (disabled): stopping immediately could strand a vehicle
+    // in the middle of a road at the exact moment that road became restricted.
     if (m_currentRoad && m_currentRoad->isVIPExclusive())
     {
         m_currentSpeed = 0.0;
         m_targetSpeed = 0.0;
         return;
     }
+    */
+
+    // A vehicle already on a newly restricted road is allowed to keep moving
+    // forward until it reaches that road's destination intersection. Its
+    // remaining route is replaced by rerouteAroundBannedRoads(), so it can
+    // leave the restricted segment physically instead of being teleported or
+    // frozen inside it.
 
     if (m_currentSpeed < m_targetSpeed)
     {
@@ -219,6 +226,18 @@ bool Vehicle::tryAdvanceToNextRoad()
 
     std::shared_ptr<Road> next = getNextRoad();
 
+    // Never enter a restricted road from an unrestricted one. Normally the
+    // ban event has already installed a detour; this guard safely handles the
+    // case where no valid detour exists.
+    if (next && next->isVIPExclusive())
+    {
+        m_distanceOnRoad = m_currentRoad->getDistance();
+        m_currentSpeed = 0.0;
+        m_targetSpeed = 0.0;
+        updateWorldPosition();
+        return false;
+    }
+
     m_currentRoad->vehicleExits(this);
 
     if (!next)
@@ -250,12 +269,6 @@ bool Vehicle::rerouteAroundBannedRoads(
         return false;
 
     const bool currentRoadIsBanned = m_currentRoad->isVIPExclusive();
-    const double currentRoadProgress = m_currentRoad->getDistance() > 0.0
-        ? std::clamp(
-              m_distanceOnRoad / m_currentRoad->getDistance(),
-              0.0,
-              1.0)
-        : 0.0;
     bool remainingRouteContainsBannedRoad = false;
     for (size_t i = m_routeIndex; i < m_route.size(); ++i)
     {
@@ -269,9 +282,11 @@ bool Vehicle::rerouteAroundBannedRoads(
     if (!remainingRouteContainsBannedRoad)
         return false;
 
-    const Intersection* rerouteStart = currentRoadIsBanned
-        ? m_currentRoad->getSourceIntersection()
-        : m_currentRoad->getDestinationIntersection();
+    // A vehicle can only leave its current directed road through the forward
+    // endpoint. The active router (Dijkstra in the simulation) then minimizes
+    // congestion-aware travel cost from that exit to the destination.
+    const Intersection* rerouteStart =
+        m_currentRoad->getDestinationIntersection();
     if (!rerouteStart)
         return false;
 
@@ -279,19 +294,8 @@ bool Vehicle::rerouteAroundBannedRoads(
         m_destination->getIntersectionID();
     if (rerouteStart->getIntersectionID() == destinationID)
     {
-        if (currentRoadIsBanned)
-        {
-            m_currentRoad->vehicleExits(this);
-            m_currentRoad.reset();
-            m_route.clear();
-            m_routeIndex = 0;
-            m_finished = true;
-        }
-        else
-        {
-            m_route = {m_currentRoad};
-            m_routeIndex = 0;
-        }
+        m_route = {m_currentRoad};
+        m_routeIndex = 0;
         return true;
     }
 
@@ -299,12 +303,22 @@ bool Vehicle::rerouteAroundBannedRoads(
         graph,
         RouteRequest(rerouteStart->getIntersectionID(), destinationID));
     if (!routeResult.isSuccess || routeResult.intersectionIDs.size() < 2)
+    {
+        // Even without a path to the original destination, an occupant of the
+        // restricted road must still evacuate it. A current-road-only route
+        // lets the vehicle reach the forward endpoint and finish there.
+        if (currentRoadIsBanned)
+        {
+            m_route = {m_currentRoad};
+            m_routeIndex = 0;
+            return true;
+        }
         return false;
+    }
 
     std::vector<std::shared_ptr<Road>> replacementRoute;
     replacementRoute.reserve(routeResult.intersectionIDs.size());
-    if (!currentRoadIsBanned)
-        replacementRoute.push_back(m_currentRoad);
+    replacementRoute.push_back(m_currentRoad);
 
     for (size_t i = 0; i + 1 < routeResult.intersectionIDs.size(); ++i)
     {
@@ -324,6 +338,15 @@ bool Vehicle::rerouteAroundBannedRoads(
     if (replacementRoute.empty())
         return false;
 
+    /*
+    // Legacy behavior (disabled): this replaced the current road immediately
+    // and copied its percentage progress, which visually teleported the car.
+    const double currentRoadProgress = m_currentRoad->getDistance() > 0.0
+        ? std::clamp(
+              m_distanceOnRoad / m_currentRoad->getDistance(),
+              0.0,
+              1.0)
+        : 0.0;
     if (currentRoadIsBanned)
     {
         m_currentRoad->vehicleExits(this);
@@ -334,6 +357,7 @@ bool Vehicle::rerouteAroundBannedRoads(
         m_isPassing = false;
         m_currentRoad->vehicleEnters(this);
     }
+    */
 
     m_route = std::move(replacementRoute);
     m_routeIndex = 0;

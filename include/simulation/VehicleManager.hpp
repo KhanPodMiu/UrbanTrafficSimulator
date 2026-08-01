@@ -25,6 +25,8 @@ public:
 
     const std::vector<std::shared_ptr<Vehicle>>& getVehicles() const;
     void spawnVehicleAtIntersection(const std::string& intersectionID);
+    /// Replans every affected vehicle immediately after road restrictions
+    /// change and returns the number of successfully updated routes.
     int rerouteVehiclesAroundBannedRoads();
 
 private:
