@@ -19,16 +19,6 @@ The project demonstrates the application of **Object-Oriented Programming**, **g
 
 ---
 
-## Team Members
-
-| No. | Student ID | Full Name | GitHub |
-|:---:|:----------:|-----------|--------|
-| 1 | 25127274 | Võ Lê Nam Khánh Ann | KhanPodMiu |
-| 2 | 25127230 | Đặng Nguyễn Yến Phương | itsyippie |
-| 3 | 25127440 | Huỳnh Chí Nhân | hchinhan |
-| 4 | 25127018 | Nguyễn Phúc Gia Bảo | Kevincrazy678 |
-
----
 
 # 🛠️ Technologies
 
@@ -335,8 +325,9 @@ Once the simulator starts, users can:
 | Key | Action |
 |-----|--------|
 | **W / A / S / D** | Move the camera around the map |
-| **Q** | Zoom out |
-| **E** | Zoom in |
+| **Left Mouse Button + Drag** | Move the camera |
+| **Mouse Wheel** | Zoom in/out |
+| **Q / E** | Zoom out / Zoom in |
 
 ---
 
