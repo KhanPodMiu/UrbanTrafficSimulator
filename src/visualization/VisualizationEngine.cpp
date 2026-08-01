@@ -5,6 +5,7 @@
 #include "graph/Graph.hpp"
 #include "graph/Road.hpp"
 #include "graph/Intersection.hpp"
+#include "render/TrafficHeatMap.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -42,6 +43,154 @@ constexpr float VEHICLE_RENDER_WIDTH = 50.0f;
 constexpr float MIN_VEHICLE_HIT_HALF_WIDTH = 8.0f;
 constexpr float MIN_VEHICLE_HIT_HALF_LENGTH = 10.0f;
 constexpr float MIN_INTERSECTION_HIT_RADIUS = 10.0f;
+constexpr Uint8 HEAT_MAP_ROAD_ALPHA = 178;
+
+constexpr SDL_Rect HEAT_MAP_BUTTON_RECT{
+    Config::PANEL_WIDTH + 18,
+    18,
+    154,
+    42};
+
+constexpr SDL_Rect HEAT_MAP_LEGEND_RECT{
+    Config::PANEL_WIDTH + 18,
+    68,
+    218,
+    124};
+
+SDL_Texture* createTextTexture(
+    SDL_Renderer* renderer,
+    TTF_Font* font,
+    const char* text,
+    SDL_Color color)
+{
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
+    if (surface == nullptr)
+        return nullptr;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    return texture;
+}
+
+SDL_Texture* createWhitePixelTexture(SDL_Renderer* renderer)
+{
+    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
+        0,
+        1,
+        1,
+        32,
+        SDL_PIXELFORMAT_RGBA32);
+    if (surface == nullptr)
+        return nullptr;
+
+    SDL_FillRect(
+        surface,
+        nullptr,
+        SDL_MapRGBA(surface->format, 255, 255, 255, 255));
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    if (texture != nullptr)
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+    return texture;
+}
+
+void renderTextureAt(
+    SDL_Renderer* renderer,
+    SDL_Texture* texture,
+    int x,
+    int y)
+{
+    if (texture == nullptr)
+        return;
+
+    SDL_Rect destination{x, y, 0, 0};
+    SDL_QueryTexture(
+        texture,
+        nullptr,
+        nullptr,
+        &destination.w,
+        &destination.h);
+    SDL_RenderCopy(renderer, texture, nullptr, &destination);
+}
+
+void fillCircle(
+    SDL_Renderer* renderer,
+    int centerX,
+    int centerY,
+    int radius)
+{
+    for (int y = -radius; y <= radius; ++y)
+    {
+        const int halfWidth = static_cast<int>(std::sqrt(
+            static_cast<double>(radius * radius - y * y)));
+        SDL_RenderDrawLine(
+            renderer,
+            centerX - halfWidth,
+            centerY + y,
+            centerX + halfWidth,
+            centerY + y);
+    }
+}
+
+void renderFloatingPanel(
+    SDL_Renderer* renderer,
+    const SDL_Rect& rectangle,
+    SDL_Color background,
+    SDL_Color border)
+{
+    const SDL_Rect shadow{
+        rectangle.x + 3,
+        rectangle.y + 4,
+        rectangle.w,
+        rectangle.h};
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 3, 12, 18, 105);
+    SDL_RenderFillRect(renderer, &shadow);
+    SDL_SetRenderDrawColor(
+        renderer,
+        background.r,
+        background.g,
+        background.b,
+        background.a);
+    SDL_RenderFillRect(renderer, &rectangle);
+    SDL_SetRenderDrawColor(
+        renderer,
+        border.r,
+        border.g,
+        border.b,
+        border.a);
+    SDL_RenderDrawRect(renderer, &rectangle);
+}
+
+void renderSolidRoadOverlay(
+    SDL_Renderer* renderer,
+    SDL_Texture* texture,
+    const Vector2& start,
+    float length,
+    float width,
+    double angle)
+{
+    if (length <= 0.0f || width <= 0.0f)
+        return;
+
+    SDL_Rect destination{
+        static_cast<int>(std::lround(start.x)),
+        static_cast<int>(std::lround(start.y - width * 0.5f)),
+        std::max(1, static_cast<int>(std::ceil(length))),
+        std::max(1, static_cast<int>(std::ceil(width)))};
+    const SDL_Point pivot{0, destination.h / 2};
+    SDL_RenderCopyEx(
+        renderer,
+        texture,
+        nullptr,
+        &destination,
+        angle,
+        &pivot,
+        SDL_FLIP_NONE);
+}
 
 // Retrieves the correct texture for a given vehicle type
 SDL_Texture* vehicleTexture(
@@ -187,6 +336,47 @@ bool VisualizationEngine::loadAssets(RenderWindow& window)
         return false;
     }
 
+    SDL_Renderer* renderer = window.getRenderer();
+    heatMapOverlayTexture_ = createWhitePixelTexture(renderer);
+    if (heatMapOverlayTexture_ == nullptr) {
+        std::cerr << "\n[ERROR] Cannot create traffic heat-map overlay: "
+                  << SDL_GetError();
+        return false;
+    }
+
+    heatMapFont_ = TTF_OpenFont(
+        "assets/textures/fonts/Octarine-Bold.otf",
+        14);
+    if (heatMapFont_ == nullptr) {
+        std::cerr << "\n[ERROR] Cannot load traffic heat-map font: "
+                  << TTF_GetError();
+        return false;
+    }
+
+    const SDL_Color primaryText{238, 246, 248, 255};
+    const SDL_Color secondaryText{190, 207, 212, 255};
+    heatMapButtonLabelTexture_ = createTextTexture(
+        renderer, heatMapFont_, "HEAT MAP", primaryText);
+    heatMapLegendTitleTexture_ = createTextTexture(
+        renderer, heatMapFont_, "TRAFFIC LEVEL", primaryText);
+    heatMapLowLabelTexture_ = createTextTexture(
+        renderer, heatMapFont_, "LOW       0 - 39%", secondaryText);
+    heatMapModerateLabelTexture_ = createTextTexture(
+        renderer, heatMapFont_, "MEDIUM  40 - 69%", secondaryText);
+    heatMapHeavyLabelTexture_ = createTextTexture(
+        renderer, heatMapFont_, "HIGH     70 - 100%", secondaryText);
+
+    if (heatMapButtonLabelTexture_ == nullptr ||
+        heatMapLegendTitleTexture_ == nullptr ||
+        heatMapLowLabelTexture_ == nullptr ||
+        heatMapModerateLabelTexture_ == nullptr ||
+        heatMapHeavyLabelTexture_ == nullptr)
+    {
+        std::cerr << "\n[ERROR] Cannot create traffic heat-map labels: "
+                  << TTF_GetError();
+        return false;
+    }
+
     return true;
 }
 
@@ -278,6 +468,9 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
         window.renderRoad(currentRoadTex, renderPos, road.length * zoom, Config::ROAD_WIDTH * zoom, road.angle);
     }
 
+    if (heatMapEnabled_)
+        renderTrafficHeatMapRoads(window, camera);
+
     // Intersection
     for (const auto& intersection : intersectionsLocation_) {
         Vector2 topLeft(
@@ -305,6 +498,222 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
         }
     }
 
+}
+
+void VisualizationEngine::renderTrafficHeatMapRoads(
+    RenderWindow& window,
+    const Camera& camera) const
+{
+    if (heatMapOverlayTexture_ == nullptr)
+        return;
+
+    SDL_Renderer* renderer = window.getRenderer();
+    const SDL_Rect viewport{
+        Config::PANEL_WIDTH,
+        0,
+        Config::VIEW_PORT_WIDTH,
+        Config::VIEW_PORT_HEIGHT};
+    SDL_RenderSetClipRect(renderer, &viewport);
+
+    const float zoom = camera.getZoom();
+    const float overlayWidth = std::max(
+        3.0f,
+        Config::ROAD_WIDTH * zoom * 0.72f);
+    SDL_SetTextureAlphaMod(heatMapOverlayTexture_, HEAT_MAP_ROAD_ALPHA);
+
+    for (const auto& road : roadsLocation_)
+    {
+        // Closed/VIP roads retain their dedicated striped texture so users do
+        // not mistake an unavailable route for ordinary heavy traffic.
+        if (!road.road || road.road->isVIPExclusive())
+            continue;
+
+        const SDL_Color color = TrafficHeatMapScale::colorFor(
+            road.road->getCongestionLevel());
+        SDL_SetTextureColorMod(
+            heatMapOverlayTexture_, color.r, color.g, color.b);
+
+        const Vector2 shiftedStart(
+            road.start.x + road.offsetX,
+            road.start.y + road.offsetY);
+        Vector2 screenStart = applyCamera(shiftedStart, camera);
+        screenStart.x += Config::PANEL_WIDTH;
+
+        renderSolidRoadOverlay(
+            renderer,
+            heatMapOverlayTexture_,
+            screenStart,
+            road.length * zoom,
+            overlayWidth,
+            road.angle);
+    }
+
+    SDL_SetTextureColorMod(heatMapOverlayTexture_, 255, 255, 255);
+    SDL_SetTextureAlphaMod(heatMapOverlayTexture_, 255);
+    SDL_RenderSetClipRect(renderer, nullptr);
+}
+
+bool VisualizationEngine::handleTrafficHeatMapEvent(const SDL_Event& event)
+{
+    if (event.type == SDL_KEYDOWN &&
+        event.key.repeat == 0 &&
+        event.key.keysym.sym == SDLK_h)
+    {
+        heatMapEnabled_ = !heatMapEnabled_;
+        return true;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN &&
+        event.button.button == SDL_BUTTON_LEFT)
+    {
+        const SDL_Point point{event.button.x, event.button.y};
+        if (SDL_PointInRect(&point, &HEAT_MAP_BUTTON_RECT) == SDL_TRUE)
+        {
+            heatMapButtonPressed_ = true;
+            return true;
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONUP &&
+        event.button.button == SDL_BUTTON_LEFT &&
+        heatMapButtonPressed_)
+    {
+        const SDL_Point point{event.button.x, event.button.y};
+        if (SDL_PointInRect(&point, &HEAT_MAP_BUTTON_RECT) == SDL_TRUE)
+            heatMapEnabled_ = !heatMapEnabled_;
+
+        heatMapButtonPressed_ = false;
+        return true;
+    }
+
+    return false;
+}
+
+void VisualizationEngine::renderTrafficHeatMapUi(RenderWindow& window) const
+{
+    SDL_Renderer* renderer = window.getRenderer();
+    int mouseX = 0;
+    int mouseY = 0;
+    SDL_GetMouseState(&mouseX, &mouseY);
+    const SDL_Point mousePoint{mouseX, mouseY};
+    const bool isHovered =
+        SDL_PointInRect(&mousePoint, &HEAT_MAP_BUTTON_RECT) == SDL_TRUE;
+
+    const SDL_Color buttonBackground = heatMapEnabled_
+        ? SDL_Color{18, 65, 69, 238}
+        : (isHovered
+            ? SDL_Color{28, 58, 70, 238}
+            : SDL_Color{18, 42, 53, 232});
+    const SDL_Color buttonBorder = heatMapEnabled_
+        ? SDL_Color{45, 212, 191, 255}
+        : (isHovered
+            ? SDL_Color{111, 147, 158, 255}
+            : SDL_Color{70, 101, 111, 235});
+    renderFloatingPanel(
+        renderer,
+        HEAT_MAP_BUTTON_RECT,
+        buttonBackground,
+        buttonBorder);
+
+    // Three bars make the control recognizable even before reading its label.
+    const SDL_Color scaleColors[] = {
+        TrafficHeatMapScale::colorFor(0),
+        TrafficHeatMapScale::colorFor(50),
+        TrafficHeatMapScale::colorFor(100)};
+    for (int i = 0; i < 3; ++i)
+    {
+        SDL_SetRenderDrawColor(
+            renderer,
+            scaleColors[i].r,
+            scaleColors[i].g,
+            scaleColors[i].b,
+            255);
+        const SDL_Rect bar{
+            HEAT_MAP_BUTTON_RECT.x + 13 + i * 5,
+            HEAT_MAP_BUTTON_RECT.y + 13 - i * 2,
+            3,
+            15 + i * 2};
+        SDL_RenderFillRect(renderer, &bar);
+    }
+
+    renderTextureAt(
+        renderer,
+        heatMapButtonLabelTexture_,
+        HEAT_MAP_BUTTON_RECT.x + 37,
+        HEAT_MAP_BUTTON_RECT.y + 13);
+
+    const SDL_Rect switchTrack{
+        HEAT_MAP_BUTTON_RECT.x + HEAT_MAP_BUTTON_RECT.w - 33,
+        HEAT_MAP_BUTTON_RECT.y + 14,
+        22,
+        14};
+    SDL_SetRenderDrawColor(
+        renderer,
+        heatMapEnabled_ ? 19 : 72,
+        heatMapEnabled_ ? 112 : 91,
+        heatMapEnabled_ ? 102 : 98,
+        255);
+    SDL_RenderFillRect(renderer, &switchTrack);
+    SDL_SetRenderDrawColor(renderer, 238, 246, 248, 255);
+    fillCircle(
+        renderer,
+        heatMapEnabled_ ? switchTrack.x + 15 : switchTrack.x + 7,
+        switchTrack.y + 7,
+        5);
+
+    if (!heatMapEnabled_)
+        return;
+
+    renderFloatingPanel(
+        renderer,
+        HEAT_MAP_LEGEND_RECT,
+        SDL_Color{12, 34, 43, 226},
+        SDL_Color{63, 91, 100, 225});
+    renderTextureAt(
+        renderer,
+        heatMapLegendTitleTexture_,
+        HEAT_MAP_LEGEND_RECT.x + 14,
+        HEAT_MAP_LEGEND_RECT.y + 11);
+
+    SDL_SetRenderDrawColor(renderer, 70, 101, 111, 180);
+    SDL_RenderDrawLine(
+        renderer,
+        HEAT_MAP_LEGEND_RECT.x + 14,
+        HEAT_MAP_LEGEND_RECT.y + 35,
+        HEAT_MAP_LEGEND_RECT.x + HEAT_MAP_LEGEND_RECT.w - 14,
+        HEAT_MAP_LEGEND_RECT.y + 35);
+
+    struct LegendRow
+    {
+        SDL_Color color;
+        SDL_Texture* label;
+    };
+    const LegendRow rows[] = {
+        {TrafficHeatMapScale::colorFor(0), heatMapLowLabelTexture_},
+        {TrafficHeatMapScale::colorFor(50), heatMapModerateLabelTexture_},
+        {TrafficHeatMapScale::colorFor(100), heatMapHeavyLabelTexture_}};
+
+    for (int i = 0; i < 3; ++i)
+    {
+        const int rowY = HEAT_MAP_LEGEND_RECT.y + 53 + i * 23;
+        SDL_SetRenderDrawColor(
+            renderer,
+            rows[i].color.r,
+            rows[i].color.g,
+            rows[i].color.b,
+            255);
+        fillCircle(renderer, HEAT_MAP_LEGEND_RECT.x + 20, rowY + 6, 5);
+        renderTextureAt(
+            renderer,
+            rows[i].label,
+            HEAT_MAP_LEGEND_RECT.x + 34,
+            rowY);
+    }
+}
+
+bool VisualizationEngine::isTrafficHeatMapEnabled() const noexcept
+{
+    return heatMapEnabled_;
 }
 
 void VisualizationEngine::renderVehicles(
@@ -506,4 +915,17 @@ void VisualizationEngine::cleanUp(RenderWindow& window)
     window.cleanUpTexture(carTexture_);
     window.cleanUpTexture(busTexture_);
     window.cleanUpTexture(emergencyTexture_);
+
+    window.cleanUpTexture(heatMapOverlayTexture_);
+    window.cleanUpTexture(heatMapButtonLabelTexture_);
+    window.cleanUpTexture(heatMapLegendTitleTexture_);
+    window.cleanUpTexture(heatMapLowLabelTexture_);
+    window.cleanUpTexture(heatMapModerateLabelTexture_);
+    window.cleanUpTexture(heatMapHeavyLabelTexture_);
+
+    if (heatMapFont_ != nullptr)
+    {
+        TTF_CloseFont(heatMapFont_);
+        heatMapFont_ = nullptr;
+    }
 }
