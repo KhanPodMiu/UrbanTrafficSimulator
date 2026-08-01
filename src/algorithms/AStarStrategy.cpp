@@ -127,7 +127,8 @@ RouteResult AStarStrategy::calculateRoute(
         const auto& roads = graph.getConnectedRoads(current.intersectionID);
 
         for(const auto& road : roads) {
-            if (!road || road->isVIPExclusive())
+            // if (!road || road->isVIPExclusive()) // Legacy: active-only closure.
+            if (!road || road->isUnavailableForRouting())
                 continue;
 
             const Intersection* neighbor = road->getDestinationIntersection();
