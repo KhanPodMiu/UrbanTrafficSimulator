@@ -206,7 +206,11 @@ int main(int argc, char* argv[]) {
 
         // --- Main game loop sections (event handling) ---
         while (SDL_PollEvent(&event)) {
-            handleInput(event, appContext);
+            const bool heatMapControlHandled =
+                visualizationEngine.handleTrafficHeatMapEvent(event);
+
+            if (!heatMapControlHandled)
+                handleInput(event, appContext);
 
             const PanelCommand panelCommand =
                 statisticsPanel.handleEvent(event);
@@ -241,6 +245,7 @@ int main(int argc, char* argv[]) {
 
             if (event.type == SDL_MOUSEBUTTONUP &&
                 event.button.button == SDL_BUTTON_LEFT &&
+                !heatMapControlHandled &&
                 event.button.x >= Config::PANEL_WIDTH &&
                 !entityInfoPanel.containsPoint(
                     event.button.x,
@@ -306,6 +311,7 @@ int main(int argc, char* argv[]) {
         // SDL_RenderFillRect(window.getRenderer(), &panel);
 
         statisticsPanel.render(window,clock.getSimulationTime());
+        visualizationEngine.renderTrafficHeatMapUi(window);
 
         window.display();
 
