@@ -259,6 +259,79 @@ void drawCircle(
     SDL_RenderDrawLines(renderer, points, SEGMENTS + 1);
 }
 
+// Draws a thick line segment by rendering parallel lines
+void drawThickLine(
+    SDL_Renderer* renderer,
+    float x1,
+    float y1,
+    float x2,
+    float y2,
+    float thickness)
+{
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    float len = std::sqrt(dx * dx + dy * dy);
+    if (len < 0.001f)
+        return;
+
+    float nx = -dy / len;
+    float ny = dx / len;
+
+    int steps = std::max(1, static_cast<int>(std::ceil(thickness)));
+    float startOffset = -thickness * 0.5f;
+
+    for (int i = 0; i <= steps; ++i)
+    {
+        float offset = startOffset + (thickness * static_cast<float>(i) / static_cast<float>(steps));
+        SDL_RenderDrawLine(
+            renderer,
+            static_cast<int>(std::lround(x1 + nx * offset)),
+            static_cast<int>(std::lround(y1 + ny * offset)),
+            static_cast<int>(std::lround(x2 + nx * offset)),
+            static_cast<int>(std::lround(y2 + ny * offset)));
+    }
+}
+
+// Draws an arrow head indicating direction along a vector
+void drawArrowHead(
+    SDL_Renderer* renderer,
+    float x,
+    float y,
+    float dirX,
+    float dirY,
+    float size)
+{
+    float len = std::sqrt(dirX * dirX + dirY * dirY);
+    if (len < 0.001f)
+        return;
+
+    float dx = dirX / len;
+    float dy = dirY / len;
+    float nx = -dy;
+    float ny = dx;
+
+    float baseCentralX = x - dx * size;
+    float baseCentralY = y - dy * size;
+
+    float p1x = baseCentralX + nx * (size * 0.45f);
+    float p1y = baseCentralY + ny * (size * 0.45f);
+    float p2x = baseCentralX - nx * (size * 0.45f);
+    float p2y = baseCentralY - ny * (size * 0.45f);
+
+    SDL_Point points[4] = {
+        SDL_Point{static_cast<int>(std::lround(x)), static_cast<int>(std::lround(y))},
+        SDL_Point{static_cast<int>(std::lround(p1x)), static_cast<int>(std::lround(p1y))},
+        SDL_Point{static_cast<int>(std::lround(p2x)), static_cast<int>(std::lround(p2y))},
+        SDL_Point{static_cast<int>(std::lround(x)), static_cast<int>(std::lround(y))}
+    };
+
+    SDL_RenderDrawLines(renderer, points, 4);
+
+    drawThickLine(renderer, p1x, p1y, x, y, 2.0f);
+    drawThickLine(renderer, p2x, p2y, x, y, 2.0f);
+    drawThickLine(renderer, p1x, p1y, p2x, p2y, 2.0f);
+}
+
 }
 
 VisualizationEngine::VisualizationEngine() = default;

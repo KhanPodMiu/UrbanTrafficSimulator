@@ -251,6 +251,7 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_MOUSEBUTTONUP &&
                 event.button.button == SDL_BUTTON_LEFT &&
                 !heatMapControlHandled &&
+                !wasDragAction() &&
                 event.button.x >= Config::PANEL_WIDTH &&
                 !entityInfoPanel.containsPoint(
                     event.button.x,

@@ -14,10 +14,16 @@ StatisticsPanel::StatisticsPanel()
       startTexture_(nullptr),
       pauseTexture_(nullptr),
       restartTexture_(nullptr),
+      startHoverTexture_(nullptr),
+      pauseHoverTexture_(nullptr),
+      restartHoverTexture_(nullptr),
       speedTextures_{},
       algorithmTextures_{},
       timeFont_(nullptr),
       speedFont_(nullptr),
+      isStartHovered_(false),
+      isPauseHovered_(false),
+      isRestartHovered_(false),
       startButtonDestination_{59, 260, 110, 56},
       // Rendered size of the uploaded pause button image.
       pauseButtonDestination_{180, 260, 110, 56},
@@ -68,11 +74,41 @@ bool StatisticsPanel::loadAssets(RenderWindow& window)
         return false;
     }
 
+    startHoverTexture_ = window.loadTexture("assets/textures/Panel/control_button/start_hover.png");
+
+    if (startHoverTexture_ == nullptr)
+    {
+        std::cerr << "Cannot load start hover button: " << SDL_GetError() << std::endl;
+        window.cleanUpTexture(startTexture_);
+        startTexture_ = nullptr;
+        window.cleanUpTexture(backgroundTexture_);
+        backgroundTexture_ = nullptr;
+        return false;
+    }
+
     pauseTexture_ = window.loadTexture("assets/textures/Panel/control_button/pause.png");
 
     if (pauseTexture_ == nullptr)
     {
         std::cerr << "Cannot load pause button: " << SDL_GetError() << std::endl;
+        window.cleanUpTexture(startHoverTexture_);
+        startHoverTexture_ = nullptr;
+        window.cleanUpTexture(startTexture_);
+        startTexture_ = nullptr;
+        window.cleanUpTexture(backgroundTexture_);
+        backgroundTexture_ = nullptr;
+        return false;
+    }
+
+    pauseHoverTexture_ = window.loadTexture("assets/textures/Panel/control_button/pause_hover.png");
+
+    if (pauseHoverTexture_ == nullptr)
+    {
+        std::cerr << "Cannot load pause hover button: " << SDL_GetError() << std::endl;
+        window.cleanUpTexture(pauseTexture_);
+        pauseTexture_ = nullptr;
+        window.cleanUpTexture(startHoverTexture_);
+        startHoverTexture_ = nullptr;
         window.cleanUpTexture(startTexture_);
         startTexture_ = nullptr;
         window.cleanUpTexture(backgroundTexture_);
@@ -85,8 +121,32 @@ bool StatisticsPanel::loadAssets(RenderWindow& window)
     if (restartTexture_ == nullptr)
     {
         std::cerr << "Cannot load restart button: " << SDL_GetError() << std::endl;
+        window.cleanUpTexture(pauseHoverTexture_);
+        pauseHoverTexture_ = nullptr;
         window.cleanUpTexture(pauseTexture_);
         pauseTexture_ = nullptr;
+        window.cleanUpTexture(startHoverTexture_);
+        startHoverTexture_ = nullptr;
+        window.cleanUpTexture(startTexture_);
+        startTexture_ = nullptr;
+        window.cleanUpTexture(backgroundTexture_);
+        backgroundTexture_ = nullptr;
+        return false;
+    }
+
+    restartHoverTexture_ = window.loadTexture("assets/textures/Panel/control_button/restart_hover.png");
+
+    if (restartHoverTexture_ == nullptr)
+    {
+        std::cerr << "Cannot load restart hover button: " << SDL_GetError() << std::endl;
+        window.cleanUpTexture(restartTexture_);
+        restartTexture_ = nullptr;
+        window.cleanUpTexture(pauseHoverTexture_);
+        pauseHoverTexture_ = nullptr;
+        window.cleanUpTexture(pauseTexture_);
+        pauseTexture_ = nullptr;
+        window.cleanUpTexture(startHoverTexture_);
+        startHoverTexture_ = nullptr;
         window.cleanUpTexture(startTexture_);
         startTexture_ = nullptr;
         window.cleanUpTexture(backgroundTexture_);
@@ -218,6 +278,10 @@ PanelCommand StatisticsPanel::handleEvent(const SDL_Event& event)
     {
         const SDL_Point mousePoint{event.button.x, event.button.y};
 
+        isStartHovered_   = SDL_PointInRect(&mousePoint, &startButtonRect_);
+        isPauseHovered_   = SDL_PointInRect(&mousePoint, &pauseButtonRect_);
+        isRestartHovered_ = SDL_PointInRect(&mousePoint, &restartButtonRect_);
+
         if (SDL_PointInRect(&mousePoint, &speedSliderRect_))
         {
             speedDragging_ = true;
@@ -227,9 +291,20 @@ PanelCommand StatisticsPanel::handleEvent(const SDL_Event& event)
         return PanelCommand::None;
     }
 
-    if (event.type == SDL_MOUSEMOTION && speedDragging_)
+    if (event.type == SDL_MOUSEMOTION)
     {
-        return updateSpeedFromMouseX(event.motion.x);
+        if (event.motion.state & SDL_BUTTON_LMASK)
+        {
+            const SDL_Point mousePoint{event.motion.x, event.motion.y};
+            isStartHovered_   = SDL_PointInRect(&mousePoint, &startButtonRect_);
+            isPauseHovered_   = SDL_PointInRect(&mousePoint, &pauseButtonRect_);
+            isRestartHovered_ = SDL_PointInRect(&mousePoint, &restartButtonRect_);
+        }
+
+        if (speedDragging_)
+        {
+            return updateSpeedFromMouseX(event.motion.x);
+        }
     }
 
     if (event.type == SDL_MOUSEBUTTONUP &&
@@ -247,17 +322,25 @@ PanelCommand StatisticsPanel::handleEvent(const SDL_Event& event)
 
     const SDL_Point mousePoint{event.button.x, event.button.y};
 
-    if (SDL_PointInRect(&mousePoint, &startButtonRect_))
+    bool wasStart = isStartHovered_;
+    bool wasPause = isPauseHovered_;
+    bool wasRestart = isRestartHovered_;
+
+    isStartHovered_ = false;
+    isPauseHovered_ = false;
+    isRestartHovered_ = false;
+
+    if (wasStart && SDL_PointInRect(&mousePoint, &startButtonRect_))
     {
         return PanelCommand::Start;
     }
 
-    if (SDL_PointInRect(&mousePoint, &pauseButtonRect_))
+    if (wasPause && SDL_PointInRect(&mousePoint, &pauseButtonRect_))
     {
         return PanelCommand::Pause;
     }
 
-    if (SDL_PointInRect(&mousePoint, &restartButtonRect_))
+    if (wasRestart && SDL_PointInRect(&mousePoint, &restartButtonRect_))
     {
         return PanelCommand::Restart;
     }
@@ -303,29 +386,38 @@ void StatisticsPanel::render(RenderWindow& window, double simulationTime)
         nullptr,
         &destination);
 
-    if (startTexture_ != nullptr)
+    SDL_Texture* currentStartTexture = (isStartHovered_ && startHoverTexture_ != nullptr) 
+                                        ? startHoverTexture_ 
+                                        : startTexture_;
+    if (currentStartTexture != nullptr)
     {
         SDL_RenderCopy(
             window.getRenderer(),
-            startTexture_,
+            currentStartTexture,
             nullptr,
             &startButtonDestination_);
     }
 
-    if (pauseTexture_ != nullptr)
+    SDL_Texture* currentPauseTexture = (isPauseHovered_ && pauseHoverTexture_ != nullptr) 
+                                        ? pauseHoverTexture_ 
+                                        : pauseTexture_;
+    if (currentPauseTexture != nullptr)
     {
         SDL_RenderCopy(
             window.getRenderer(),
-            pauseTexture_,
+            currentPauseTexture,
             nullptr,
             &pauseButtonDestination_);
     }
 
-    if (restartTexture_ != nullptr)
+    SDL_Texture* currentRestartTexture = (isRestartHovered_ && restartHoverTexture_ != nullptr) 
+                                          ? restartHoverTexture_ 
+                                          : restartTexture_;
+    if (currentRestartTexture != nullptr)
     {
         SDL_RenderCopy(
             window.getRenderer(),
-            restartTexture_,
+            currentRestartTexture,
             nullptr,
             &restartButtonDestination_);
     }
@@ -446,16 +538,31 @@ void StatisticsPanel::cleanUp(RenderWindow& window)
         startTexture_ = nullptr;
     }
 
+    if (startHoverTexture_ != nullptr) { 
+        window.cleanUpTexture(startHoverTexture_); 
+        startHoverTexture_ = nullptr; 
+    }
+
     if (pauseTexture_ != nullptr)
     {
         window.cleanUpTexture(pauseTexture_);
         pauseTexture_ = nullptr;
     }
 
+    if (pauseHoverTexture_ != nullptr) { 
+        window.cleanUpTexture(pauseHoverTexture_); 
+        pauseHoverTexture_ = nullptr; 
+    }
+
     if (restartTexture_ != nullptr)
     {
         window.cleanUpTexture(restartTexture_);
         restartTexture_ = nullptr;
+    }
+    
+    if (restartHoverTexture_ != nullptr) { 
+        window.cleanUpTexture(restartHoverTexture_); 
+        restartHoverTexture_ = nullptr; 
     }
 
     if (timeFont_ != nullptr)
