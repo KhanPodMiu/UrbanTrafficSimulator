@@ -112,7 +112,53 @@ TEST(VehicleNavTest, NormalRoadBehaviourUnchanged)
 }
 
 // =================================================================
-// TEST 3: Spawn safety - don't spawn on congested road
+// TEST 3: Roundabouts use direct road-to-road movement (no arc)
+// =================================================================
+TEST(VehicleNavTest, RoundaboutApproachRemainsOnIncomingRoad)
+{
+    Graph g = buildRoundaboutGraph();
+    auto incomingRoad = g.getRoad("R_N_in");
+    auto outgoingRoad = g.getRoad("R_E_out");
+    ASSERT_NE(incomingRoad, nullptr);
+    ASSERT_NE(outgoingRoad, nullptr);
+
+    Car vehicle("V_direct_approach");
+    vehicle.setRoute({incomingRoad, outgoingRoad});
+    vehicle.setCurrentRoad(incomingRoad);
+    vehicle.setDistanceOnRoad(incomingRoad->getDistance() - 40.0);
+    vehicle.updateWorldPosition();
+
+    const Vector2 position = vehicle.getPosition();
+    EXPECT_NEAR(position.x, 960.0, 0.01);
+    EXPECT_NEAR(position.y, 960.0, 0.01);
+    EXPECT_NEAR(vehicle.getHeadingAngle(), 90.0, 0.01);
+}
+
+TEST(VehicleNavTest, RoundaboutExitMovesDirectlyOntoOutgoingRoad)
+{
+    Graph g = buildRoundaboutGraph();
+    auto incomingRoad = g.getRoad("R_N_in");
+    auto outgoingRoad = g.getRoad("R_E_out");
+    ASSERT_NE(incomingRoad, nullptr);
+    ASSERT_NE(outgoingRoad, nullptr);
+
+    Car vehicle("V_direct_exit");
+    vehicle.setRoute({incomingRoad, outgoingRoad});
+    vehicle.setCurrentRoad(incomingRoad);
+    vehicle.setDistanceOnRoad(incomingRoad->getDistance() + 20.0);
+
+    ASSERT_TRUE(vehicle.tryAdvanceToNextRoad());
+    EXPECT_EQ(vehicle.getCurrentRoad(), outgoingRoad);
+    EXPECT_NEAR(vehicle.getDistanceOnRoad(), 20.0, 0.01);
+
+    const Vector2 position = vehicle.getPosition();
+    EXPECT_NEAR(position.x, 1020.0, 0.01);
+    EXPECT_NEAR(position.y, 1040.0, 0.01);
+    EXPECT_NEAR(vehicle.getHeadingAngle(), 0.0, 0.01);
+}
+
+// =================================================================
+// TEST 4: Spawn safety - don't spawn on congested road
 // =================================================================
 TEST(CollisionTest, SpawnSafetyPreventsOverlap)
 {
@@ -151,7 +197,7 @@ TEST(CollisionTest, SpawnSafetyPreventsOverlap)
 }
 
 // =================================================================
-// TEST 4: Transition safety - overflow distance is clamped
+// TEST 5: Transition safety - overflow distance is clamped
 // =================================================================
 TEST(CollisionTest, TransitionSafetyClampsOverflow)
 {

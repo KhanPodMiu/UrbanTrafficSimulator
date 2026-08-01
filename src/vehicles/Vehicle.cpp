@@ -8,7 +8,7 @@
 #include "graph/Graph.hpp"
 #include "graph/Road.hpp"
 #include "algorithms/RoutingManager.hpp"
-#include "core/Constants.hpp"
+// #include "core/Constants.hpp" // Legacy roundabout-arc implementation only.
 #include "simulation/RouteRequest.hpp"
 
 namespace {
@@ -92,6 +92,10 @@ void Vehicle::updateWorldPosition()
     double roadLength = m_currentRoad->getDistance();
     double dist = m_distanceOnRoad;
 
+    /*
+     * Legacy roundabout-arc implementation (disabled).
+     * Kept here for reference in case curved movement is needed again later.
+     *
     auto calculateRoundaboutArc = [&](const Intersection* r_center, const Intersection* in_src, const Intersection* out_dst, double t_arc) {
         double R = Config::ROUNDABOUT_RADIUS;
         
@@ -160,7 +164,12 @@ void Vehicle::updateWorldPosition()
             }
         }
     }
+    */
 
+    // Roundabouts intentionally use the same straight road interpolation as
+    // every other intersection. The active road changes only in
+    // tryAdvanceToNextRoad(), so the vehicle heads directly into the junction
+    // and continues along the next road without a synthetic circular arc.
     double t = (roadLength > 0.0) ? (dist / roadLength) : 0.0;
     t = std::clamp(t, 0.0, 1.0);
 
