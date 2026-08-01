@@ -33,11 +33,16 @@ private:
     SDL_Texture* startTexture_;
     SDL_Texture* pauseTexture_;
     SDL_Texture* restartTexture_;
+    SDL_Texture* startHoverTexture_;
+    SDL_Texture* pauseHoverTexture_;
+    SDL_Texture* restartHoverTexture_ ;
     std::array<SDL_Texture*, 5> speedTextures_;
     std::array<SDL_Texture*, 3> algorithmTextures_;
     TTF_Font* timeFont_;
     TTF_Font* speedFont_;
-
+    bool isStartHovered_;
+    bool isPauseHovered_;
+    bool isRestartHovered_;
     SDL_Rect startButtonDestination_;
     SDL_Rect pauseButtonDestination_;
     SDL_Rect restartButtonDestination_;
