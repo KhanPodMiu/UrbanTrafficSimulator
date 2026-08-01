@@ -16,6 +16,7 @@
 #include "simulation/WorldClock.hpp"
 #include "simulation/TrafficLightManager.hpp"
 #include "simulation/RouteOptimizer.hpp"
+#include "simulation/PresidentialRouteManager.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "visualization/camera.hpp"
 #include "render/EntityInfoPanel.hpp"
@@ -183,6 +184,9 @@ int main(int argc, char* argv[]) {
     auto routeOptimizer = std::make_shared<RouteOptimizer>(&routingManager);
 
     VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/300, /*spawnIntervalSeconds=*/0.5);
+    PresidentialRouteManager presidentialRouteManager(
+        graph,
+        vehicleManager);
 
     //=======================================================================================================================================================================
 
@@ -195,7 +199,8 @@ int main(int argc, char* argv[]) {
         graph, 
         vehicleManager, 
         visualizationEngine, 
-        is_banned_state
+        is_banned_state,
+        presidentialRouteManager
     };
 
     //=======================================================================================================================================================================
@@ -292,6 +297,13 @@ int main(int argc, char* argv[]) {
             TrafficLightManager::getInstance().update(clock.getDeltaTime());
 
             vehicleManager.update(clock.getDeltaTime());
+
+            if (presidentialRouteManager.update())
+            {
+                std::cout
+                    << "[INFO] Presidential corridor is clear; "
+                    << "the convoy may now enter.\n";
+            }
         }
 
         // --- Main game loop sections (rendering) ---

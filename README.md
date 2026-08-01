@@ -173,6 +173,9 @@ A special event simulates **Donald Trump's presidential convoy** traveling along
 
 During this event:
 
+* The route first enters a clearance phase that lasts until it is completely clear.
+* New routes avoid the corridor immediately while vehicles already inside are allowed to leave.
+* The corridor becomes exclusive only after every target road is empty and no vehicle route points into it.
 * The designated route becomes temporarily inaccessible.
 * Normal vehicles must avoid the closed roads.
 * Traffic conditions dynamically change during the event.
