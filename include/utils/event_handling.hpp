@@ -10,6 +10,7 @@
 #include <filesystem>
 
 class VisualizationEngine;
+class PresidentialRouteManager;
 
 struct AppContext {
     bool& isRunning;
@@ -18,6 +19,7 @@ struct AppContext {
     VehicleManager& vehicleManager;
     VisualizationEngine& visualizationEngine;
     bool& isBannedState;
+    PresidentialRouteManager& presidentialRouteManager;
 };
 
 std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath);
