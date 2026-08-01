@@ -465,7 +465,20 @@ void VisualizationEngine::render(RenderWindow& window, const Camera& camera)
                                       ? bannedRoadTexture_ 
                                       : roadTexture_;
 
+        const bool closurePending =
+            road.road && road.road->isVIPClosurePending();
+        if (closurePending)
+        {
+            // Amber marks the advance-warning/clearance phase. The road is
+            // already excluded from routing, but cars currently inside may
+            // still leave before the striped active closure appears.
+            SDL_SetTextureColorMod(currentRoadTex, 255, 185, 70);
+        }
+
         window.renderRoad(currentRoadTex, renderPos, road.length * zoom, Config::ROAD_WIDTH * zoom, road.angle);
+
+        if (closurePending)
+            SDL_SetTextureColorMod(currentRoadTex, 255, 255, 255);
     }
 
     if (heatMapEnabled_)
@@ -525,7 +538,8 @@ void VisualizationEngine::renderTrafficHeatMapRoads(
     {
         // Closed/VIP roads retain their dedicated striped texture so users do
         // not mistake an unavailable route for ordinary heavy traffic.
-        if (!road.road || road.road->isVIPExclusive())
+        // if (!road.road || road.road->isVIPExclusive()) // Legacy: active-only closure.
+        if (!road.road || road.road->isUnavailableForRouting())
             continue;
 
         const SDL_Color color = TrafficHeatMapScale::colorFor(
