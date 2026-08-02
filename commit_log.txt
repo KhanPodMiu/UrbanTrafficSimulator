@@ -1,0 +1,3329 @@
+* commit 56f82130ebbbcc17e9c1b483c5de142acadd13db
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sun Aug 2 23:59:39 2026 +0700
+| 
+|     refactor: delete unnecessary file
+| 
+|  assets/maps/4phaibatrung.json       | 4164 ---------------
+|  assets/maps/Casinha.json            | 4988 ------------------
+|  assets/maps/DinhDocLap.json         | 8257 -----------------------------
+|  assets/maps/LangDaiHoc.json         | 6064 ---------------------
+|  assets/maps/NguyenVanCu.json        | 9252 ---------------------------------
+|  assets/maps/NguyenVanCu2.json       | 7364 --------------------------
+|  assets/maps/complex_map.json        |   57 -
+|  assets/maps/gridMap.json            | 5568 --------------------
+|  assets/maps/large_map.json          | 9252 ---------------------------------
+|  assets/maps/small_map.json          |   84 -
+|  assets/textures/bg2.png             |  Bin 2959976 -> 0 bytes
+|  assets/textures/bg3.png             |  Bin 5449086 -> 0 bytes
+|  docs/Project.pdf                    |  Bin 172131 -> 0 bytes
+|  docs/diagrams/.gitkeep              |    0
+|  docs/diagrams/uml_class_diagram.svg |    1 -
+|  docs/screenshots/Screen.png         |  Bin 1561426 -> 0 bytes
+|  16 files changed, 55051 deletions(-)
+| 
+* commit 7119595becc3fcde6165dc2e56b71a25268a9b4d
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sun Aug 2 23:56:48 2026 +0700
+| 
+|     readme
+| 
+|  README.md | 367 ++++++++++++++++--------------------------------------------
+|  1 file changed, 98 insertions(+), 269 deletions(-)
+| 
+* commit 75d6dc05c9f43be8d6decf2bf811907d573e05f6
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sun Aug 2 23:37:39 2026 +0700
+| 
+|     feat: separate event handling from prev merge branch in main
+| 
+|  include/utils/EventManager.hpp |  7 ++-
+|  src/main.cpp                   | 99 +---------------------------------------
+|  src/utils/EventManager.cpp     | 27 +++++++++--
+|  3 files changed, 32 insertions(+), 101 deletions(-)
+|   
+*   commit 60384784eb855d859fe718598fa5450f1e99b2c9
+|\  Merge: 1a454e6 5d69e48
+| | Author: Anndy Vo <miupod.3006@gmail.com>
+| | Date:   Sun Aug 2 23:31:05 2026 +0700
+| | 
+| |     Merge pull request #44 from KhanPodMiu/fix/panel
+| |     
+| |     fix: fix routing algorithm button
+| |   
+| *   commit 5d69e486fbdfbe682fd61db22a040a35ca9e3d78
+| |\  Merge: d81101d 1a454e6
+| |/  Author: Anndy Vo <miupod.3006@gmail.com>
+|/|   Date:   Sun Aug 2 23:30:23 2026 +0700
+| |   
+| |       Merge branch 'main' into fix/panel
+| | 
+* | commit 1a454e64ac2670892add221fb8ec5805388e6b2b
+| | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | Date:   Sun Aug 2 23:27:07 2026 +0700
+| | 
+| |     fix: avoid overlap of vehicle
+| | 
+| |  CMakeLists.txt             |  5 +++--
+| |  include/core/Constants.hpp |  2 ++
+| |  src/main.cpp               |  5 ++++-
+| |  src/vehicles/Vehicle.cpp   | 12 ++++++++----
+| |  4 files changed, 17 insertions(+), 7 deletions(-)
+| |   
+* |   commit aedc9d560ccca2ec5d84a46aeeceeb1b0601b654
+|\ \  Merge: 0c0600b f61895d
+| | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | Date:   Sun Aug 2 22:46:15 2026 +0700
+| | | 
+| | |     Merge pull request #43 from KhanPodMiu/fix/panel
+| | |     
+| | |     Fix/panel
+| | |   
+* | |   commit 0c0600b6f0379e817b3da8a4f78cf3e2d9121be4
+|\ \ \  Merge: 3e9b9a3 db0966e
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Sun Aug 2 22:15:40 2026 +0700
+| | | | 
+| | | |     Merge pull request #42 from KhanPodMiu/fix-event
+| | | |     
+| | | |     feat: add safe presidential route preparation and event management
+| | | | 
+| * | | commit db0966e492aae4281708afc22f570e5c5ef660e8
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:36:12 2026 +0700
+| | | | 
+| | | |     feat: added a different color of pending banned route to overwrite heatmap's color
+| | | | 
+| | | |  src/render/MapRenderer.cpp | 8 ++++++++
+| | | |  src/utils/MapLoader.cpp    | 3 ++-
+| | | |  2 files changed, 10 insertions(+), 1 deletion(-)
+| | | | 
+| * | | commit bb16cb0fb9cd71ab27ab661a3a98219433bdcb4a
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:35:04 2026 +0700
+| | | | 
+| | | |     feat: added helper function supporting route manager
+| | | | 
+| | | |  include/utils/event_handling.hpp | 4 ++++
+| | | |  1 file changed, 4 insertions(+)
+| | | | 
+| * | | commit 8f610e60b525c4486169a802697bd128e920112d
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:33:45 2026 +0700
+| | | | 
+| | | |     fix: change a little bit about variable and logic to suit for new pending function
+| | | | 
+| | | |  src/render/HeatMapOverlay.cpp                 |   2 +-
+| | | |  src/utils/InputHandler.cpp                    |   1 +
+| | | |  .../simulation/banned_route_reroute_test.cpp  | 188 +++++++++++++++++-
+| | | |  3 files changed, 184 insertions(+), 7 deletions(-)
+| | | | 
+| * | | commit ebed5c653039ba5e8f283feca8e9f62c47dc0b0b
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:32:39 2026 +0700
+| | | | 
+| | | |     feat: commentline for better review of reroute around banned road function
+| | | | 
+| | | |  include/simulation/VehicleManager.hpp | 2 ++
+| | | |  1 file changed, 2 insertions(+)
+| | | | 
+| * | | commit 7f74d51782627ef5bd04c0613d68ec42f908f67b
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:31:33 2026 +0700
+| | | | 
+| | | |     fix: fix the logic of cars when the Trump's event road appeared
+| | | | 
+| | | |  src/vehicles/Vehicle.cpp | 94 +++++++++++++++++++++++++++-------------
+| | | |  1 file changed, 63 insertions(+), 31 deletions(-)
+| | | | 
+| * | | commit 7da55d53cbdbf8cd1a74547271a1526e6bbbb809
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:30:26 2026 +0700
+| | | | 
+| | | |     feat: comment line for better understand of reroute around banned roads function
+| | | | 
+| | | |  include/vehicles/Vehicle.hpp | 3 +++
+| | | |  1 file changed, 3 insertions(+)
+| | | | 
+| * | | commit 475cccf665eb0ed75f6817c4555d24b39f348d3b
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:29:40 2026 +0700
+| | | | 
+| | | |     feat: Added unit tests only suitable for route manager which is needed to control event
+| | | | 
+| | | |  .../presidentialRouteManager_test.cpp         | 163 ++++++++++++++++++
+| | | |  1 file changed, 163 insertions(+)
+| | | | 
+| * | | commit d45a1f3f9db493cb38f8ddfc48faa3acd3ba3bb0
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:28:51 2026 +0700
+| | | | 
+| | | |     feat: implemented manager functions to control pending and decide to close route
+| | | | 
+| | | |  .../simulation/PresidentialRouteManager.hpp   |  55 +++++++
+| | | |  src/simulation/PresidentialRouteManager.cpp   | 153 ++++++++++++++++++
+| | | |  2 files changed, 208 insertions(+)
+| | | | 
+| * | | commit 58248228185b6be6f8f52aabf4c4ba937167c913
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:27:12 2026 +0700
+| | | | 
+| | | |     feat: Added pending for cars to running out of banned routes
+| | | | 
+| | | |  include/simulation/BannedRouteManager.hpp |  2 ++
+| | | |  src/simulation/BannedRouteManager.cpp     | 16 +++++++++++++---
+| | | |  2 files changed, 15 insertions(+), 3 deletions(-)
+| | | | 
+| * | | commit 06fae12a9938362423ed7cb24744ecb76cd1f389
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:24:02 2026 +0700
+| | | | 
+| | | |     fix: concise the main() function to event manager
+| | | | 
+| | | |  src/main.cpp | 103 +++++++++++----------------------------------------
+| | | |  1 file changed, 22 insertions(+), 81 deletions(-)
+| | | | 
+| * | | commit 24d5749e0309d976237283b3cd635c59e88493c9
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:23:05 2026 +0700
+| | | | 
+| | | |     feat: implemented event manager to control event instead of keeping expand the main() function
+| | | | 
+| | | |  include/utils/EventManager.hpp |  21 +++++++
+| | | |  src/utils/EventManager.cpp     | 106 +++++++++++++++++++++++++++++++++
+| | | |  2 files changed, 127 insertions(+)
+| | | | 
+| * | | commit 0c188369e69481a0404189d7eedeabbd68300df3
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:19:44 2026 +0700
+| | | | 
+| | | |     feat: added new variable for event
+| | | | 
+| | | |  src/algorithms/AStarStrategy.cpp | 3 ++-
+| | | |  1 file changed, 2 insertions(+), 1 deletion(-)
+| | | | 
+| * | | commit a490191d5fa8cae2c765644f86f0182fb33a0198
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Sun Aug 2 19:18:37 2026 +0700
+| | | | 
+| | | |     feat: added header to check for pending in event
+| | | | 
+| | | |  include/graph/Road.hpp | 6 +++++-
+| | | |  1 file changed, 5 insertions(+), 1 deletion(-)
+| | | | 
+| * | | commit 258610f08c6f5986b7591357a5c715d17000ef12
+|/ / /  Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | |   Date:   Sun Aug 2 19:18:18 2026 +0700
+| | |   
+| | |       feat: added new varibles supporting for pending in Trump's event
+| | |   
+| | |    src/algorithms/BFS.cpp      |  3 ++-
+| | |    src/algorithms/Dijkstra.cpp |  3 ++-
+| | |    src/graph/Road.cpp          | 23 +++++++++++++++++++++--
+| | |    3 files changed, 25 insertions(+), 4 deletions(-)
+| | | 
+| | * commit d81101d2835a092868af3358f58b0272cc7dbd53
+| |/  Author: itsyippie <dnyp222@gmail.com>
+| |   Date:   Sun Aug 2 22:55:40 2026 +0700
+| |   
+| |       fix: fix routing algorithm button
+| |   
+| |    include/render/StatisticsPanel.hpp |  2 +-
+| |    src/main.cpp                       | 18 ++++++++++++++++++
+| |    2 files changed, 19 insertions(+), 1 deletion(-)
+| | 
+| * commit f61895dc00abee6caa65011edc215a52351f05bc
+| | Author: itsyippie <dnyp222@gmail.com>
+| | Date:   Sun Aug 2 22:29:03 2026 +0700
+| | 
+| |     fix: update panel_background and adjust Intersection Information text
+| | 
+| |  assets/textures/Panel/panel_background.png | Bin 24183 -> 149927 bytes
+| |  src/render/EntityInfoPanel.cpp             |  28 ++++++++++++-------------
+| |  2 files changed, 14 insertions(+), 14 deletions(-)
+| | 
+| * commit 23051daf05b2aa4059d38614af7b9649e21ddace
+|/  Author: itsyippie <dnyp222@gmail.com>
+|   Date:   Sun Aug 2 21:53:06 2026 +0700
+|   
+|       feat: add vehicle count on Panel, change theme of HeatmapButton
+|   
+|    .../Panel/heatmap_button/heatmap_off.png         | Bin 0 -> 27397 bytes
+|    .../textures/Panel/heatmap_button/heatmap_on.png | Bin 0 -> 28103 bytes
+|    assets/textures/Panel/panel_background.png       | Bin 77821 -> 24183 bytes
+|    assets/textures/map.png                          | Bin 3278158 -> 5101637 bytes
+|    include/render/StatisticsPanel.hpp               |   2 +-
+|    include/render/TextureManager.hpp                |  17 +--
+|    src/main.cpp                                     |   3 +-
+|    src/render/HeatMapOverlay.cpp                    | 134 ++-----------------
+|    src/render/StatisticsPanel.cpp                   |   7 +-
+|    src/render/TextureManager.cpp                    |  50 ++-----
+|    tests/render/trafficHeatMap_test.cpp             |   4 +-
+|    11 files changed, 37 insertions(+), 180 deletions(-)
+|     
+| *   commit 51909bae9e9831a419ccbfcce9ed722427aa5f28
+| |\  Merge: bc90c6a 551c18d
+| | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | Date:   Sun Aug 2 10:16:49 2026 +0700
+| | | 
+| | |     Merge branch 'main' into feature/Trump-road
+| | | 
+| | * commit 551c18dee1c1562cba82b45d5c2d340e56c79ffd
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Sun Aug 2 10:15:21 2026 +0700
+| | | 
+| | |     readme
+| | | 
+| | |  README.md                     |   22 +
+| | |  assets/maps/4phaibatrung.json | 4164 ----------------
+| | |  assets/maps/Casinha.json      | 4988 -------------------
+| | |  assets/maps/DinhDocLap.json   | 8257 -------------------------------
+| | |  assets/maps/LangDaiHoc.json   | 6064 -----------------------
+| | |  assets/maps/NguyenVanCu.json  | 9252 -----------------------------------
+| | |  assets/maps/NguyenVanCu2.json | 7364 ----------------------------
+| | |  assets/maps/complex_map.json  |   57 -
+| | |  assets/maps/gridMap.json      | 5568 ---------------------
+| | |  assets/maps/large_map.json    | 9252 -----------------------------------
+| | |  assets/maps/small_map.json    |   84 -
+| | |  11 files changed, 22 insertions(+), 55050 deletions(-)
+| | | 
+| | * commit 0554026775e9e7780db7d3114836200d6f0d8ba1
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Sun Aug 2 09:57:37 2026 +0700
+| | | 
+| | |     update: readme
+| | | 
+| | |  README.md                           | 99 ++++++++++++-------------------
+| | |  docs/diagrams/.gitkeep              |  0
+| | |  docs/diagrams/uml_class_diagram.svg |  1 -
+| | |  3 files changed, 38 insertions(+), 62 deletions(-)
+| | | 
+| | * commit 5e658f4fe80f025841e9ae5033112157ffa2e0c3
+| |/  Author: KhanPodMiu <miupod.3006@gmail.com>
+|/|   Date:   Sun Aug 2 09:41:14 2026 +0700
+| |   
+| |       refactor: separate handle event to eventManager
+| |   
+| |    include/utils/EventManager.hpp |  41 ++++++++++++
+| |    src/main.cpp                   |  83 +-----------------------
+| |    src/utils/EventManager.cpp     | 118 +++++++++++++++++++++++++++++++++++
+| |    3 files changed, 162 insertions(+), 80 deletions(-)
+| |   
+* |   commit 3e9b9a3bb2d10c29ecdb276f9f93ef8b0e4af7c7
+|\ \  Merge: 0229f1b 3a33fba
+| | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | Date:   Sun Aug 2 08:58:20 2026 +0700
+| | | 
+| | |     Merge pull request #41 from KhanPodMiu/refactor/Visualization-and-EventHandle
+| | |     
+| | |     Refactor/visualization and event handle & Fix/Trump road
+| | | 
+| * | commit 3a33fba3bb9cb53c482ab34f3c121134cd3db369
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:34:01 2026 +0700
+| | | 
+| | |     refactor: seperate input handler into dedicated file for easy to maintain and expand
+| | | 
+| | |  include/utils/InputHandler.hpp   |  39 +++++
+| | |  include/utils/event_handling.hpp |   7 +-
+| | |  src/utils/InputHandler.cpp       | 204 +++++++++++++++++++++++++
+| | |  src/utils/event_handling.cpp     | 271 ++-------------------------------
+| | |  4 files changed, 257 insertions(+), 264 deletions(-)
+| | | 
+| * | commit 20cbabef7becb9c8a93e1e6515159e36892d4770
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:32:43 2026 +0700
+| | | 
+| | |     refactor: extract banned road logic to a dedicated manager
+| | | 
+| | |  include/simulation/BannedRouteManager.hpp | 22 ++++++++++
+| | |  src/simulation/BannedRouteManager.cpp     | 58 +++++++++++++++++++++++++
+| | |  2 files changed, 80 insertions(+)
+| | | 
+| * | commit 90dfcf8ba332815f454006c3c56952048c240842
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:22:57 2026 +0700
+| | | 
+| | |     refactor: seperate all function relate to vehicle
+| | | 
+| | |  include/render/VehicleRenderer.hpp |  29 ++++
+| | |  src/render/VehicleRenderer.cpp     | 258 +++++++++++++++++++++++++++++++
+| | |  2 files changed, 287 insertions(+)
+| | | 
+| * | commit 213e8e2ca160d648179accc12bebaa309ff79fcd
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:22:29 2026 +0700
+| | | 
+| | |     refactor: separate map rendering, sub-renderers, and texture loading
+| | | 
+| | |  include/render/MapRenderer.hpp    |  62 ++++++++
+| | |  include/render/RenderHelpers.hpp  |  75 +++++++++
+| | |  include/render/TextureManager.hpp |  67 ++++++++
+| | |  src/render/MapRenderer.cpp        | 125 +++++++++++++++
+| | |  src/render/RenderHelpers.cpp      | 267 ++++++++++++++++++++++++++++++++
+| | |  src/render/TextureManager.cpp     | 161 +++++++++++++++++++
+| | |  6 files changed, 757 insertions(+)
+| | | 
+| * | commit ce2bef87c716ff4f1925680d0a25d84c5601ee61
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:18:55 2026 +0700
+| | | 
+| | |     refactor: extract traffic congestion levels, colors, and UI rendering to dedicated modules
+| | | 
+| | |  include/render/HeatMapOverlay.hpp  |  34 +++++
+| | |  include/render/TrafficHeatMap.hpp  |  22 ++-
+| | |  include/simulation/TrafficFlow.hpp |  17 +++
+| | |  src/render/HeatMapOverlay.cpp      | 238 +++++++++++++++++++++++++++++++
+| | |  src/render/TrafficHeatMap.cpp      |  16 +--
+| | |  src/simulation/TrafficFlow.cpp     |  12 ++
+| | |  6 files changed, 314 insertions(+), 25 deletions(-)
+| | | 
+| * | commit 0b4d7f7124228524e0301045f764025fcc122e66
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:16:09 2026 +0700
+| | | 
+| | |     refactor: extract map object selection to EntityPicker
+| | | 
+| | |  include/render/EntityPicker.hpp |  37 ++++++++
+| | |  src/render/EntityPicker.cpp     | 161 ++++++++++++++++++++++++++++++++++
+| | |  2 files changed, 198 insertions(+)
+| | | 
+| * | commit ff8c732bf2ad20f4c691e016f0124552909cb148
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:14:21 2026 +0700
+| | | 
+| | |     Refactor: Decompose VisualizationEngine into smaller components
+| | | 
+| | |  include/visualization/VisualizationEngine.hpp |  123 +-
+| | |  src/visualization/VisualizationEngine.cpp     | 1165 +------------------
+| | |  2 files changed, 63 insertions(+), 1225 deletions(-)
+| | | 
+| * | commit c8484dd97c6ee59b9f6b10d5bbeb54ffe40c11cf
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sun Aug 2 00:12:19 2026 +0700
+| | | 
+| | |     fix: make the radius of spawning vehicle click smaller
+| | | 
+| | |  src/utils/event_handling.cpp | 2 +-
+| | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | |   
+| | *   commit bc90c6a884bab760995552912a391418ca14bfdb
+| | |\  Merge: caac289 57bceee
+| | |/  Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| |/|   Date:   Sat Aug 1 15:35:09 2026 +0700
+| | |   
+| | |       Merge remote-tracking branch 'origin/fix/Trump-Road' into feature/Trump-road
+| | | 
+| * | commit 57bceee787e23dee0d033dfbe35c3969435273fe
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Aug 1 15:31:24 2026 +0700
+| | | 
+| | |     fix: re add visualization tracking route
+| | | 
+| | |  src/visualization/VisualizationEngine.cpp | 206 +++++++++++++++++++++++-
+| | |  1 file changed, 205 insertions(+), 1 deletion(-)
+| | |   
+| | *   commit caac289df24a479c79745a1a8cad56dee463efeb
+| | |\  Merge: da7fac8 2c3a34d
+| | |/  Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| |/|   Date:   Sat Aug 1 15:13:03 2026 +0700
+| | |   
+| | |       Merge remote-tracking branch 'origin/fix/Trump-Road' into feature/Trump-road
+| | | 
+| * | commit 2c3a34d617780148968b7d34e324b47a17b00941
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Aug 1 15:11:01 2026 +0700
+| | | 
+| | |     feat: add clickDragging without turn off the statistic vehicle panel
+| | | 
+| | |  include/utils/event_handling.hpp |  4 ++++
+| | |  src/main.cpp                     |  1 +
+| | |  src/utils/event_handling.cpp     | 42 ++++++++++++++++++++++++++++++----
+| | |  3 files changed, 42 insertions(+), 5 deletions(-)
+| | | 
+| * | commit 6d11a7d5f6d23299813d9ba6ce6811d91220ecfb
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Aug 1 15:10:09 2026 +0700
+| | | 
+| | |     feat: Add route tracking in statistic visualization
+| | | 
+| | |  include/visualization/VisualizationEngine.hpp   |  5 ++
+| | |  src/visualization/VisualizationEngine.cpp       | 73 +++++++++++++++++++
+| | |  .../vehicle_route_visualization_test.cpp        | 33 +++++++++
+| | |  3 files changed, 111 insertions(+)
+| | | 
+| * | commit bd7f4d89b5de908ae5f40c1ca95bc4cd48f9fa28
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Aug 1 11:58:17 2026 +0700
+| | | 
+| | |     feat: add logic for render, loading , event handling for new hover feature
+| | | 
+| | |  include/render/StatisticsPanel.hpp |   7 +-
+| | |  src/render/StatisticsPanel.cpp     | 131 ++++++++++++++++++++++++++++---
+| | |  2 files changed, 125 insertions(+), 13 deletions(-)
+| | | 
+| * | commit 4e97157e1d2e57cb679ae6a6fd4b24ad0545cbdf
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Aug 1 11:55:12 2026 +0700
+| | | 
+| | |     feat: new asset for hover button
+| | | 
+| | |  .../textures/Panel/control_button/pause_hover.png | Bin 0 -> 20734 bytes
+| | |  .../Panel/control_button/restart_hover.png        | Bin 0 -> 25700 bytes
+| | |  .../textures/Panel/control_button/start_hover.png | Bin 0 -> 16294 bytes
+| | |  3 files changed, 0 insertions(+), 0 deletions(-)
+| | | 
+| * | commit 1163c3f34c6706d138c69c7eb6fc3ab118914504
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Aug 1 11:05:36 2026 +0700
+| | | 
+| | |     fix: add more banned route to prevent informing forest
+| | | 
+| | |  assets/bannedRoutes/khapkhap_routeBanned_01.json | 6 +++++-
+| | |  1 file changed, 5 insertions(+), 1 deletion(-)
+| | | 
+| | * commit da7fac816412f9735a181ecafc7f8ba54e9b8a54
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 14:50:57 2026 +0700
+| | | 
+| | |     feat: added specific test which only for new reroute method
+| | | 
+| | |  tests/simulation/banned_route_reroute_test.cpp | 37 ++++++++++++++++++++
+| | |  1 file changed, 37 insertions(+)
+| | | 
+| | * commit bc72def3c6592e3125490facdd1150edacb2a0b4
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 14:50:21 2026 +0700
+| | | 
+| | |     feat: added pending to clear road for Trump's event
+| | | 
+| | |  README.md    | 13 ++++++++-----
+| | |  src/main.cpp | 14 +++++++++++++-
+| | |  2 files changed, 21 insertions(+), 6 deletions(-)
+| | | 
+| | * commit 91d0ec0a79fea7af76389dd4a62c0a52c055fe75
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 14:49:20 2026 +0700
+| | | 
+| | |     fix: change variable for new rerouting method
+| | | 
+| | |  src/utils/MapLoader.cpp  |  3 ++-
+| | |  src/vehicles/Vehicle.cpp | 36 ++++++++++++++++++++++--------------
+| | |  2 files changed, 24 insertions(+), 15 deletions(-)
+| | | 
+| | * commit eaaa65ba2a7e93c59545ce9fdcc4eaca6a3f516f
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 14:46:44 2026 +0700
+| | | 
+| | |     feat: added closure pending to wait for other cars run away from Trump's road
+| | | 
+| | |  src/visualization/VisualizationEngine.cpp | 16 +++++++++++++++-
+| | |  1 file changed, 15 insertions(+), 1 deletion(-)
+| | | 
+| | * commit dac44ee6ede8be9c7e288683460332cfe378c3e0
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 14:35:44 2026 +0700
+| | | 
+| | |     feat: added header for reroute function
+| | | 
+| | |  include/utils/event_handling.hpp | 4 +++-
+| | |  1 file changed, 3 insertions(+), 1 deletion(-)
+| | | 
+| | * commit 7a5a03413f53efcd304113a9d6f64aa296d96dd4
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 14:35:23 2026 +0700
+| | | 
+| | |     feat: added reroute function
+| | | 
+| | |  src/utils/event_handling.cpp | 24 +++++++++++++++++++++++-
+| | |  1 file changed, 23 insertions(+), 1 deletion(-)
+| | | 
+| | * commit e4a5cead7fe38b2f461d696bc053dc8567eb9d93
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 13:34:28 2026 +0700
+| | | 
+| | |     feat: Added tests to ensure functions run perfectly
+| | | 
+| | |  .../presidentialRouteManager_test.cpp           | 163 ++++++++++++++++++
+| | |  1 file changed, 163 insertions(+)
+| | | 
+| | * commit 86f564642abd19ae106082774f16020baea98844
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 13:33:27 2026 +0700
+| | | 
+| | |     feat: Implemented President route manager for better manage of routes
+| | | 
+| | |  include/simulation/PresidentialRouteManager.hpp |  55 +++++++
+| | |  src/simulation/PresidentialRouteManager.cpp     | 153 ++++++++++++++++++
+| | |  2 files changed, 208 insertions(+)
+| | | 
+| | * commit f068978c0394ee6002d6b95efb034e745771e73c
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 12:05:47 2026 +0700
+| | | 
+| | |     feat: Added route pending for Trump event
+| | | 
+| | |  include/graph/Road.hpp | 6 +++++-
+| | |  1 file changed, 5 insertions(+), 1 deletion(-)
+| | | 
+| | * commit 957c320145fc528a67ac105ee5786cbb94ad7350
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 12:01:09 2026 +0700
+| | | 
+| | |     feat: Add pending func for Trump event
+| | | 
+| | |  src/graph/Road.cpp | 23 +++++++++++++++++++++--
+| | |  1 file changed, 21 insertions(+), 2 deletions(-)
+| | | 
+| | * commit f21b077a233812ea57f0dce9aef93353bc3860e9
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 12:00:07 2026 +0700
+| | | 
+| | |     feat: add functions to check unavailable rerouting
+| | | 
+| | |  src/algorithms/AStarStrategy.cpp | 3 ++-
+| | |  src/algorithms/BFS.cpp           | 3 ++-
+| | |  src/algorithms/Dijkstra.cpp      | 3 ++-
+| | |  3 files changed, 6 insertions(+), 3 deletions(-)
+| | | 
+| | * commit ea8619c66f00210010ae2a5942fb25be44beaaca
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Sat Aug 1 10:54:56 2026 +0700
+| | | 
+| | |     feat: added unit tests for reroute while running away from banned route
+| | | 
+| | |  tests/simulation/banned_route_reroute_test.cpp | 151 ++++++++++++++++++-
+| | |  1 file changed, 145 insertions(+), 6 deletions(-)
+| | | 
+| | * commit 7ed9283531fdfa30ec76ac8ff1e8ba01950c98c9
+| |/  Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| |   Date:   Sat Aug 1 10:54:34 2026 +0700
+| |   
+| |       fix: change the way vehicle run away from banned route
+| |   
+| |    include/simulation/VehicleManager.hpp |  2 +
+| |    include/vehicles/Vehicle.hpp          |  3 ++
+| |    src/vehicles/Vehicle.cpp              | 78 +++++++++++++++++++----------
+| |    3 files changed, 56 insertions(+), 27 deletions(-)
+| | 
+| * commit 414a5f762d01a164ce7276ad9abc64370e126ed1
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:35:30 2026 +0700
+| | 
+| |     fix: disuse old logic in round about
+| | 
+| |  src/vehicles/Vehicle.cpp                       | 11 ++++-
+| |  tests/simulation/roundabout_collision_test.cpp | 50 +++++++++++++++++++++-
+| |  2 files changed, 58 insertions(+), 3 deletions(-)
+| | 
+| * commit b181cce840cec360fbacee1ff03d931801650cd2
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:34:46 2026 +0700
+| | 
+| |     feat: added heat map control
+| | 
+| |  src/main.cpp | 8 +++++++-
+| |  1 file changed, 7 insertions(+), 1 deletion(-)
+| | 
+| * commit 962312c95f61e7d7b855335074ca7e0b46b85eb8
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:34:04 2026 +0700
+| | 
+| |     feat: added H key to hide or seek heat map
+| | 
+| |  README.md | 2 ++
+| |  1 file changed, 2 insertions(+)
+| | 
+| * commit c5209d89be936ff22915f1b8c7be8e955ea5e71f
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:33:32 2026 +0700
+| | 
+| |     feat: Added unit test to ensure Heat Map functions run correctly
+| | 
+| |  tests/render/trafficHeatMap_test.cpp | 93 ++++++++++++++++++++++++++++++++
+| |  1 file changed, 93 insertions(+)
+| | 
+| * commit 7d4d1766a70fe7ea28ecbac582f3fb7c8235198e
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:32:58 2026 +0700
+| | 
+| |     feat: Added Heat Map feature for better visualization
+| | 
+| |  src/visualization/VisualizationEngine.cpp | 422 ++++++++++++++++++++++++++
+| |  1 file changed, 422 insertions(+)
+| | 
+| * commit 1875edf6e94702e96508ac14de76d415e2ccf754
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:32:15 2026 +0700
+| | 
+| |     feat: Added render and headle supporting for heat map feature
+| | 
+| |  include/visualization/VisualizationEngine.hpp | 28 ++++++++++++++++++++++-
+| |  1 file changed, 27 insertions(+), 1 deletion(-)
+| | 
+| * commit 7907a6067f9f49750a35f98cf6e38a174c005731
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:30:30 2026 +0700
+| | 
+| |     feat: Added Heat Map feature
+| | 
+| |  src/render/TrafficHeatMap.cpp | 30 ++++++++++++++++++++++++++++++
+| |  1 file changed, 30 insertions(+)
+| | 
+| * commit 78f058d345632c799e4b38d1755179db861bff64
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Sat Aug 1 10:30:15 2026 +0700
+| | 
+| |     feat: implemented header file for heat map
+| | 
+| |  include/render/TrafficHeatMap.hpp | 23 +++++++++++++++++++++++
+| |  1 file changed, 23 insertions(+)
+| | 
+| * commit 67ac13c4778511c24b3e09855d9c7c9c395c4e2b
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Fri Jul 31 19:56:01 2026 +0700
+| | 
+| |     feat: Implemented test to ensure reroute after event opens ran correctly
+| | 
+| |  tests/simulation/banned_route_reroute_test.cpp | 123 +++++++++++++++++++++
+| |  1 file changed, 123 insertions(+)
+| | 
+| * commit d41b793c6bc4f10ba3e55e843ddb9f85f5326823
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Fri Jul 31 19:55:19 2026 +0700
+| | 
+| |     feat: add code to check if VIP event begins
+| | 
+| |  src/utils/event_handling.cpp | 5 ++++-
+| |  1 file changed, 4 insertions(+), 1 deletion(-)
+| | 
+| * commit 9c1058c905335a27421b762054d1e68013f61829
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Fri Jul 31 19:54:06 2026 +0700
+| | 
+| |     feat: Added VIP route for Trump
+| | 
+| |  src/algorithms/AStarStrategy.cpp |   9 +-
+| |  src/algorithms/BFS.cpp           | 170 +++++++++++++++++------------------
+| |  src/algorithms/Dijkstra.cpp      |   2 +-
+| |  3 files changed, 92 insertions(+), 89 deletions(-)
+| | 
+| * commit c464348806aaef6d7029631b65369ed9e027c325
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Fri Jul 31 19:53:43 2026 +0700
+| | 
+| |     feat: Added reroute functions for vital events
+| | 
+| |  include/vehicles/Vehicle.hpp |  14 +++--
+| |  src/vehicles/Vehicle.cpp     | 113 +++++++++++++++++++++++++++++++++++++++
+| |  2 files changed, 123 insertions(+), 4 deletions(-)
+| | 
+| * commit cab8a416ee88effc4e27862bc7a8848a841f7793
+| | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | Date:   Fri Jul 31 19:51:58 2026 +0700
+| | 
+| |     feat: Added reroute feature for Trump's event
+| | 
+| |  include/simulation/VehicleManager.hpp |  3 ++-
+| |  src/simulation/VehicleManager.cpp     | 18 +++++++++++++++++-
+| |  2 files changed, 19 insertions(+), 2 deletions(-)
+| |   
+| *   commit c509aaa2af84edeca32380c448eb2fc17e73e061
+| |\  Merge: 55e73aa 6349b0a
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 19:32:36 2026 +0700
+| | | 
+| | |     Merge branch 'fix' into feature/Trump-road
+| | | 
+| | * commit 6349b0aabab8a2d8baf06839c5fc369bad469405
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 18:49:22 2026 +0700
+| | | 
+| | |     feat: added ggtest for new graph' pointer
+| | | 
+| | |  tests/Graph/graph_test.cpp | 63 ++++++++++++++++++++++++++++++++++++++++
+| | |  1 file changed, 63 insertions(+)
+| | | 
+| | * commit fbca6d29f866f530533a1e0bb4dc901743dca7d9
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 18:49:02 2026 +0700
+| | | 
+| | |     feat: Added endpoint for better use of pointer
+| | | 
+| | |  include/graph/Graph.hpp |  6 ++++++
+| | |  src/graph/Graph.cpp     | 19 ++++++++++++++++---
+| | |  2 files changed, 22 insertions(+), 3 deletions(-)
+| | | 
+| | * commit 02181b753feafc1ad4b6560f7b0d829d4f2d03c2
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 18:47:11 2026 +0700
+| | | 
+| | |     feat: Added endpoint for graph to improve the pointer usage
+| | | 
+| | |  include/graph/Road.hpp |  6 ++++++
+| | |  src/graph/Road.cpp     | 20 +++++++++++++++++++-
+| | |  2 files changed, 25 insertions(+), 1 deletion(-)
+| | | 
+| * | commit 55e73aa20863bbb409e9c90c6fcb559dbba73a51
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 19:21:49 2026 +0700
+| | | 
+| | |     fix: deleted functions to fix errors
+| | | 
+| | |  src/main.cpp | 93 +++++-------------------------------------------------
+| | |  1 file changed, 8 insertions(+), 85 deletions(-)
+| | | 
+| * | commit 7760c077b59cbf3daad6e27d6de139b18956874a
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 19:21:27 2026 +0700
+| | | 
+| | |     fix: replaced usistd by chrono for better use of window
+| | | 
+| | |  tests/simulation/worldClock_test.cpp | 22 ++++++++++++----------
+| | |  1 file changed, 12 insertions(+), 10 deletions(-)
+| | | 
+| * | commit 2b11f0a2935672911eafb2694464641130489293
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 19:20:41 2026 +0700
+| | | 
+| | |     fix: deleted functions which is doubled and made errors
+| | | 
+| | |  src/visualization/VisualizationEngine.cpp | 201 +-----------------------
+| | |  1 file changed, 3 insertions(+), 198 deletions(-)
+| | | 
+| * | commit 3dfb3f468332e2eea5684f290d5e7e252984b7fd
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 19:20:11 2026 +0700
+| | | 
+| | |     fix: deleted reset() doubled and made errors
+| | | 
+| | |  src/simulation/VehicleManager.cpp | 16 +---------------
+| | |  1 file changed, 1 insertion(+), 15 deletions(-)
+| | | 
+| * | commit b759cdf587b29297c3df2b71462095fe7d141d01
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 31 19:19:54 2026 +0700
+| | | 
+| | |     fix: delete dcl, struct, method which is doubled and made errors
+| | | 
+| | |  include/visualization/VisualizationEngine.hpp | 43 +++++++--------------
+| | |  1 file changed, 15 insertions(+), 28 deletions(-)
+| | | 
+| * | commit 411e79626632528e36770856117654f9962ab197
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Fri Jul 31 12:10:59 2026 +0700
+| | | 
+| | |     fix Refactor main.cpp at loadAsset, handleInput
+| | | 
+| | |  src/main.cpp | 17 +++--------------
+| | |  1 file changed, 3 insertions(+), 14 deletions(-)
+| | |   
+| * |   commit 91a4c14c27722eb04008255e2fd41f03dbe673e0
+| |\ \  Merge: 0d4b0ac f39abdd
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Fri Jul 31 12:10:24 2026 +0700
+| | | | 
+| | | |     Merge branch 'feature/panel' into feature/Trump-road
+| | | | 
+| * | | commit 0d4b0ac2f98b7bdffd321f589cd765f0c6fc2958
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Fri Jul 31 10:08:32 2026 +0700
+| | | | 
+| | | |     Refactor: Change spawn vehicle at intersection to button V with mouse position
+| | | | 
+| | | |  src/utils/event_handling.cpp | 33 +++++++++++++++++----------------
+| | | |  1 file changed, 17 insertions(+), 16 deletions(-)
+| | | | 
+| * | | commit d4017244745367e00cc92b21b7deb1ddf986f63a
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Fri Jul 31 10:07:46 2026 +0700
+| | | | 
+| | | |     fix: resovle conflict for merging branch panel into TrumpRoad
+| | | | 
+| | | |  include/simulation/VehicleManager.hpp         |   7 +-
+| | | |  include/visualization/VisualizationEngine.hpp |  32 ++-
+| | | |  src/main.cpp                                  | 158 +++++++++-
+| | | |  src/simulation/VehicleManager.cpp             |  15 +
+| | | |  src/visualization/VisualizationEngine.cpp     | 271 +++++++++++++++---
+| | | |  5 files changed, 415 insertions(+), 68 deletions(-)
+| | | | 
+| * | | commit 644fdb4712ff2059436882f3a34bf10f6b93b0d5
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 01:06:07 2026 +0700
+| | | | 
+| | | |     feat: add handle for mutiple choice route banned
+| | | | 
+| | | |  include/utils/event_handling.hpp |  5 +-
+| | | |  src/utils/MapLoader.cpp          | 11 ++++-
+| | | |  src/utils/event_handling.cpp     | 84 +++++++++++++++++++++++---------
+| | | |  3 files changed, 73 insertions(+), 27 deletions(-)
+| | | | 
+| * | | commit bf88bac2f2284b75f5535b9e9bb75e831bc39411
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:33:42 2026 +0700
+| | | | 
+| | | |     refactor: encap AppContext to struct data
+| | | | 
+| | | |  include/utils/event_handling.hpp | 15 ++++++++++++++-
+| | | |  1 file changed, 14 insertions(+), 1 deletion(-)
+| | | | 
+| * | | commit 61784c4bd8c1e7688b976669d6b42321bd292ef5
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:33:14 2026 +0700
+| | | | 
+| | | |     refactor: handleInput and filesystem::path
+| | | | 
+| | | |  src/main.cpp | 14 ++++++++++++--
+| | | |  1 file changed, 12 insertions(+), 2 deletions(-)
+| | | | 
+| * | | commit bee1a610bf03780ecae471eeb7d2e59c38783e5d
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:32:33 2026 +0700
+| | | | 
+| | | |     feat: add logic for render banned road
+| | | | 
+| | | |  src/utils/MapLoader.cpp | 33 ++++++++++++++++++++++++---------
+| | | |  1 file changed, 24 insertions(+), 9 deletions(-)
+| | | | 
+| * | | commit 8c56a2bcf15d5a7a3d7d46db19128bf4ea8d5263
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:32:11 2026 +0700
+| | | | 
+| | | |     feat: add render for banned road
+| | | | 
+| | | |  include/visualization/VisualizationEngine.hpp |  1 +
+| | | |  src/visualization/VisualizationEngine.cpp     | 17 +++++++++++++++--
+| | | |  2 files changed, 16 insertions(+), 2 deletions(-)
+| | | | 
+| * | | commit 408a6484790a0b88a92a0b5fdfc4f8c25f02cff9
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:31:46 2026 +0700
+| | | | 
+| | | |     feat: add event trump road when click B
+| | | | 
+| | | |  src/utils/event_handling.cpp | 57 ++++++++++++++++++++++++++----------
+| | | |  1 file changed, 41 insertions(+), 16 deletions(-)
+| | | | 
+| * | | commit 7f5c98abb20a739ae21f2612ec28e7e1dc7caec0
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:31:11 2026 +0700
+| | | | 
+| | | |     feat: add check is trump Road
+| | | | 
+| | | |  include/graph/Road.hpp | 5 ++++-
+| | | |  src/graph/Road.cpp     | 7 +++++++
+| | | |  2 files changed, 11 insertions(+), 1 deletion(-)
+| | | | 
+| * | | commit 0e91f70cec6d34a9df174d99d444e8ec767608af
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Thu Jul 30 00:30:49 2026 +0700
+| | | | 
+| | | |     feat: add assets for trumpRoad
+| | | | 
+| | | |  assets/bannedRoutes/khapkhap_routeBanned.json |  23 +++++++++++++++++
+| | | |  .../bannedRoutes/khapkhap_routeBanned_01.json |  21 +++++++++++++++
+| | | |  .../bannedRoutes/khapkhap_routeBanned_02.json |  14 ++++++++++
+| | | |  .../bannedRoutes/khapkhap_routeBanned_03.json |  21 +++++++++++++++
+| | | |  .../bannedRoutes/khapkhap_routeBanned_04.json |  21 +++++++++++++++
+| | | |  .../bannedRoutes/khapkhap_routeBanned_05.json |  24 ++++++++++++++++++
+| | | |  assets/textures/Roads/road_banned.png         | Bin 0 -> 27096 bytes
+| | | |  7 files changed, 124 insertions(+)
+| | | |     
+| | | | *   commit d739e4938753c0895db64a749cf7e38a62cd8899
+| | | | |\  Merge: 498cc4c 2ed515e
+| | | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | | Date:   Sun Aug 2 08:48:24 2026 +0700
+| | | | | | 
+| | | | | |     Merge branch 'main' into feature/panel
+| | | | | | 
+| | | | | * commit 2ed515e754c843a4f2fad203ee60ab49af051464
+| | | | |/  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | |/|   Date:   Sat Aug 1 08:39:10 2026 +0700
+| | | | |   
+| | | | |       fix: remove private 4in from readme
+| | | | |   
+| | | | |    README.md | 15 +++------------
+| | | | |    1 file changed, 3 insertions(+), 12 deletions(-)
+| | | | | 
+| | | * | commit 9e86aaaedfba38fa52a008e96a0d7632a08697c4
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Fri Jul 31 07:41:28 2026 +0700
+| | | | | 
+| | | | |     update: readme + member information
+| | | | | 
+| | | | |  README.md | 11 +++++++++++
+| | | | |  1 file changed, 11 insertions(+)
+| | | | | 
+| | | * | commit 68376a4e0358a43d2c5d1fcccb8c70a3e9a41676
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Thu Jul 30 11:35:14 2026 +0700
+| | | | | 
+| | | | |     fix: add leaking function
+| | | | | 
+| | | | |  src/utils/event_handling.cpp | 31 +++++++++++++++++++++++++++++++
+| | | | |  1 file changed, 31 insertions(+)
+| | | | |   
+| | | * |   commit 41ebc786a1e17b5191f283d1d285f94fd8f67188
+| | | |\ \  Merge: d7eb688 bc97b3c
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Thu Jul 30 11:26:07 2026 +0700
+| | | | | | 
+| | | | | |     Merge branch 'main' of https://github.com/KhanPodMiu/UrbanTrafficSimulator
+| | | | | |   
+| | | | * |   commit bc97b3c2bf3ebdf444852d9b7876c2024bfc2448
+| | | | |\ \  Merge: 735c42a e323437
+| | | | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | | | Date:   Thu Jul 30 11:25:41 2026 +0700
+| | | | | | | 
+| | | | | | |     Merge pull request #33 from KhanPodMiu/Kevin
+| | | | | | |     
+| | | | | | |     feat: added mouse control
+| | | | | | |   
+| | | | | * |   commit e32343705367ca4d19f9befbd542f76275e289fd
+| | | | | |\ \  Merge: 03870fb 735c42a
+| | | | | |/ /  Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | |/| |   Date:   Thu Jul 30 11:25:32 2026 +0700
+| | | | | | |   
+| | | | | | |       Merge branch 'main' into Kevin
+| | | | | | | 
+| | | | | * | commit 03870fb6c63a1e8714f08c5a0ad9f0681b121377
+| | | | | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | | | | Date:   Fri Jul 24 12:19:27 2026 +0700
+| | | | | | | 
+| | | | | | |     feat: added mouse control
+| | | | | | | 
+| | | | | | |  include/visualization/camera.hpp           |   8 +-
+| | | | | | |  src/utils/event_handling.cpp               |  53 ++++
+| | | | | | |  src/vehicles/Vehicle.cpp                   |  74 +++++-
+| | | | | | |  src/visualization/camera.cpp               |  38 ++-
+| | | | | | |  .../roundabout_collision_test.cpp          | 195 +++++++++++++++
+| | | | | | |  5 files changed, 363 insertions(+), 5 deletions(-)
+| | | | | | | 
+| | | * | | | commit d7eb688ceb9a92a8d61e45f220cf7425c3a4cb07
+| | | |/ / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | |   Date:   Mon Jul 27 19:47:57 2026 +0700
+| | | | | |   
+| | | | | |       Gitignore
+| | | | | |   
+| | | | | |    .gitignore | 15 ++++++++++++++-
+| | | | | |    1 file changed, 14 insertions(+), 1 deletion(-)
+| | | | | | 
+| | | * | | commit 735c42ab9caedc73d5879f59805f2d7abac79a77
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Mon Jul 27 19:27:53 2026 +0700
+| | | | | | 
+| | | | | |     ReadMe V1
+| | | | | | 
+| | | | | |  README.md                   |  40 +-------------------------------
+| | | | | |  docs/screenshots/.gitkeep   |   0
+| | | | | |  docs/screenshots/Screen.png | Bin 0 -> 1561426 bytes
+| | | | | |  3 files changed, 1 insertion(+), 39 deletions(-)
+| | | | | | 
+| | | * | | commit 710bad4fdbc1db9798c4d7deebb7e59925610eef
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Mon Jul 27 19:26:00 2026 +0700
+| | | | | | 
+| | | | | |     Readme
+| | | | | | 
+| | | | | |  README.md | 382 +++++++++++++++++++++++++++++++++++++++++---------
+| | | | | |  1 file changed, 312 insertions(+), 70 deletions(-)
+| | | | | |   
+| | | * | |   commit 4831c93e45aee0238f8f54d47f479b676fe74983
+| | | |\ \ \  Merge: 28eced8 d9fd0a9
+| | | | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | | | Date:   Mon Jul 27 13:40:48 2026 +0700
+| | | | | | | 
+| | | | | | |     Merge pull request #30 from KhanPodMiu/fix/traffic-light-stopping
+| | | | | | |     
+| | | | | | |     Fix/traffic light stopping
+| | | | | | |   
+| | | * | | |   commit 28eced8a613fb2fbbecf17de44515b5b691ec48d
+| | | |\ \ \ \  Merge: 41a61f5 c47924f
+| | | | |_|/ /  Author: Anndy Vo <miupod.3006@gmail.com>
+| | | |/| | |   Date:   Mon Jul 27 13:40:21 2026 +0700
+| | | | | | |   
+| | | | | | |       Merge pull request #29 from KhanPodMiu/click-regenerate-vehicle
+| | | | | | |       
+| | | | | | |       Click regenerate vehicle
+| | | | | | | 
+| | | | * | | commit c47924fb026d070855849a611c7c5da1cda7dc8e
+| | |_|/ / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| |/| | | |   Date:   Mon Jul 27 13:39:50 2026 +0700
+| | | | | |   
+| | | | | |       fix : cmake
+| | | | | |   
+| | | | | |    Archive.zip                 | Bin 73565 -> 0 bytes
+| | | | | |    CMakeLists.txt              |   4 ++++
+| | | | | |    docs/complexity_analysis.md |   2 +-
+| | | | | |    3 files changed, 5 insertions(+), 1 deletion(-)
+| | | | | | 
+| * | | | | commit 77d47babd5e285c490c8405e84326606d30f7c69
+| | | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | | Date:   Sun Jul 26 14:07:36 2026 +0700
+| | | | | | 
+| | | | | |     refactor: add note for debug
+| | | | | | 
+| | | | | |  src/simulation/VehicleManager.cpp | 11 ++++++++---
+| | | | | |  src/utils/event_handling.cpp      |  4 ++--
+| | | | | |  2 files changed, 10 insertions(+), 5 deletions(-)
+| | | | | | 
+| * | | | | commit 4b6ca880e77b2600b239ed40bb13e89143aaf879
+| | | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | | Date:   Sun Jul 26 14:07:13 2026 +0700
+| | | | | | 
+| | | | | |     fix: Add prevent spawn too much vehicles
+| | | | | | 
+| | | | | |  src/factory/VehicleFactory.cpp | 81 +++++++++++++++++++++++++-----
+| | | | | |  1 file changed, 69 insertions(+), 12 deletions(-)
+| | | | | | 
+| * | | | | commit 3908d1ec5a857be3a38565c33f5b6415738b9713
+| | | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | | Date:   Sun Jul 26 14:05:16 2026 +0700
+| | | | | | 
+| | | | | |     fix: Change vehicle_hitbox_size better suited map visualization
+| | | | | | 
+| | | | | |  include/graph/Road.hpp | 2 +-
+| | | | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | | | 
+| * | | | | commit 76dcf249fdb8d252ceb06b408472eae4be441277
+| | | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | | Date:   Sun Jul 26 01:14:53 2026 +0700
+| | | | | | 
+| | | | | |     fix: Copilot adjust something to cmake build and run on Nhan's laptop
+| | | | | | 
+| | | | | |  .../visualization/VisualizationEngine.hpp   |  3 +-
+| | | | | |  src/main.cpp                                | 63 +++++++++++++++--
+| | | | | |  src/visualization/VisualizationEngine.cpp   | 59 ++++++++++-----
+| | | | | |  3 files changed, 103 insertions(+), 22 deletions(-)
+| | | | | | 
+| * | | | | commit 4a569b50bf770a05770099d3b88c72159708de12
+| | | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | | Date:   Sun Jul 26 01:12:48 2026 +0700
+| | | | | | 
+| | | | | |     feat: Add event clicking to generate vehicle
+| | | | | | 
+| | | | | |  include/factory/VehicleFactory.hpp    |  10 +++
+| | | | | |  include/graph/Graph.hpp               |   7 ++
+| | | | | |  include/simulation/VehicleManager.hpp |   3 +
+| | | | | |  include/utils/event_handling.hpp      |   7 +-
+| | | | | |  src/factory/VehicleFactory.cpp        |  64 +++++++++++++
+| | | | | |  src/graph/Graph.cpp                   |  86 ++++++++++++++++++
+| | | | | |  src/simulation/VehicleManager.cpp     |  20 ++++-
+| | | | | |  src/utils/event_handling.cpp          | 105 ++++++++++++++++------
+| | | | | |  8 files changed, 274 insertions(+), 28 deletions(-)
+| | | | | | 
+| * | | | | commit 0d5258861be024ef8ef86970c2bd1f310ddf352b
+| | |/ / /  Author: hchinhan <cucmo845@gmail.com>
+| |/| | |   Date:   Sun Jul 26 00:41:33 2026 +0700
+| | | | |   
+| | | | |       fix: Update cmake on Nhan laptop
+| | | | |   
+| | | | |    CMakeLists.txt | 4 ----
+| | | | |    1 file changed, 4 deletions(-)
+| | | | | 
+| | | | * commit 498cc4c4bc5ced78705bee31153eee4cbddd803c
+| | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | Date:   Sat Aug 1 22:45:20 2026 +0700
+| | | | | 
+| | | | |     fix: update background map
+| | | | | 
+| | | | |  assets/textures/map.png | Bin 3278158 -> 5101637 bytes
+| | | | |  1 file changed, 0 insertions(+), 0 deletions(-)
+| | | | |   
+| | | | | * commit 15a60a0fecd7aaab6f7e0c2ecfb872ba36457af2
+| | | | |/  Author: itsyippie <dnyp222@gmail.com>
+| | | | |   Date:   Sat Aug 1 14:25:17 2026 +0700
+| | | | |   
+| | | | |       Add tracking camera files
+| | | | |   
+| | | | |    include/utils/tracking.hpp | 0
+| | | | |    src/utils/tracking.cpp     | 0
+| | | | |    2 files changed, 0 insertions(+), 0 deletions(-)
+| | | | | 
+| | | | * commit 27b9addf36777356cd9c6bb7493a247d78b02896
+| | | |/  Author: itsyippie <dnyp222@gmail.com>
+| | |/|   Date:   Sat Aug 1 10:23:10 2026 +0700
+| | | |   
+| | | |       fix: routing algorithms
+| | | |   
+| | | |    include/render/StatisticsPanel.hpp           |  4 +-
+| | | |    src/main.cpp                                 | 31 ++++++--
+| | | |    src/render/EntityInfoPanel.cpp               | 28 +++----
+| | | |    src/render/StatisticsPanel.cpp               | 14 ++--
+| | | |    .../render/StatisticsPanelAlgorithm_test.cpp | 75 ++++++++++++++++++
+| | | |    5 files changed, 124 insertions(+), 28 deletions(-)
+| | | | 
+| | * | commit f39abddb670868a8d55916d993a49ecffd3ce1aa
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Wed Jul 29 23:40:47 2026 +0700
+| | | | 
+| | | |     feat: update vehicle and intersection panel
+| | | | 
+| | | |  assets/textures/Intersection/intersection.png | Bin 0 -> 29485 bytes
+| | | |  include/render/EntityInfoPanel.hpp            |  61 ++
+| | | |  include/vehicles/Vehicle.hpp                  | 266 +++---
+| | | |  include/visualization/VisualizationEngine.hpp | 154 ++--
+| | | |  src/main.cpp                                  |  72 +-
+| | | |  src/render/EntityInfoPanel.cpp                | 441 ++++++++++
+| | | |  src/vehicles/Vehicle.cpp                      |  29 +-
+| | | |  src/visualization/VisualizationEngine.cpp     | 766 +++++++++++-------
+| | | |  8 files changed, 1298 insertions(+), 491 deletions(-)
+| | | |   
+| | * |   commit 8a719875d6946455f0c033d07f490135359bffe4
+| | |\ \  Merge: 6d5ecd6 7c15e47
+| | | | | Author: dnyp222-crypto <dnyp222@gmail.com>
+| | | | | Date:   Mon Jul 27 17:50:40 2026 +0700
+| | | | | 
+| | | | |     Merge branch 'feature/panel' of https://github.com/KhanPodMiu/UrbanTrafficSimulator into feature/panel
+| | | | | 
+| | * | | commit 6d5ecd6562931f86ea1ffb29f96147e22cffd679
+| | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | Date:   Mon Jul 27 17:43:07 2026 +0700
+| | | | | 
+| | | | |     feat: update speed
+| | | | | 
+| | | | |  assets/textures/Panel/speed/speed_0_5x.png | Bin 15578 -> 30620 bytes
+| | | | |  assets/textures/Panel/speed/speed_1x.png   | Bin 15993 -> 31005 bytes
+| | | | |  assets/textures/Panel/speed/speed_2x.png   | Bin 15986 -> 30719 bytes
+| | | | |  assets/textures/Panel/speed/speed_4x.png   | Bin 15670 -> 30983 bytes
+| | | | |  assets/textures/Panel/speed/speed_8x.png   | Bin 15693 -> 31205 bytes
+| | | | |  5 files changed, 0 insertions(+), 0 deletions(-)
+| | | | |   
+| | | | | * commit 9094d402c02a75feaed34fec056a71abe085efe5
+| | | | |/  Author: itsyippie <dnyp222@gmail.com>
+| | | |/|   Date:   Tue Jul 28 19:54:22 2026 +0700
+| | | | |   
+| | | | |       asset: render road
+| | | | |   
+| | | | |    README.md                                   |   39 +-
+| | | | |    assets/maps/khapkhap.json                   |   86 +-
+| | | | |    assets/maps/small_map.json                  |   10 +-
+| | | | |    assets/textures/Intersection/Roundabout.png |  Bin 52805 -> 1623086 bytes
+| | | | |    .../textures/Intersection/intersection.png  |  Bin 0 -> 41031 bytes
+| | | | |    .../textures/Panel/heatmap/heatmap_off.png  |  Bin 0 -> 51783 bytes
+| | | | |    .../textures/Panel/heatmap/heatmap_on.png   |  Bin 0 -> 54844 bytes
+| | | | |    assets/textures/Roads/road_green.png        |  Bin 0 -> 13644 bytes
+| | | | |    assets/textures/Roads/road_red.png          |  Bin 0 -> 13642 bytes
+| | | | |    assets/textures/Roads/road_yellow.png       |  Bin 0 -> 13644 bytes
+| | | | |    include/core/Constants.hpp                  |   15 +-
+| | | | |    include/core/renderWindow.hpp               |    6 +-
+| | | | |    include/graph/Intersection.hpp              |   10 +-
+| | | | |    include/graph/Road.hpp                      |   21 +-
+| | | | |    include/render/StatisticsPanel.hpp          |  154 +-
+| | | | |    include/simulation/CollisionManager.hpp     |   30 +-
+| | | | |    include/simulation/VehicleManager.hpp       |   82 +-
+| | | | |    include/vehicles/Vehicle.hpp                |   17 +-
+| | | | |    .../visualization/VisualizationEngine.hpp   |  124 +-
+| | | | |    src/core/renderWindow.cpp                   |  271 +++-
+| | | | |    src/graph/Intersection.cpp                  |   52 +
+| | | | |    src/graph/Road.cpp                          |  996 ++++++++-----
+| | | | |    src/main.cpp                                |   50 +-
+| | | | |    src/simulation/CollisionManager.cpp         |  327 ++++-
+| | | | |    src/simulation/TrafficLightManager.cpp      |   49 +-
+| | | | |    src/simulation/VehicleManager.cpp           |  200 ++-
+| | | | |    src/utils/MapLoader.cpp                     |   45 +-
+| | | | |    src/vehicles/Bus.cpp                        |    5 +-
+| | | | |    src/vehicles/Car.cpp                        |    5 +-
+| | | | |    src/vehicles/EmergencyVehicle.cpp           |    9 +-
+| | | | |    src/vehicles/Vehicle.cpp                    |  278 ++--
+| | | | |    src/visualization/VisualizationEngine.cpp   | 1104 +++++++++++----
+| | | | |    tests/MapLoader/mapLoader_test.cpp          |   14 +-
+| | | | |    tests/graph/RoadGeometry_test.cpp           |  116 ++
+| | | | |    tests/simulation/collisionManager_test.cpp  |  499 ++++++-
+| | | | |    .../simulation/trafficLightManager_test.cpp |   65 +
+| | | | |    36 files changed, 3498 insertions(+), 1181 deletions(-)
+| | | | | 
+| | | * | commit 7c15e477d2eb81d450f66f6b5573d28a2780d64d
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Mon Jul 27 13:51:38 2026 +0700
+| | | | | 
+| | | | |     feat: upsize map
+| | | | | 
+| | | | |  include/core/Constants.hpp | 2 +-
+| | | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | | 
+| | | * | commit 29ac8aaa0d52f9f7486979ae297976e199e2a2bb
+| | |/ /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | |   Date:   Mon Jul 27 13:49:30 2026 +0700
+| | | |   
+| | | |       feat: upsize map
+| | | |   
+| | | |    include/core/Constants.hpp | 2 +-
+| | | |    1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | 
+| | * | commit a3e37d93a40a93b420771cc98082193a898d153c
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 27 00:12:33 2026 +0700
+| | | | 
+| | | |     fix: restore simulation time text color
+| | | | 
+| | | |  src/render/StatisticsPanel.cpp | 2 +-
+| | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | 
+| | * | commit 36af1ab4bfde6f6e338edc4e96218e71f381ba61
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 27 00:03:19 2026 +0700
+| | | | 
+| | | |     chore: delete error line
+| | | | 
+| | | |  assets/textures/Panel/panel_background.png | Bin 51598 -> 77821 bytes
+| | | |  assets/textures/Panel/speed_0_5x.png       | Bin 15578 -> 0 bytes
+| | | |  assets/textures/Panel/speed_1x.png         | Bin 15993 -> 0 bytes
+| | | |  assets/textures/Panel/speed_2x.png         | Bin 15986 -> 0 bytes
+| | | |  assets/textures/Panel/speed_4x.png         | Bin 15670 -> 0 bytes
+| | | |  assets/textures/Panel/speed_8x.png         | Bin 15693 -> 0 bytes
+| | | |  src/main.cpp                               | 256 +------------
+| | | |  src/render/StatisticsPanel.cpp             | 400 +--------------------
+| | | |  8 files changed, 10 insertions(+), 646 deletions(-)
+| | | | 
+| | * | commit a8e68c4ee0078269bd5b6061b0ab719d3b33c087
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Sun Jul 26 19:32:39 2026 +0700
+| | | | 
+| | | |     feat: add algorithm selection and simulation speed controls
+| | | | 
+| | | |  .../Panel/algorithms_button/AStar.png         | Bin 0 -> 32787 bytes
+| | | |  .../textures/Panel/algorithms_button/BFS.png  | Bin 0 -> 32553 bytes
+| | | |  .../Panel/algorithms_button/DIJKSTRA.png      | Bin 0 -> 33059 bytes
+| | | |  .../Panel/{ => control_button}/pause.png      | Bin
+| | | |  .../Panel/{ => control_button}/restart.png    | Bin
+| | | |  .../Panel/{ => control_button}/start.png      | Bin
+| | | |  assets/textures/Panel/heatmap_off.png         | Bin 15952 -> 0 bytes
+| | | |  assets/textures/Panel/heatmap_on.png          | Bin 17674 -> 0 bytes
+| | | |  assets/textures/Panel/speed/speed_0_5x.png    | Bin 0 -> 15578 bytes
+| | | |  assets/textures/Panel/speed/speed_1x.png      | Bin 0 -> 15993 bytes
+| | | |  assets/textures/Panel/speed/speed_2x.png      | Bin 0 -> 15986 bytes
+| | | |  assets/textures/Panel/speed/speed_4x.png      | Bin 0 -> 15670 bytes
+| | | |  assets/textures/Panel/speed/speed_8x.png      | Bin 0 -> 15693 bytes
+| | | |  include/render/StatisticsPanel.hpp            |  16 +-
+| | | |  src/main.cpp                                  | 238 +++++++
+| | | |  src/render/StatisticsPanel.cpp                | 493 ++++++++++++++
+| | | |  src/simulation/CollisionManager.cpp           | 249 +++----
+| | | |  src/simulation/WorldClock.cpp                 |  42 +-
+| | | |  src/vehicles/Vehicle.cpp                      | 634 +++++++++---------
+| | | |  tests/simulation/worldClock_test.cpp          |  43 +-
+| | | |  20 files changed, 1247 insertions(+), 468 deletions(-)
+| | | | 
+| | * | commit d6bd70269e2d4523640caab4a0f0eae46cc6b33c
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Sat Jul 25 10:22:40 2026 +0700
+| | | | 
+| | | |     feat: update SPEED
+| | | | 
+| | | |  assets/textures/Panel/panel_background.png | Bin 12651 -> 51598 bytes
+| | | |  assets/textures/Panel/pause_active.png     | Bin 16828 -> 0 bytes
+| | | |  assets/textures/Panel/speed_0_5x.png       | Bin 0 -> 15578 bytes
+| | | |  assets/textures/Panel/speed_1x.png         | Bin 0 -> 15993 bytes
+| | | |  assets/textures/Panel/speed_2x.png         | Bin 0 -> 15986 bytes
+| | | |  assets/textures/Panel/speed_4x.png         | Bin 0 -> 15670 bytes
+| | | |  assets/textures/Panel/speed_8x.png         | Bin 0 -> 15693 bytes
+| | | |  assets/textures/Panel/speed_up.png         | Bin 15532 -> 0 bytes
+| | | |  assets/textures/Panel/start_active.png     | Bin 15788 -> 0 bytes
+| | | |  include/render/StatisticsPanel.hpp         |  21 ++-
+| | | |  include/simulation/WorldClock.hpp          |   3 +
+| | | |  src/main.cpp                               |   5 +
+| | | |  src/render/StatisticsPanel.cpp             | 145 +++++++++++++++++++--
+| | | |  src/simulation/WorldClock.cpp              |  17 ++-
+| | | |  14 files changed, 174 insertions(+), 17 deletions(-)
+| | | | 
+| | * | commit 939a585dca5209615a2561b977a3642614c4df6c
+| |/ /  Author: itsyippie <dnyp222@gmail.com>
+|/| |   Date:   Sat Jul 25 09:27:56 2026 +0700
+| | |   
+| | |       feat: update START, PAUSE, RESTART button
+| | |   
+| | |    assets/textures/Panel/panel_background.png | Bin 9044 -> 12651 bytes
+| | |    assets/textures/Panel/pause.png            | Bin 15900 -> 17638 bytes
+| | |    assets/textures/Panel/restart.png          | Bin 0 -> 32426 bytes
+| | |    assets/textures/Panel/start.png            | Bin 17809 -> 19917 bytes
+| | |    include/render/StatisticsPanel.hpp         |  76 ++--
+| | |    include/simulation/TrafficLightManager.hpp |   3 +-
+| | |    include/simulation/VehicleManager.hpp      |   1 +
+| | |    include/simulation/WorldClock.hpp          |   5 +
+| | |    src/main.cpp                               |  34 +-
+| | |    src/render/StatisticsPanel.cpp             | 422 ++++++++++++++-------
+| | |    src/simulation/TrafficLightManager.cpp     |  20 +-
+| | |    src/simulation/VehicleManager.cpp          |  17 +-
+| | |    src/simulation/WorldClock.cpp              |  37 +-
+| | |    tests/simulation/worldClock_test.cpp       |  69 ++++
+| | |    14 files changed, 501 insertions(+), 183 deletions(-)
+| | |   
+* | |   commit 0229f1b17c60eab293c18641eb4fd216be0c73bf
+|\ \ \  Merge: ed28712 c89329d
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Fri Jul 24 12:09:37 2026 +0700
+| | | | 
+| | | |     Merge branch 'feature/panel' of https://github.com/KhanPodMiu/UrbanTrafficSimulator into feature/panel
+| | | |   
+| * | |   commit c89329d68370afecc2cefa6c25152db7debaf78d
+| |\ \ \  Merge: 9932c0d d9fd0a9
+| | | |/  Author: Anndy Vo <miupod.3006@gmail.com>
+| | |/|   Date:   Fri Jul 24 12:05:27 2026 +0700
+| | | |   
+| | | |       Merge pull request #28 from KhanPodMiu/fix/traffic-light-stopping
+| | | |       
+| | | |       Fix/traffic light stopping
+| | | | 
+| | * | commit d9fd0a93cac606777ccf21ad8ccf5ba999cfbea5
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jul 24 12:01:54 2026 +0700
+| | | | 
+| | | |     fix: stop at red line
+| | | | 
+| | | |  Archive.zip                                | Bin 72277 -> 0 bytes
+| | | |  include/simulation/CollisionManager.hpp    |   1 +
+| | | |  src/simulation/CollisionManager.cpp        |  15 ++++++--------
+| | | |  src/vehicles/Vehicle.cpp                   |   3 ++-
+| | | |  tests/simulation/collisionManager_test.cpp |  22 ++++++++++-----------
+| | | |  5 files changed, 19 insertions(+), 22 deletions(-)
+| | | | 
+| | * | commit d1aea0902f84d81a9c14c3c27f7553f1c43e7cb3
+| | |/  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | |   Date:   Thu Jul 23 20:22:36 2026 +0700
+| | |   
+| | |       feat: emergency
+| | |   
+| | |    Archive.zip                                | Bin 73565 -> 72277 bytes
+| | |    include/graph/Road.hpp                     |   2 +
+| | |    include/simulation/CollisionManager.hpp    |   9 ++-
+| | |    include/simulation/VehicleManager.hpp      |   2 +-
+| | |    include/vehicles/EmergencyVehicle.hpp      |  12 ++--
+| | |    include/vehicles/Vehicle.hpp               |  20 +++++-
+| | |    src/graph/Road.cpp                         |  10 +++
+| | |    src/main.cpp                               |   2 +-
+| | |    src/simulation/CollisionManager.cpp        |  61 ++++++++++++++---
+| | |    src/vehicles/Vehicle.cpp                   |  38 +++++++++--
+| | |    tests/simulation/collisionManager_test.cpp |  74 +++++++++++++++++++++
+| | |    11 files changed, 206 insertions(+), 24 deletions(-)
+| | | 
+* | | commit ed287128b5d06674d11331d5ea0312969dd184a9
+|/ /  Author: itsyippie <dnyp222@gmail.com>
+| |   Date:   Fri Jul 24 12:09:18 2026 +0700
+| |   
+| |       feature: update path
+| |   
+| |    assets/textures/Panel/heatmap_off.png      | Bin 0 -> 15952 bytes
+| |    assets/textures/Panel/heatmap_on.png       | Bin 0 -> 17674 bytes
+| |    assets/textures/Panel/panel_background.png | Bin 0 -> 9044 bytes
+| |    assets/textures/Panel/pause.png            | Bin 0 -> 15900 bytes
+| |    assets/textures/Panel/pause_active.png     | Bin 0 -> 16828 bytes
+| |    assets/textures/Panel/speed_up.png         | Bin 0 -> 15532 bytes
+| |    assets/textures/Panel/start.png            | Bin 0 -> 17809 bytes
+| |    assets/textures/Panel/start_active.png     | Bin 0 -> 15788 bytes
+| |    assets/textures/Roads/road.png             | Bin 8055 -> 32535 bytes
+| |    assets/textures/fonts/Octarine-Bold.otf    | Bin 0 -> 51864 bytes
+| |    assets/textures/fonts/Squartiqa.ttf        | Bin 0 -> 35880 bytes
+| |    assets/textures/map.png                    | Bin 2761485 -> 3278158 bytes
+| |    include/core/Constants.hpp                 |   2 +-
+| |    include/render/StatisticsPanel.hpp         |  28 +++++
+| |    src/main.cpp                               |  36 +++++-
+| |    src/render/StatisticsPanel.cpp             | 146 +++++++++++++++++++++++
+| |    src/visualization/VisualizationEngine.cpp  |   2 +-
+| |    17 files changed, 207 insertions(+), 7 deletions(-)
+| | 
+* | commit 9932c0d0620e34dbee23ff09698c02d5fe158b37
+|/  Author: itsyippie <dnyp222@gmail.com>
+|   Date:   Thu Jul 23 01:11:11 2026 +0700
+|   
+|       feat: add statistics and control panel class
+|   
+|    include/render/StatisticsPanel.hpp | 0
+|    src/render/StatisticsPanel.cpp     | 0
+|    2 files changed, 0 insertions(+), 0 deletions(-)
+| 
+* commit 41a61f52f9aaf30622cb9ba90089344e3cd85958
+| Author: itsyippie <dnyp222@gmail.com>
+| Date:   Tue Jul 21 23:07:40 2026 +0700
+| 
+|     feat: update vehicle sprites, including bus and emergency
+| 
+|  assets/textures/Vehicles/bus.png       | Bin 825799 -> 1240364 bytes
+|  assets/textures/Vehicles/emergency.png | Bin 825799 -> 1166571 bytes
+|  2 files changed, 0 insertions(+), 0 deletions(-)
+|   
+*   commit d1cf32e0b86fa8376e14e6cf831d4c63bade658a
+|\  Merge: dde5e88 df47eb3
+| | Author: itsyippie <dnyp222@gmail.com>
+| | Date:   Tue Jul 21 13:07:36 2026 +0700
+| | 
+| |     Merge branch 'main' of https://github.com/KhanPodMiu/UrbanTrafficSimulator
+| | 
+| * commit df47eb3872572b87a606ea75b00f0fb78adf687d
+| | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | Date:   Tue Jul 21 13:05:10 2026 +0700
+| | 
+| |     update: map khapkhap
+| | 
+| |  assets/maps/khapkhap.json                 | 24 ------------------------
+| |  include/simulation/CollisionManager.hpp   |  2 +-
+| |  src/main.cpp                              |  2 +-
+| |  src/vehicles/Vehicle.cpp                  |  2 +-
+| |  src/visualization/VisualizationEngine.cpp |  1 -
+| |  5 files changed, 3 insertions(+), 28 deletions(-)
+| | 
+* | commit dde5e88ce7bb02f856858002ecf5bd237fa651e9
+|/  Author: itsyippie <dnyp222@gmail.com>
+|   Date:   Tue Jul 21 13:06:09 2026 +0700
+|   
+|       fix: map
+|   
+|    src/main.cpp             | 2 +-
+|    src/vehicles/Vehicle.cpp | 1 +
+|    2 files changed, 2 insertions(+), 1 deletion(-)
+|   
+*   commit 608f33ec6515e3f3c80747779447ec2d4090ef8b
+|\  Merge: 57d822d beb2274
+| | Author: Anndy Vo <miupod.3006@gmail.com>
+| | Date:   Tue Jul 21 10:38:22 2026 +0700
+| | 
+| |     Merge pull request #27 from KhanPodMiu/feature/vehicle-logic
+| |     
+| |     Feature/vehicle logic
+| |   
+| *   commit beb2274ad61fab1bff58788f803735eb5a582ee0
+| |\  Merge: 0bfbaa3 57d822d
+| |/  Author: Anndy Vo <miupod.3006@gmail.com>
+|/|   Date:   Tue Jul 21 10:38:12 2026 +0700
+| |   
+| |       Merge branch 'main' into feature/vehicle-logic
+| | 
+* | commit 57d822d89aff7d0fac1dfd2d7fc0cfeceb6618c0
+| | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | Date:   Tue Jul 21 10:36:44 2026 +0700
+| | 
+| |     fix: sth
+| | 
+| |  assets/textures/Vehicles/car.png | Bin 825552 -> 0 bytes
+| |  src/main.cpp                     | 140 -----------------------------------
+| |  2 files changed, 140 deletions(-)
+| |   
+* |   commit 6e7130bcd9035a3d2782d29e15c2e48b72f7835e
+|\ \  Merge: db66dde dc816e3
+| | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | Date:   Tue Jul 21 10:34:22 2026 +0700
+| | | 
+| | |     Merge pull request #25 from KhanPodMiu/feature/UXUI
+| | |     
+| | |     Feature/ux UI
+| | |   
+| * |   commit dc816e3bb328d21709c60bef4badd252ea69d541
+| |\ \  Merge: 54b69b8 db66dde
+| |/ /  Author: Anndy Vo <miupod.3006@gmail.com>
+|/| |   Date:   Tue Jul 21 10:34:11 2026 +0700
+| | |   
+| | |       Merge branch 'main' into feature/UXUI
+| | |   
+* | |   commit db66dde0e3e95779a0b005f831012f3a7c9af127
+|\ \ \  Merge: 02fc8f7 ddda971
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Tue Jul 21 10:24:08 2026 +0700
+| | | | 
+| | | |     Resolve merge conflicts
+| | | | 
+* | | | commit 02fc8f75fbbb6ff34f80ddf0d1ad054b318d3c29
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Sat Jul 18 09:09:48 2026 +0700
+| | | | 
+| | | |     feat: add UI/UX sprites
+| | | | 
+| | | |  assets/maps/NguyenVanCu2.json               | 7364 +++++++++++++++++++
+| | | |  assets/textures/Intersection/Roundabout.png |  Bin 0 -> 52805 bytes
+| | | |  assets/textures/Roads/road.png              |  Bin 0 -> 8055 bytes
+| | | |  assets/textures/Roads/road_dark.png         |  Bin 0 -> 23833 bytes
+| | | |  assets/textures/Roads/road_striped.png      |  Bin 0 -> 10781 bytes
+| | | |  assets/textures/bg2.png                     |  Bin 0 -> 2959976 bytes
+| | | |  assets/textures/bg3.png                     |  Bin 0 -> 5449086 bytes
+| | | |  include/core/Constants.hpp                  |    2 +-
+| | | |  src/main.cpp                                |    2 +-
+| | | |  src/visualization/VisualizationEngine.cpp   |    4 +-
+| | | |  10 files changed, 7368 insertions(+), 4 deletions(-)
+| | | | 
+| | * | commit 54b69b8c8a25afd112703218d923b5de1ed9a597
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Tue Jul 21 10:32:53 2026 +0700
+| | | | 
+| | | |     feat: background:
+| | | | 
+| | | |  assets/textures/Artboard 6@2x.png | Bin 349046 -> 0 bytes
+| | | |  assets/textures/BG.png            | Bin 64921 -> 0 bytes
+| | | |  assets/textures/BG21.png          | Bin 3581997 -> 0 bytes
+| | | |  assets/textures/BG22.png          | Bin 3583760 -> 0 bytes
+| | | |  assets/textures/BGGG.png          | Bin 93098 -> 0 bytes
+| | | |  assets/textures/HCMUS.png         | Bin 123608 -> 0 bytes
+| | | |  assets/textures/bg2.png           | Bin 2959976 -> 0 bytes
+| | | |  assets/textures/bg3.png           | Bin 5449086 -> 0 bytes
+| | | |  assets/textures/grid.png          | Bin 150620 -> 0 bytes
+| | | |  9 files changed, 0 insertions(+), 0 deletions(-)
+| | | | 
+| | * | commit 5bb0a4c9e6408b191b23d9e0252157a0bece472d
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Tue Jul 21 10:09:09 2026 +0700
+| | | | 
+| | | |     feat: update UI/UX
+| | | | 
+| | | |  assets/maps/4phaibatrung.json               | 4164 +++++++++++
+| | | |  assets/maps/Casinha.json                    | 4988 +++++++++++++
+| | | |  assets/maps/NguyenVanCu2.json               | 7364 +++++++++++++++++++
+| | | |  assets/maps/khapkhap.json                   | 6833 +++++++++++++++++
+| | | |  assets/textures/Artboard 6@2x.png           |  Bin 0 -> 349046 bytes
+| | | |  assets/textures/BG21.png                    |  Bin 0 -> 3581997 bytes
+| | | |  assets/textures/BG22.png                    |  Bin 0 -> 3583760 bytes
+| | | |  assets/textures/BGGG.png                    |  Bin 0 -> 93098 bytes
+| | | |  assets/textures/Intersection/Roundabout.png |  Bin 0 -> 52805 bytes
+| | | |  assets/textures/Roads/road.png              |  Bin 0 -> 8055 bytes
+| | | |  assets/textures/Roads/road_dark.png         |  Bin 0 -> 23833 bytes
+| | | |  assets/textures/Roads/road_striped.png      |  Bin 0 -> 10781 bytes
+| | | |  assets/textures/Vehicles/car.png            |  Bin 0 -> 825552 bytes
+| | | |  assets/textures/bg2.png                     |  Bin 0 -> 2959976 bytes
+| | | |  assets/textures/bg3.png                     |  Bin 0 -> 5449086 bytes
+| | | |  assets/textures/grid.png                    |  Bin 0 -> 150620 bytes
+| | | |  assets/textures/map.png                     |  Bin 0 -> 2761485 bytes
+| | | |  include/core/Constants.hpp                  |    2 +-
+| | | |  src/main.cpp                                |    2 +-
+| | | |  src/visualization/VisualizationEngine.cpp   |   23 +-
+| | | |  20 files changed, 23370 insertions(+), 6 deletions(-)
+| | | | 
+| | | * commit 0bfbaa3c909ebf0bcb8e6900cabf1775182b7854
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Tue Jul 21 10:30:16 2026 +0700
+| | | | 
+| | | |     refactor: update vehicles speed
+| | | | 
+| | | |  include/simulation/CollisionManager.hpp | 2 +-
+| | | |  src/main.cpp                            | 2 +-
+| | | |  src/vehicles/Bus.cpp                    | 2 +-
+| | | |  src/vehicles/EmergencyVehicle.cpp       | 2 +-
+| | | |  4 files changed, 4 insertions(+), 4 deletions(-)
+| | | | 
+| | | * commit 025bff1ac9c8dba0e88f0b44b35ad1a42fc1feba
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Mon Jul 20 20:23:34 2026 +0700
+| | | | 
+| | | |     render: vehicle
+| | | | 
+| | | |  Archive.zip                                   | Bin 0 -> 73565 bytes
+| | | |  assets/textures/Vehicles/bus.png              | Bin 0 -> 825799 bytes
+| | | |  assets/textures/Vehicles/car.png              | Bin 0 -> 825799 bytes
+| | | |  assets/textures/Vehicles/emergency.png        | Bin 0 -> 825799 bytes
+| | | |  include/core/Constants.hpp                    |   5 -
+| | | |  include/simulation/CollisionManager.hpp       |  29 +-----
+| | | |  include/vehicles/Vehicle.hpp                  |   9 +-
+| | | |  include/visualization/VisualizationEngine.hpp |   4 +
+| | | |  src/main.cpp                                  |   2 +-
+| | | |  src/simulation/CollisionManager.cpp           |  16 +---
+| | | |  src/simulation/VehicleManager.cpp             |   7 +-
+| | | |  src/vehicles/Bus.cpp                          |   2 +-
+| | | |  src/vehicles/Car.cpp                          |   2 +-
+| | | |  src/vehicles/Vehicle.cpp                      |  24 +++--
+| | | |  src/visualization/VisualizationEngine.cpp     |  89 +++++++++++++-----
+| | | |  15 files changed, 99 insertions(+), 90 deletions(-)
+| | | | 
+| | | * commit ed6952e4a4fc672ba5aa548bcd2ce7f59096a83c
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Mon Jul 20 16:30:09 2026 +0700
+| | | | 
+| | | |     feat: stop at red light
+| | | | 
+| | | |  include/factory/VehicleFactory.hpp        | 19 --------
+| | | |  include/simulation/VehicleManager.hpp     | 11 -----
+| | | |  include/vehicles/Vehicle.hpp              | 11 +----
+| | | |  src/factory/VehicleFactory.cpp            | 13 +-----
+| | | |  src/main.cpp                              | 53 +++++++++++------------
+| | | |  src/simulation/VehicleManager.cpp         |  5 ++-
+| | | |  src/vehicles/Vehicle.cpp                  | 20 +++++----
+| | | |  src/visualization/VisualizationEngine.cpp |  4 --
+| | | |  8 files changed, 42 insertions(+), 94 deletions(-)
+| | | | 
+| | | * commit 2badcf60faa291170f45a6b93313c15e3b9bd3f1
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Mon Jul 20 16:10:40 2026 +0700
+| | | | 
+| | | |     feat: vehicle collision + render
+| | | | 
+| | | |  Archive.zip                                   | Bin 61054 -> 0 bytes
+| | | |  include/factory/VehicleFactory.hpp            |  39 +++++
+| | | |  include/graph/Graph.hpp                       |   3 +
+| | | |  include/simulation/CollisionManager.hpp       |  53 +++++++
+| | | |  include/simulation/VehicleManager.hpp         |  53 +++++++
+| | | |  include/vehicles/Bus.hpp                      |  10 ++
+| | | |  include/vehicles/Car.hpp                      |  10 ++
+| | | |  include/vehicles/EmergencyVehicle.hpp         |  13 ++
+| | | |  include/vehicles/Vehicle.hpp                  |  38 ++++-
+| | | |  include/vehicles/VehicleManager.hpp           |  40 -----
+| | | |  include/visualization/VisualizationEngine.hpp |   7 +
+| | | |  src/factory/VehicleFactory.cpp                | 146 ++++++++++++++++++
+| | | |  src/graph/Graph.cpp                           |  27 ++++
+| | | |  src/main.cpp                                  |  15 ++
+| | | |  src/simulation/CollisionManager.cpp           |  92 +++++++++++
+| | | |  src/simulation/VehicleManager.cpp             |  91 +++++++++++
+| | | |  src/vehicles/Bus.cpp                          |  11 ++
+| | | |  src/vehicles/Car.cpp                          |  11 ++
+| | | |  src/vehicles/EmergencyVehicle.cpp             |  11 ++
+| | | |  src/vehicles/Vehicle.cpp                      | 123 ++++++++++++++-
+| | | |  src/visualization/VisualizationEngine.cpp     |  45 ++++++
+| | | |  21 files changed, 793 insertions(+), 45 deletions(-)
+| | | | 
+| | | * commit 09347b7808bb0c49c8b354808c143a14f53c23e4
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Mon Jul 20 15:27:39 2026 +0700
+| | | | 
+| | | |     refactor : vehicle and road
+| | | | 
+| | | |  Archive.zip                             | Bin 0 -> 61054 bytes
+| | | |  include/factory/VehicleFactory.hpp      |   0
+| | | |  include/graph/Road.hpp                  |  19 ++-
+| | | |  include/simulation/CollisionManager.hpp |   0
+| | | |  include/simulation/VehicleManager.hpp   |   0
+| | | |  include/vehicles/Vehicle.hpp            |  90 +++++++++++---
+| | | |  include/vehicles/VehicleManager.hpp     |  40 ++++++
+| | | |  src/factory/VehicleFactory.cpp          |   0
+| | | |  src/graph/Road.cpp                      | 110 +++++++++++++----
+| | | |  src/simulation/CollisionManager.cpp     |   0
+| | | |  src/simulation/VehicleManager.cpp       |   0
+| | | |  src/vehicles/Vehicle.cpp                | 156 +++++++++++++++++++-----
+| | | |  12 files changed, 339 insertions(+), 76 deletions(-)
+| | | | 
+| | | * commit 179288e2aeccea1f7a4167639bb2d29b5ae53384
+| | |/  Author: KhanPodMiu <miupod.3006@gmail.com>
+| |/|   Date:   Mon Jul 20 14:38:41 2026 +0700
+| | |   
+| | |       fix : fix bug from vehicle
+| | |   
+| | |    include/simulation/TrafficLightManager.hpp |  3 ++-
+| | |    src/graph/Graph.cpp                        |  6 ------
+| | |    src/graph/Road.cpp                         | 25 ----------------------
+| | |    src/main.cpp                               |  3 +--
+| | |    src/simulation/TrafficLightManager.cpp     | 10 ++++-----
+| | |    src/utils/MapLoader.cpp                    |  6 ++----
+| | |    src/vehicles/Vehicle.cpp                   |  8 +++----
+| | |    7 files changed, 14 insertions(+), 47 deletions(-)
+| | |   
+| * |   commit ddda97181b7052cb2eba2da6ce50a9fd3d1aaca0
+| |\ \  Merge: 2ddb8c3 60a6192
+| | |/  Author: Anndy Vo <miupod.3006@gmail.com>
+| |/|   Date:   Mon Jul 20 13:58:30 2026 +0700
+| | |   
+| | |       Merge pull request #24 from KhanPodMiu/Vehicle2
+| | |       
+| | |       Vehicle2
+| | |   
+| | *   commit 60a61925fe960db4f065b2ae3f1739f65d1f3eaf
+| | |\  Merge: 859e048 2ddb8c3
+| | |/  Author: Anndy Vo <miupod.3006@gmail.com>
+| |/|   Date:   Mon Jul 20 13:58:21 2026 +0700
+| | |   
+| | |       Merge branch 'main' into Vehicle2
+| | | 
+| * | commit 2ddb8c335373de5d249d6c4eece34c174ac41900
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Fri Jul 17 19:16:54 2026 +0700
+| | | 
+| | |     feat: convert render trafficLight color to render TL texture
+| | | 
+| | |  include/core/Constants.hpp                    | 10 +----
+| | |  include/core/renderWindow.hpp                 |  2 +-
+| | |  include/visualization/VisualizationEngine.hpp | 20 ++-------
+| | |  src/core/renderWindow.cpp                     | 16 +++++--
+| | |  src/visualization/VisualizationEngine.cpp     | 49 ++++++++++++++++-----
+| | |  5 files changed, 57 insertions(+), 40 deletions(-)
+| | | 
+| * | commit 2802efd8774cb60275bd9b4f555d2b5a624ad789
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Fri Jul 17 18:57:13 2026 +0700
+| | | 
+| | |     fix : re-add render traffic light
+| | | 
+| | |  include.zip  | Bin 20980 -> 0 bytes
+| | |  src/main.cpp |   2 ++
+| | |  2 files changed, 2 insertions(+)
+| | |   
+| * |   commit 176244b7600bfb48ff669778bbe7e95a3da7c870
+| |\ \  Merge: 405688a 75b3635
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Fri Jul 17 08:57:59 2026 +0700
+| | | | 
+| | | |     Merge pull request #23 from KhanPodMiu/Routing
+| | | |     
+| | | |     Routing
+| | | |   
+| | * |   commit 75b36359ef901689bf823eaa3562b0c6f8ca533b
+| | |\ \  Merge: fcd355a 405688a
+| | |/ /  Author: Anndy Vo <miupod.3006@gmail.com>
+| |/| |   Date:   Fri Jul 17 08:57:48 2026 +0700
+| | | |   
+| | | |       Merge branch 'main' into Routing
+| | | | 
+| * | | commit 405688ac897670b31a21eadcd4934fecd9af1d4d
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jul 17 08:36:51 2026 +0700
+| | | | 
+| | | |     feat: sth changed
+| | | | 
+| | | |  src/main.cpp | 2 +-
+| | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | 
+| * | | commit 172511445a847dbda0712748ca79b584b88ec1e5
+|/| | | Merge: b84e328 ec19e65
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Wed Jul 15 20:47:54 2026 +0700
+| | | | 
+| | | |     Merge pull request #22 from KhanPodMiu/TrafficLightManager
+| | | |     
+| | | |     Traffic light manager
+| | | | 
+| * | | commit ec19e65614156a9fc6e97b2483b21c75eca9b1b9
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Wed Jul 15 20:47:00 2026 +0700
+| | | | 
+| | | |     feat : fix light bug and render traffic light into map
+| | | | 
+| | | |  include/core/Constants.hpp                    |  2 +
+| | | |  include/core/renderWindow.hpp                 |  1 +
+| | | |  include/graph/Graph.hpp                       |  2 +
+| | | |  include/graph/Road.hpp                        | 24 ++++----
+| | | |  include/simulation/TrafficLightManager.hpp    | 11 ++--
+| | | |  include/visualization/VisualizationEngine.hpp |  8 ++-
+| | | |  src/core/renderWindow.cpp                     |  6 ++
+| | | |  src/graph/Graph.cpp                           |  8 +++
+| | | |  src/graph/Road.cpp                            | 60 ++-----------------
+| | | |  src/main.cpp                                  |  5 ++
+| | | |  src/simulation/TrafficLightManager.cpp        | 20 +++++--
+| | | |  src/visualization/VisualizationEngine.cpp     | 38 ++++++++++++
+| | | |  12 files changed, 104 insertions(+), 81 deletions(-)
+| | | | 
+| * | | commit 2e8a1581088f0efcaf3de5a486bf7c8b3bc0b780
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Wed Jul 15 11:24:28 2026 +0700
+| | | | 
+| | | |     feat: Add Class TrafficLight Manger, Add new
+| | | |     function to class Graph, add friend class to Road
+| | | | 
+| | | |  include/graph/Graph.hpp                    |  11 +-
+| | | |  include/graph/Road.hpp                     |   4 +-
+| | | |  include/simulation/TrafficLightManager.hpp |  51 ++++
+| | | |  src/graph/Graph.cpp                        | 267 +++++++++++++--------
+| | | |  src/simulation/TrafficLightManager.cpp     | 141 +++++++++++
+| | | |  5 files changed, 363 insertions(+), 111 deletions(-)
+| | | | 
+* | | | commit b84e3280531574f909694a831ab19db619913b5e
+|/ / /  Author: itsyippie <dnyp222@gmail.com>
+| | |   Date:   Wed Jul 15 13:52:43 2026 +0700
+| | |   
+| | |       feat: add traffic light sprites
+| | |   
+| | |    assets/textures/TrafficLight/Green_light.png  | Bin 0 -> 504166 bytes
+| | |    assets/textures/TrafficLight/Red_light.png    | Bin 0 -> 495667 bytes
+| | |    assets/textures/TrafficLight/Yellow_light.png | Bin 0 -> 502344 bytes
+| | |    3 files changed, 0 insertions(+), 0 deletions(-)
+| | |   
+* | |   commit 3a44662d227487d96cbb17d9b870af5d818847f8
+|\ \ \  Merge: 8f1e792 0f17994
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jul 10 19:41:04 2026 +0700
+| | | | 
+| | | |     feat : gridMap
+| | | | 
+| * | | commit 0f17994e503ceeb1498e8f9d82e1f8e4499d95f0
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Thu Jul 9 11:41:44 2026 +0700
+| | | | 
+| | | |     refactor : path algorithm
+| | | | 
+| | | |  src/algorithms/AStarStrategy.cpp | 15 +++------------
+| | | |  src/main.cpp                     |  2 +-
+| | | |  2 files changed, 4 insertions(+), 13 deletions(-)
+| | | | 
+| * | | commit 021a79ea58483b25539a8a2eb9b60d4b4c8636db
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Thu Jul 9 11:08:15 2026 +0700
+| | | | 
+| | | |     Synchornize
+| | | | 
+| | | |  docs/complexity_analysis.md      | 3 +--
+| | | |  include/core/Constants.hpp       | 2 +-
+| | | |  src/algorithms/AStarStrategy.cpp | 7 +++----
+| | | |  src/main.cpp                     | 1 +
+| | | |  4 files changed, 6 insertions(+), 7 deletions(-)
+| | | | 
+| * | | commit 54cfc0055cf431b6d763ae697521746997a41498
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Wed Jul 8 15:40:27 2026 +0700
+| | | | 
+| | | |     cmake add build for may cua Nhan
+| | | | 
+| | | |  CMakeLists.txt | 1 +
+| | | |  1 file changed, 1 insertion(+)
+| | | | 
+* | | | commit 8f1e792775a4662236238401f69c4a18dac80d58
+|/ / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | |   Date:   Fri Jul 10 19:40:43 2026 +0700
+| | |   
+| | |       feat : gridMap
+| | |   
+| | |    .../{large_map_v2.json => NguyenVanCu.json}   |    0
+| | |    assets/maps/gridMap.json                      | 5568 +++++++++++++++++
+| | |    include/graph/Road.hpp                        |    2 +-
+| | |    src/main.cpp                                  |    5 +-
+| | |    src/utils/MapLoader.cpp                       |    3 +-
+| | |    5 files changed, 5571 insertions(+), 7 deletions(-)
+| | | 
+| * | commit fcd355a6525fb8e4a9a5b6f7eeadcda9159011bf
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Fri Jul 17 08:55:15 2026 +0700
+| | | 
+| | |     feat : integrate routing to main
+| | | 
+| | |  include.zip  | Bin 0 -> 20980 bytes
+| | |  src/main.cpp |  38 ++++++++++++++++++++++++++++++++++++++
+| | |  2 files changed, 38 insertions(+)
+| | | 
+| * | commit a0e0ef6574b50214c8c589878683b05a64790a28
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 10 11:39:56 2026 +0700
+| | | 
+| | |     feat: Deleted explanation files (of Kevin)
+| | | 
+| | |  Explanation.md   | 258 -----------------------
+| | |  Explanation_2.md | 542 -------------------------------------------------
+| | |  Task.md          |  43 ----
+| | |  3 files changed, 843 deletions(-)
+| | | 
+| * | commit 34633b21450411bfa52831cc1a5980e39ad283a8
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 10 11:36:38 2026 +0700
+| | | 
+| | |     feat: Implement Routing Algorithms and Pathfinding
+| | | 
+| | |  CMakeLists.txt                             |   7 +-
+| | |  Explanation.md                             | 258 +++++++++++
+| | |  Explanation_2.md                           | 542 +++++++++++++++++++++++
+| | |  Task.md                                    |  43 ++
+| | |  include/algorithms/AStarStrategy.hpp       |   9 +-
+| | |  include/algorithms/BFS.hpp                 |   9 +-
+| | |  include/algorithms/Dijkstra.hpp            |   5 +-
+| | |  include/algorithms/PathFindingStrategy.hpp |  11 +
+| | |  include/simulation/RouteResult.hpp         |   7 +-
+| | |  src/algorithms/AStarStrategy.cpp           |   2 +-
+| | |  src/algorithms/BFS.cpp                     | 172 ++++---
+| | |  src/algorithms/Dijkstra.cpp                |   2 +-
+| | |  src/graph/Intersection.cpp                 |   1 +
+| | |  src/main.cpp                               |   2 +-
+| | |  tests/Algorithms/AStar_test.cpp            |   7 +-
+| | |  15 files changed, 968 insertions(+), 109 deletions(-)
+| | | 
+| * | commit 7866ab1077c71566aac85e807a9153203b176ea3
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 10 11:30:09 2026 +0700
+| | | 
+| | |     feat: Implemented RoutingManager class
+| | | 
+| | |  src/algorithms/RoutingManager.cpp | 15 +++++++++++++++
+| | |  1 file changed, 15 insertions(+)
+| | | 
+| * | commit a8a880f398e73149ba2c78e197e93eb6b14a79d5
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 10 11:29:43 2026 +0700
+| | | 
+| | |     feat: Implemented RouteOptimizer class
+| | | 
+| | |  src/simulation/RouteOptimizer.cpp | 52 +++++++++++++++++++++++++++++++++
+| | |  1 file changed, 52 insertions(+)
+| | | 
+| * | commit bf8352f8dbf6ccda8927b02a2ee503d2dbf71b51
+| | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | Date:   Fri Jul 10 11:29:07 2026 +0700
+| | | 
+| | |     feat: added header files for manager and optimizer
+| | | 
+| | |  include/algorithms/RoutingManager.hpp | 15 +++++++++++++++
+| | |  include/simulation/RouteOptimizer.hpp | 16 ++++++++++++++++
+| | |  2 files changed, 31 insertions(+)
+| | | 
+| | * commit 859e048abdf150cde3c28b4f6b1e1dedaa4e1031
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Jul 18 09:41:51 2026 +0700
+| | | 
+| | |     refactor: delete note
+| | | 
+| | |  include/graph/Road.hpp       |  2 +-
+| | |  include/vehicles/Vehicle.hpp |  2 +-
+| | |  src/graph/Road.cpp           | 24 ------------------------
+| | |  3 files changed, 2 insertions(+), 26 deletions(-)
+| | | 
+| | * commit fd97c5faf59fb21180e1de81c61065a2800f4dcd
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Wed Jul 15 12:24:59 2026 +0700
+| | | 
+| | |     feat: Recalculate TravelCost and Congestion scale
+| | |     by using BRP function and road distance, hitbox
+| | |     size
+| | | 
+| | |  include/graph/Road.hpp |  7 ++++++-
+| | |  src/graph/Road.cpp     | 38 +++++++++++++++++++-------------------
+| | |  2 files changed, 25 insertions(+), 20 deletions(-)
+| | | 
+| | * commit 5634ae0275461c5edf1109df98e5f42874834918
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Wed Jul 15 11:10:41 2026 +0700
+| | | 
+| | |     refactor: Delete note
+| | | 
+| | |  include/simulation/TrafficLightManager.hpp | 8 --------
+| | |  1 file changed, 8 deletions(-)
+| | | 
+| | * commit 956f5a6d59b4b8ba2c4ed9c4e22e17a13b8eac5f
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Wed Jul 15 11:08:12 2026 +0700
+| | | 
+| | |     refactor: TrafficLightManager use vector2i,
+| | |     Road change queue to vector
+| | | 
+| | |  include/graph/Road.hpp                     |  2 +-
+| | |  include/simulation/TrafficLightManager.hpp | 21 +++++++++------------
+| | |  include/utils/vector2i.hpp                 |  2 +-
+| | |  src/graph/Road.cpp                         |  4 ++--
+| | |  src/simulation/TrafficLightManager.cpp     | 19 +++++++++++++------
+| | |  5 files changed, 26 insertions(+), 22 deletions(-)
+| | | 
+| | * commit 86bae9305a93b7021243c44c626e779e130cac2e
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Mon Jul 13 23:34:40 2026 +0700
+| | | 
+| | |     Feat: Add queue to manage
+| | |     the amount of vehicles on the road
+| | | 
+| | |  include/graph/Road.hpp | 15 +++++++++++++--
+| | |  src/graph/Road.cpp     | 22 ++++++++++++++++++++++
+| | |  2 files changed, 35 insertions(+), 2 deletions(-)
+| | | 
+| | * commit 603671fa3b37895f0f325f51134a1ecf5b8a5064
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Mon Jul 13 22:31:48 2026 +0700
+| | | 
+| | |     Refactor: change travelCost to double in Dijkstra algorithm and Road class
+| | | 
+| | |  include/graph/Road.hpp      |  9 ++++-----
+| | |  src/algorithms/Dijkstra.cpp | 10 +++++-----
+| | |  src/graph/Road.cpp          | 15 +++++++--------
+| | |  3 files changed, 16 insertions(+), 18 deletions(-)
+| | | 
+| | * commit 5fceae3e8daf4f19c650ff59d2ee8c42033bc568
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Sat Jul 11 10:32:40 2026 +0700
+| | | 
+| | |     Refactor: TrafficLightManager add lamda function
+| | |     and delete friend class
+| | |     Feat: Add callBack function to use hash map
+| | |     Intersection
+| | | 
+| | |  include/graph/Graph.hpp                    |  7 ++++---
+| | |  include/graph/Intersection.hpp             |  1 +
+| | |  include/simulation/TrafficLightManager.hpp | 11 +++++------
+| | |  src/graph/Graph.cpp                        |  8 +++++++-
+| | |  src/simulation/TrafficLightManager.cpp     | 23 +++++++++++++----------
+| | |  5 files changed, 30 insertions(+), 20 deletions(-)
+| | | 
+| | * commit 318db1cb6bae179f884dbcba4b652f0fe4c5d3b8
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Tue Jul 7 15:51:14 2026 +0700
+| | | 
+| | |     feat: add friend class TrafficLightManager to Graph
+| | | 
+| | |  include/graph/Graph.hpp |   8 +-
+| | |  src/graph/Graph.cpp     | 260 +++++++++++++++++++++++++-----------------
+| | |  2 files changed, 160 insertions(+), 108 deletions(-)
+| | | 
+| | * commit 3b7373ac5c0e703c92972c9fd28ad9e8070924eb
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Tue Jul 7 15:48:48 2026 +0700
+| | | 
+| | |     feat: add new method for class road
+| | | 
+| | |  include/graph/Road.hpp | 4 ++--
+| | |  1 file changed, 2 insertions(+), 2 deletions(-)
+| | | 
+| | * commit 411e96fbd61ce702986e747b2b5285d74a56b775
+| | | Author: hchinhan <cucmo845@gmail.com>
+| | | Date:   Tue Jul 7 15:45:30 2026 +0700
+| | | 
+| | |     refactor: Change file folder
+| | | 
+| | |  include/simulation/TrafficLightManager.hpp | 63 ++++++++++++++++++++++++
+| | |  include/vehicles/Vehicle.hpp               | 36 ++++++++++++++
+| | |  src/simulation/TrafficLightManager.cpp     |  2 +-
+| | |  3 files changed, 100 insertions(+), 1 deletion(-)
+| | | 
+| | * commit 1d3a26df927acd2bdb37d8c915b17e7c6c49a972
+| |/  Author: hchinhan <cucmo845@gmail.com>
+|/|   Date:   Tue Jul 7 15:40:12 2026 +0700
+| |   
+| |       refator: Change file folder
+| |   
+| |    include/simulation/TrafficLightManager.hpp |   0
+| |    include/vehicles/Vehicle.hpp               |   0
+| |    src/simulation/TrafficLightManager.cpp     | 131 +++++++++++++++++++++++
+| |    src/vehicles/Vehicle.cpp                   |  63 +++++++++++
+| |    4 files changed, 194 insertions(+)
+| | 
+* | commit 350938969e8af431629cfff59609f8c60753132a
+|/  Author: KhanPodMiu <miupod.3006@gmail.com>
+|   Date:   Tue Jul 7 10:15:55 2026 +0700
+|   
+|       fix : include const hpp
+|   
+|    src/graph/Intersection.cpp | 1 +
+|    1 file changed, 1 insertion(+)
+|   
+*   commit 8992e66e7c95742eb9b94007883c2dc017ddf14f
+|\  Merge: c43e346 310a3fe
+| | Author: YEN PHUONG <dnyp222@gmail.com>
+| | Date:   Tue Jul 7 10:01:21 2026 +0700
+| | 
+| |     Merge pull request #20 from KhanPodMiu/algorithms/AStarStrategy
+| |     
+| |     feat: add missing files
+| |   
+| *   commit 310a3fe9d45a73a1ebdf71aa70dcd0233f1ecd00
+| |\  Merge: 2c0aef3 c43e346
+| |/  Author: YEN PHUONG <dnyp222@gmail.com>
+|/|   Date:   Tue Jul 7 10:01:08 2026 +0700
+| |   
+| |       Merge branch 'main' into algorithms/AStarStrategy
+| |   
+* |   commit c43e34603ec9c04e44b3e31d53fcb17eb20d02f5
+|\ \  Merge: 2a4caf6 45522a3
+| | | Author: YEN PHUONG <dnyp222@gmail.com>
+| | | Date:   Tue Jul 7 09:53:18 2026 +0700
+| | | 
+| | |     Merge pull request #19 from KhanPodMiu/algorithms/AStarStrategy
+| | |     
+| | |     Algorithms/a star strategy
+| | |   
+| * |   commit 45522a3833379d8aa391cf61aabcc473fd9f16f5
+| |\ \  Merge: 76c7a84 2a4caf6
+| |/ /  Author: YEN PHUONG <dnyp222@gmail.com>
+|/| |   Date:   Tue Jul 7 09:53:00 2026 +0700
+| | |   
+| | |       Merge branch 'main' into algorithms/AStarStrategy
+| | |   
+* | |   commit 2a4caf6268e1072421f7c1931f07ffbb702b8589
+|\ \ \  Merge: c55075e 553ac52
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Sun Jul 5 23:27:28 2026 +0700
+| | | | 
+| | | |     Merge pull request #18 from KhanPodMiu/fix/refeactor-project
+| | | |     
+| | | |     refactor project
+| | | | 
+| * | | commit 553ac52f574f59676833f8133ae431814f66623d
+|/ / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | |   Date:   Sun Jul 5 23:25:58 2026 +0700
+| | |   
+| | |       refactor project
+| | |   
+| | |    assets.zip                                    | Bin 9204533 -> 0 bytes
+| | |    assets/fonts/.gitkeep                         |   0
+| | |    assets/icons/.gitkeep                         |   0
+| | |    assets/maps/.gitkeep                          |   0
+| | |    assets/shaders/.gitkeep                       |   0
+| | |    assets/textures/.gitkeep                      |   0
+| | |    include/algorithms/.gitkeep                   |   0
+| | |    include/core/Constants.hpp                    |  42 ++++++
+| | |    include/simulation/.gitkeep                   |   0
+| | |    include/utils/.gitkeep                        |   0
+| | |    include/vehicles/.gitkeep                     |   0
+| | |    include/visualization/MapRenderer.hpp         |   9 --
+| | |    include/visualization/VisualizationEngine.hpp |  62 ++++++++
+| | |    src/algorithms/.gitkeep                       |   0
+| | |    src/graph/Intersection.cpp                    |  18 ++-
+| | |    src/main.cpp                                  | 133 ++----------------
+| | |    src/simulation/.gitkeep                       |   0
+| | |    src/utils/.gitkeep                            |   0
+| | |    src/vehicles/.gitkeep                         |   0
+| | |    src/visualization/MapRenderer.cpp             |  23 ---
+| | |    src/visualization/VisualizationEngine.cpp     | 118 ++++++++++++++++
+| | |    src/visualization/camera.cpp                  |  35 ++---
+| | |    22 files changed, 264 insertions(+), 176 deletions(-)
+| | |   
+* | |   commit c55075eace27e2f4e7321dfb74f561367b62a832
+|\ \ \  Merge: 21f16c8 6c6200f
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Fri Jul 3 13:48:15 2026 +0700
+| | | | 
+| | | |     Merge pull request #17 from KhanPodMiu/feature/render_half_of_road
+| | | |     
+| | | |     Feature/render half of road
+| | | | 
+| * | | commit 6c6200f3410ccdc99fade6a6fa61e0d2c3ae3a09
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jul 3 13:47:10 2026 +0700
+| | | | 
+| | | |     finished branch
+| | | | 
+| | | |  assets.zip                  |  Bin 0 -> 9204533 bytes
+| | | |  assets/maps/DinhDocLap.json | 8257 +++++++++++++++++++++++++++++++++++
+| | | |  assets/maps/LangDaiHoc.json | 6064 +++++++++++++++++++++++++
+| | | |  src/main.cpp                |    7 +-
+| | | |  4 files changed, 14323 insertions(+), 5 deletions(-)
+| | | | 
+| * | | commit eb942631be148fb57a57ba2fe7d7663d36732e02
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Wed Jul 1 22:59:43 2026 +0700
+| | | | 
+| | | |     feat : upscale map and fix render
+| | | | 
+| | | |  assets/maps/bug_map_4test.json |   55 -
+| | | |  assets/maps/large_map.json     | 9252 ++++++++++++++++++++++++++++++++
+| | | |  assets/maps/large_map_v2.json  | 9252 ++++++++++++++++++++++++++++++++
+| | | |  assets/maps/small_map.json     |   29 +
+| | | |  assets/maps/test_map.json      |   34 -
+| | | |  assets/textures/BG.png         |  Bin 0 -> 64921 bytes
+| | | |  assets/textures/Background.png |  Bin 2850684 -> 0 bytes
+| | | |  assets/textures/HCMUS.png      |  Bin 0 -> 123608 bytes
+| | | |  assets/textures/bg4000.png     |  Bin 58979 -> 0 bytes
+| | | |  assets/textures/newtemp.png    |  Bin 72490 -> 0 bytes
+| | | |  src/graph/Intersection.cpp     |    4 +-
+| | | |  src/main.cpp                   |    9 +-
+| | | |  src/visualization/camera.cpp   |   14 +-
+| | | |  13 files changed, 18547 insertions(+), 102 deletions(-)
+| | | | 
+| * | | commit d01b43fb4cfeef2a87faf2ae5efd785ef9fbb279
+|/ / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | |   Date:   Sat Jun 27 20:01:40 2026 +0700
+| | |   
+| | |       fix : fix camera movement
+| | |   
+| | |    assets/textures/Intersection/rb1.png | Bin 0 -> 2132997 bytes
+| | |    assets/textures/Roads/road2.png      | Bin 0 -> 6777620 bytes
+| | |    include/visualization/camera.hpp     |   1 +
+| | |    src/core/renderWindow.cpp            |  57 ++++++++++++++++++++-------
+| | |    src/main.cpp                         |  26 ++++--------
+| | |    src/visualization/camera.cpp         |  12 +++---
+| | |    6 files changed, 57 insertions(+), 39 deletions(-)
+| | | 
+* | | commit 21f16c8a5d5239d8e4e60d6ccb1703f0fcf2edfc
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Sat Jun 27 19:25:46 2026 +0700
+| | | 
+| | |     fix : fix memory leak and update new map
+| | | 
+| | |  assets/maps/complex_map.json     |  57 ++++++++++++++++
+| | |  include/core/renderWindow.hpp    |   2 +-
+| | |  include/visualization/camera.hpp |   1 +
+| | |  src/core/renderWindow.cpp        |  21 +++---
+| | |  src/graph/.prettierrc            |   4 --
+| | |  src/main.cpp                     | 117 +++++++++++++++++++--------------
+| | |  src/visualization/camera.cpp     |   9 +++
+| | |  7 files changed, 145 insertions(+), 66 deletions(-)
+| | |   
+* | |   commit 7b37feaf84d6d0d22228df9dbd21ae5c61020533
+|\ \ \  Merge: 80f0cf2 de4f33c
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Mon Jun 22 12:08:37 2026 +0700
+| | | | 
+| | | |     Merge pull request #15 from KhanPodMiu/feature/camera_UI_Road_Intersection
+| | | |     
+| | | |     feat : update bg
+| | | | 
+| * | | commit de4f33c0c2a89ef9ca6aa385a9ef398fc45a2852
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Mon Jun 22 12:07:49 2026 +0700
+| | | | 
+| | | |     feat : update bg
+| | | | 
+| | | |  assets/textures/bg4000.png       | Bin 0 -> 58979 bytes
+| | | |  assets/textures/newtemp.png      | Bin 0 -> 72490 bytes
+| | | |  include/visualization/camera.hpp |   1 +
+| | | |  src/main.cpp                     |   2 +-
+| | | |  src/visualization/camera.cpp     |  28 ++++++++++++++++++++++------
+| | | |  5 files changed, 24 insertions(+), 7 deletions(-)
+| | | | 
+* | | | commit 80f0cf2d994163720371d1bc61554c45b8d1a538
+|\| | | Merge: 75bb6bf e52d9e7
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Mon Jun 22 12:06:21 2026 +0700
+| | | | 
+| | | |     Merge pull request #14 from KhanPodMiu/feature/camera_UI_Road_Intersection
+| | | |     
+| | | |     Feature/camera UI road intersection
+| | | | 
+| * | | commit e52d9e7c27101d8f36f88c93dd19c09bcc8f162e
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jun 19 00:48:30 2026 +0700
+| | | | 
+| | | |     feat : implement camera zoom
+| | | | 
+| | | |  include/core/renderWindow.hpp    |  2 +-
+| | | |  include/utils/vector2i.hpp       |  4 +-
+| | | |  include/visualization/camera.hpp |  3 +-
+| | | |  src/core/renderWindow.cpp        | 18 ++++----
+| | | |  src/main.cpp                     | 19 +++++---
+| | | |  src/utils/vector2i.cpp           |  2 +-
+| | | |  src/visualization/camera.cpp     | 79 +++++++++++++-------------------
+| | | |  7 files changed, 57 insertions(+), 70 deletions(-)
+| | | | 
+| * | | commit 3a7cd6e99fa427229d2eb070f1cb39d4cad627d6
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jun 19 00:09:09 2026 +0700
+| | | | 
+| | | |     feat : implement helper func for cleaner
+| | | | 
+| | | |  include/utils/event_handling.hpp |  7 +++
+| | | |  include/visualization/camera.hpp |  9 +++-
+| | | |  src/core/renderWindow.cpp        |  6 ++-
+| | | |  src/main.cpp                     | 73 +++++++++++++-------------------
+| | | |  src/utils/event_handling.cpp     | 46 ++++++++++++++++++++
+| | | |  src/visualization/camera.cpp     | 20 +++++++--
+| | | |  6 files changed, 111 insertions(+), 50 deletions(-)
+| | | | 
+| * | | commit 7ec4ccac632c7ba001b2c3a75fad186ecf3fea8e
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Thu Jun 18 23:39:03 2026 +0700
+| | | | 
+| | | |     feat : show road and intersection
+| | | | 
+| | | |  assets/maps/test_map.json                     |  34 +++++++
+| | | |  .../textures/Intersection/temp_roundabout.png | Bin 0 -> 69197 bytes
+| | | |  assets/textures/Roads/temp_road.png           | Bin 0 -> 20676 bytes
+| | | |  include/core/renderWindow.hpp                 |   1 +
+| | | |  src/core/renderWindow.cpp                     |  13 +++
+| | | |  src/main.cpp                                  |  91 +++++++++++++++++-
+| | | |  6 files changed, 134 insertions(+), 5 deletions(-)
+| | | | 
+| * | | commit a063576a7b719bb88b1cd5fdb984dc87a2d39e44
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Thu Jun 18 21:45:43 2026 +0700
+| | | | 
+| | | |     feat : camera V1
+| | | | 
+| | | |  assets/maps/background.png        | Bin 2850684 -> 0 bytes
+| | | |  include/core/renderWindow.hpp     |   3 +-
+| | | |  include/graph/Graph.hpp           |   1 +
+| | | |  include/utils/vector2i.hpp        |   7 +
+| | | |  include/visualization/camera.hpp  |  23 +++
+| | | |  src/core/renderWindow.cpp         |  23 ++-
+| | | |  src/graph/.prettierrc             |   4 +
+| | | |  src/graph/Graph.cpp               | 261 ++++++++++++------------------
+| | | |  src/main.cpp                      |  90 ++++++++---
+| | | |  src/utils/vector2i.cpp            |   9 ++
+| | | |  src/visualization/MapRenderer.cpp |   2 +-
+| | | |  src/visualization/camera.cpp      |  51 ++++++
+| | | |  12 files changed, 282 insertions(+), 192 deletions(-)
+| | | | 
+| * | | commit 17aea8488fae64b330f97fde06e0b65d2d6e0daa
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Thu Jun 18 19:56:20 2026 +0700
+| | | | 
+| | | |     feat : splite window/ map and UI Panel
+| | | | 
+| | | |  include/core/renderWindow.hpp         |  4 +++
+| | | |  include/graph/Graph.hpp               |  1 +
+| | | |  include/visualization/.gitkeep        |  0
+| | | |  include/visualization/MapRenderer.hpp |  9 ++++++
+| | | |  src/core/renderWindow.cpp             | 16 ++++++++++
+| | | |  src/graph/Graph.cpp                   |  5 +++
+| | | |  src/main.cpp                          | 46 ++++++++++++++++++++++-----
+| | | |  src/visualization/.gitkeep            |  0
+| | | |  src/visualization/MapRenderer.cpp     | 23 ++++++++++++++
+| | | |  9 files changed, 96 insertions(+), 8 deletions(-)
+| | | | 
+| * | | commit e07e5980475ac2d85879f9776042ddc8d022d2e1
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Tue Jun 16 18:00:18 2026 +0700
+| | | | 
+| | | |     feat : world clock + timestepping limit fps to 30 frame rate
+| | | | 
+| | | |  .gitignore                           |   4 +-
+| | | |  README.md                            |  87 ---------------------------
+| | | |  docs/Project.pdf                     | Bin 0 -> 172131 bytes
+| | | |  include/simulation/WorldClock.hpp    |  16 +++++
+| | | |  src/main.cpp                         |  25 ++++++--
+| | | |  src/simulation/WorldClock.cpp        |  22 +++++++
+| | | |  tests/simulation/worldClock_test.cpp |  48 +++++++++++++++
+| | | |  7 files changed, 110 insertions(+), 92 deletions(-)
+| | | | 
+* | | | commit 75bb6bf6134659858a20257f4cb18b1a2675d2a2
+| | | | Author: YEN PHUONG <dnyp222@gmail.com>
+| | | | Date:   Fri Jun 19 15:04:33 2026 +0700
+| | | | 
+| | | |     feat: increase MAP_WIDTH from 4000 to 5300
+| | | | 
+| | | |  src/graph/Intersection.cpp | 2 +-
+| | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | |   
+* | | |   commit 523600bb07e2265f2debff9600a63a67b4722edd
+|\ \ \ \  Merge: c40c833 5dae797
+| | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | Date:   Thu Jun 18 20:23:24 2026 +0700
+| | | | | 
+| | | | |     Merge pull request #13 from KhanPodMiu/fix/intersection
+| | | | |     
+| | | | |     Fix/intersection
+| | | | | 
+| * | | | commit 5dae797d17e4683d20527ef6c12132dbfb3839ef
+| | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | Date:   Mon Jun 15 19:23:20 2026 +0700
+| | | | | 
+| | | | |     feat: add getRadius()
+| | | | | 
+| | | | |  include/graph/Intersection.hpp |  3 +++
+| | | | |  src/graph/Intersection.cpp     | 19 ++++++++++++++++++-
+| | | | |  2 files changed, 21 insertions(+), 1 deletion(-)
+| | | | | 
+| * | | | commit 9d191c3b4d4f635f6444efa1e10633cf07f5407a
+| | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | Date:   Sun Jun 14 00:10:01 2026 +0700
+| | | | | 
+| | | | |     Refactor Intersection::getType() using neighbor count
+| | | | | 
+| | | | |  include/graph/Intersection.hpp | 37 +++++------------
+| | | | |  src/graph/Intersection.cpp     | 68 +++++++++++++++++++++++---------
+| | | | |  2 files changed, 59 insertions(+), 46 deletions(-)
+| | | | | 
+| | | | * commit 2c0aef30a9e4f3827882d01e7d12cc15cbd2feab
+| | | |/  Author: itsyippie <dnyp222@gmail.com>
+| | | |   Date:   Tue Jul 7 09:59:23 2026 +0700
+| | | |   
+| | | |       feat: add missing files
+| | | |   
+| | | |    assets/maps/DinhDocLap.json              | 8257 +++++++++++++++++
+| | | |    assets/maps/LangDaiHoc.json              | 6064 +++++++++++++
+| | | |    assets/maps/large_map_v2.json            | 9252 ++++++++++++++++++++
+| | | |    cmake_test_discovery_e0a22a9269.json     |   69 +
+| | | |    include/algorithms/Dijkstra.hpp          |    6 +-
+| | | |    include/graph/Intersection.hpp           |   36 +-
+| | | |    src/algorithms/Dijkstra.cpp              |    8 +-
+| | | |    src/graph/Intersection.cpp               |   92 +-
+| | | |    tests/AStarStrategy/AStrar_test.cpp      |  260 -
+| | | |    tests/AStarStrategy/TestGraphBuilder.cpp |  130 -
+| | | |    tests/AStarStrategy/TestGraphBuilder.hpp |   16 -
+| | | |    tests/Algorithms/AStar_test.cpp          |  238 +-
+| | | |    tests/Algorithms/BFS_test.cpp            |  109 +
+| | | |    tests/Algorithms/DIJKSTRA_test.cpp       |    0
+| | | |    tests/test_algorithm.cpp                 |   91 -
+| | | |    15 files changed, 24024 insertions(+), 604 deletions(-)
+| | | | 
+| | | * commit 76c7a84c26aaae60fed420c42072e5071e9bf0f1
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 6 13:50:54 2026 +0700
+| | | | 
+| | | |     refactor(astar): use fixed Euclidean/MAX_SPEED heuristic
+| | | | 
+| | | |  include/algorithms/AStarStrategy.hpp |  22 +++---
+| | | |  src/algorithms/AStarStrategy.cpp     | 100 ++++++++++++---------------
+| | | |  2 files changed, 55 insertions(+), 67 deletions(-)
+| | | | 
+| | | * commit 2d48456ddb2e104d0e0c12646a7d53cdfd32896a
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 6 13:32:43 2026 +0700
+| | | | 
+| | | |     feat: add unit test for comparing algorithms
+| | | | 
+| | | |  tests/Algorithms/AStar_test.cpp | 172 ++++++++++++++++++++++++++++++++
+| | | |  1 file changed, 172 insertions(+)
+| | | | 
+| | | * commit c99edbcaaeae4057ccdf5d338f03cee50acb43e5
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 6 03:28:24 2026 +0700
+| | | | 
+| | | |     feat: add expanded node for compare routing performance
+| | | | 
+| | | |  include/algorithms/BFS.hpp | 11 ++++++++---
+| | | |  src/algorithms/BFS.cpp     | 39 +++++++++++++++++++++++++++-----------
+| | | |  2 files changed, 36 insertions(+), 14 deletions(-)
+| | | | 
+| | | * commit bfb27a2fda05eee1ec028c8e206088badf455a24
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 6 03:26:37 2026 +0700
+| | | | 
+| | | |     feat: update AStarStrategy
+| | | | 
+| | | |  include/algorithms/AStarStrategy.hpp | 6 ++++++
+| | | |  src/algorithms/AStarStrategy.cpp     | 7 +++++--
+| | | |  2 files changed, 11 insertions(+), 2 deletions(-)
+| | | | 
+| | | * commit 258abd864d77e290af0c38e4bb7780e04e6df03e
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Mon Jul 6 03:23:51 2026 +0700
+| | | | 
+| | | |     feat: Complexity documentation of routing algorithms
+| | | | 
+| | | |  docs/complexity_analysis.md | 118 +++++++++++++++++++++++++++++++++++-
+| | | |  1 file changed, 117 insertions(+), 1 deletion(-)
+| | | | 
+| | | * commit c5f09a6378468cf68bcd838db1abda82fc063525
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Sun Jul 5 22:50:40 2026 +0700
+| | | | 
+| | | |     feat: add DivideSpeed heuristic for benchmarking A*
+| | | | 
+| | | |  include/algorithms/AStarStrategy.hpp | 3 ++-
+| | | |  src/algorithms/AStarStrategy.cpp     | 4 +++-
+| | | |  2 files changed, 5 insertions(+), 2 deletions(-)
+| | | | 
+| | | * commit 2605a2d97d22a5d3a65d5b7009173ce70d6ee6a4
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Thu Jun 25 01:18:48 2026 +0700
+| | | | 
+| | | |     feat: implement A* with different heuristic functions
+| | | | 
+| | | |  include/algorithms/AStarStrategy.hpp |  4 ++--
+| | | |  src/algorithms/AStarStrategy.cpp     | 12 ++++++------
+| | | |  2 files changed, 8 insertions(+), 8 deletions(-)
+| | | |   
+| | | *   commit 324bb25b31cff41c4a1852765d1b5ae4a5a29ce6
+| | | |\  Merge: 8a7465b c6a6b42
+| | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | Date:   Tue Jun 23 22:46:32 2026 +0700
+| | | | | 
+| | | | |     Merge pull request #16 from KhanPodMiu/BFS-Dijsktra
+| | | | |     
+| | | | |     Bfs dijsktra
+| | | | | 
+| | | | * commit c6a6b4294291043ef0feca7be8e7e208b98c21c2
+| | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | Date:   Tue Jun 23 18:24:48 2026 +0700
+| | | | | 
+| | | | |     feat: unit test
+| | | | | 
+| | | | |  tests/test_algorithm.cpp | 91 ++++++++++++++++++++++++++++++++++++++
+| | | | |  1 file changed, 91 insertions(+)
+| | | | | 
+| | | | * commit 0230ef5ff0d9bca4277a4adc78e84b4529216d39
+| | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | Date:   Tue Jun 16 11:11:55 2026 +0700
+| | | | | 
+| | | | |     feat: add DijkstraStrategy for algorithm
+| | | | |     refactor: delete unecessary library in BFS.hpp
+| | | | | 
+| | | | |  include/algorithms/BFS.hpp      |  2 -
+| | | | |  include/algorithms/Dijkstra.hpp | 10 ++++
+| | | | |  src/algorithms/Dijkstra.cpp     | 86 +++++++++++++++++++++++++++++++
+| | | | |  3 files changed, 96 insertions(+), 2 deletions(-)
+| | | | | 
+| | | | * commit 53d3786cfa7a8bfba66ebc748e08700deac11f6b
+| | | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | | Date:   Tue Jun 16 09:47:11 2026 +0700
+| | | | | 
+| | | | |     feat: add BFSStragety for algorithm
+| | | | |     refactor: change name variable in RouteResult
+| | | | | 
+| | | | |  include/algorithms/BFS.hpp         | 12 +++++
+| | | | |  include/simulation/RouteResult.hpp | 10 ++--
+| | | | |  src/algorithms/BFS.cpp             | 70 ++++++++++++++++++++++++++++
+| | | | |  3 files changed, 87 insertions(+), 5 deletions(-)
+| | | | | 
+| | | * | commit 8a7465b505adec66df188772996334c25f76f29b
+| | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | Date:   Tue Jun 23 22:44:01 2026 +0700
+| | | | | 
+| | | | |     feat: implement A* pathfinding algorithm
+| | | | | 
+| | | | |  docs/complexity_analysis.md              |   1 +
+| | | | |  include/algorithms/AStarStrategy.hpp     |  51 ++++
+| | | | |  src/algorithms/AStarStrategy.cpp         | 164 +++++++++++++
+| | | | |  src/main.cpp                             |  58 ++---
+| | | | |  tests/AStarStrategy/AStrar_test.cpp      | 260 +++++++++++++++++++++
+| | | | |  tests/AStarStrategy/TestGraphBuilder.cpp | 130 +++++++++++
+| | | | |  tests/AStarStrategy/TestGraphBuilder.hpp |  16 ++
+| | | | |  7 files changed, 653 insertions(+), 27 deletions(-)
+| | | | |   
+| | | * |   commit 468e7af71ae44ea1a61c14b0c69c89a03c782874
+| | | |\ \  Merge: 1c06694 c40c833
+| |_|_|/ /  Author: itsyippie <dnyp222@gmail.com>
+|/| | | |   Date:   Tue Jun 16 22:25:45 2026 +0700
+| | | | |   
+| | | | |       Merge branch 'main' into algorithms/AStarStrategy
+| | | | | 
+* | | | | commit c40c8334b880b2951196443fd97152ff6ec1970a
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Tue Jun 16 18:27:58 2026 +0700
+| | | | | 
+| | | | |     refactor : wrong information in reademe
+| | | | | 
+| | | | |  README.md | 124 ----------------------------------------------------
+| | | | |  1 file changed, 124 deletions(-)
+| | | | | 
+* | | | | commit 00561dd3a0922cc9aa8b02b1126e82cef68fea65
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Tue Jun 16 18:24:35 2026 +0700
+| | | | | 
+| | | | |     refactor : uml architecture
+| | | | | 
+| | | | |  docs/diagrams/uml_class_diagram.svg | 2 +-
+| | | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | | 
+* | | | | commit d56e3ebe7ca35862fac18e5d173fb123a31386c8
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Tue Jun 16 18:21:38 2026 +0700
+| | | | | 
+| | | | |     feat : upload uml diagram to readme
+| | | | | 
+| | | | |  README.md                           | 93 ++-------------------------
+| | | | |  docs/diagrams/uml_class_diagram.svg |  1 +
+| | | | |  2 files changed, 7 insertions(+), 87 deletions(-)
+| | | | | 
+* | | | | commit a1e8edb2172742d50e6bcfc1978d9b219d00171b
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Tue Jun 16 18:06:58 2026 +0700
+| | | | | 
+| | | | |     refactor : update gitignore
+| | | | | 
+| | | | |  .gitignore | 4 +++-
+| | | | |  1 file changed, 3 insertions(+), 1 deletion(-)
+| | | | |   
+* | | | |   commit 8098f301fcc8157cce5297b5ebfb4a13e2807e82
+|\ \ \ \ \  Merge: 8a0444e a178d34
+| |_|/ / /  Author: Anndy Vo <miupod.3006@gmail.com>
+|/| | | /   Date:   Tue Jun 16 18:05:52 2026 +0700
+| | |_|/    
+| |/| |         Merge pull request #12 from KhanPodMiu/Routing-Data-Models
+| | | |         
+| | | |         Routing data models
+| | | | 
+| * | | commit a178d347d7c7f398257e75227bf5a7293f52c1d4
+| | | | Author: hchinhan <cucmo845@gmail.com>
+| | | | Date:   Sun Jun 14 22:20:38 2026 +0700
+| | | | 
+| | | |     feat: Add RouteRequest and RouteRessult data model
+| | | | 
+| | | |  include/simulation/RouteRequest.hpp | 1 -
+| | | |  1 file changed, 1 deletion(-)
+| | | | 
+| * | | commit 2a1eb5fd3614eaef7b5432b3edce7b265319cb7a
+|/ / /  Author: hchinhan <cucmo845@gmail.com>
+| | |   Date:   Sun Jun 14 22:20:14 2026 +0700
+| | |   
+| | |       feat: Add RouteRequest and RouteResult classes for routing data models
+| | |   
+| | |    include/simulation/RouteRequest.hpp | 14 ++++++++++++++
+| | |    include/simulation/RouteResult.hpp  | 13 +++++++++++++
+| | |    2 files changed, 27 insertions(+)
+| | |   
+* | |   commit 8a0444ea7e1aac3dc3f2fcaf71c5a464e71faacc
+|\ \ \  Merge: de2f500 4ed7d85
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Sun Jun 14 12:34:28 2026 +0700
+| | | | 
+| | | |     Merge pull request #11 from KhanPodMiu/feature/json_mapLoader
+| | | |     
+| | | |     Feature/json map loader
+| | | | 
+| * | | commit 4ed7d85ab1c1e06de6020348bff191e26c4c9c7e
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Sat Jun 13 21:38:27 2026 +0700
+| | | | 
+| | | |     feat : implement mapLoader and complete features testing
+| | | | 
+| | | |  assets/maps/bug_map_4test.json     |  55 ++
+| | | |  src/utils/MapLoader.cpp            |  52 +-
+| | | |  tests/MapLoader/mapLoader_test.cpp |  64 +++
+| | | |  tests/Sth/test.cpp                 |  42 --
+| | | |  tests/Sth/test_Road.cpp            | 802 -----------------------------
+| | | |  tests/Sth/test_graph.cpp           | 145 ------
+| | | |  tests/Sth/test_intersection.cpp    | 340 ------------
+| | | |  7 files changed, 163 insertions(+), 1337 deletions(-)
+| | | |   
+| * | |   commit 5a9ec4c4d1dff329a3a50b45b1a018a2f335e0c5
+| |\ \ \  Merge: 3ddcbed 09abd14
+| | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | Date:   Sat Jun 13 20:45:15 2026 +0700
+| | | | | 
+| | | | |     Merge pull request #9 from KhanPodMiu/main
+| | | | |     
+| | | | |     add important classes
+| | | | | 
+| * | | | commit 3ddcbed80892519315712a00bb0ee6181295cf01
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Sat Jun 13 20:44:11 2026 +0700
+| | | | | 
+| | | | |     waiting : wait for graph, road, intersection
+| | | | | 
+| | | | |  include/utils/MapLoader.hpp | 10 ++++++++++
+| | | | |  src/utils/MapLoader.cpp     | 33 +++++++++++++++++++++++++++++++++
+| | | | |  2 files changed, 43 insertions(+)
+| | | | | 
+| * | | | commit e2fa36d823d7b853229545fa341d95924c37c68f
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Sat Jun 13 16:52:51 2026 +0700
+| | | | | 
+| | | | |     feat : small_map.json
+| | | | | 
+| | | | |  assets/maps/data.json       | 11 -------
+| | | | |  assets/maps/small_map.json  | 55 +++++++++++++++++++++++++++++++++++
+| | | | |  include/utils/MapLoader.hpp |  0
+| | | | |  src/utils/MapLoader.cpp     |  0
+| | | | |  4 files changed, 55 insertions(+), 11 deletions(-)
+| | | | | 
+* | | | | commit de2f500c37262b5510a47a8de8e9f860a98a3668
+| |/ / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+|/| | |   Date:   Sun Jun 14 10:55:01 2026 +0700
+| | | |   
+| | | |       feat : update timestep argument
+| | | |   
+| | | |    src/core/renderWindow.cpp | 2 +-
+| | | |    1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | 
+| | | * commit 1c06694de50002276f089bec0fc8ad156679b4d4
+| |_|/  Author: itsyippie <dnyp222@gmail.com>
+|/| |   Date:   Tue Jun 16 22:21:41 2026 +0700
+| | |   
+| | |       feat: create AStarStrategy branch
+| | |   
+| | |    include/algorithms/AStarStrategy.hpp |   4 +
+| | |    src/algorithms/AStarStrategy.cpp     |   0
+| | |    tests/Sth/test.cpp                   |  42 --
+| | |    tests/Sth/test_Road.cpp              | 802 ---------------------------
+| | |    tests/Sth/test_graph.cpp             | 145 -----
+| | |    tests/Sth/test_intersection.cpp      | 340 ------------
+| | |    6 files changed, 4 insertions(+), 1329 deletions(-)
+| | | 
+* | | commit 09abd1425182dce1b62c47ab3083ca88c7020a54
+| | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | Date:   Sat Jun 13 16:57:57 2026 +0700
+| | | 
+| | |     fix : add again remove func in graph
+| | | 
+| | |  include/graph/Graph.hpp |   2 +
+| | |  src/graph/Graph.cpp     | 252 +++++++++++++++++++++++++++++++++++++++++-
+| | |  2 files changed, 253 insertions(+), 1 deletion(-)
+| | |   
+* | |   commit 9a05f80cf1472267c5121c55ee13af90ddfaefdb
+|\ \ \  Merge: df6ac82 074f82b
+| | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | Date:   Fri Jun 12 11:45:30 2026 +0700
+| | | | 
+| | | |     Merge pull request #8 from KhanPodMiu/Road_Kevin
+| | | |     
+| | | |     Road kevin
+| | | | 
+| * | | commit 074f82bbedaba1d5185a34b31dd5409955b25332
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Wed Jun 10 23:57:27 2026 +0700
+| | | | 
+| | | |     feat: Added traffic light in Road class
+| | | | 
+| | | |  src/graph/Road.cpp | 175 +++++++++++++++++++++++++++++++++++++++++++--
+| | | |  1 file changed, 169 insertions(+), 6 deletions(-)
+| | | | 
+| * | | commit 82845c9166cebf89215ea6d23be3d3c05ddb7553
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Wed Jun 10 23:57:00 2026 +0700
+| | | | 
+| | | |     feat: Added traffic light functionality to Road
+| | | | 
+| | | |  include/graph/Road.hpp | 69 ++++++++++++++++++++++++++++++++++++++----
+| | | |  1 file changed, 63 insertions(+), 6 deletions(-)
+| | | | 
+| * | | commit 4ed7cddbdebb24fcaec4585e96b23c2a9c0db1bd
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Mon Jun 8 00:28:13 2026 +0700
+| | | | 
+| | | |     Fix: added condition with nullptr check
+| | | | 
+| | | |  src/graph/Road.cpp | 48 ++++++++++++++++++++++++++++++++++++++--------
+| | | |  1 file changed, 40 insertions(+), 8 deletions(-)
+| | | |   
+| * | |   commit 3450091e62bb60afe789c319b0b19449932ea181
+| |\ \ \  Merge: 4599449 8cb3dad
+| | | |/  Author: Anndy Vo <miupod.3006@gmail.com>
+| | |/|   Date:   Sun Jun 7 23:38:32 2026 +0700
+| | | |   
+| | | |       Merge pull request #7 from KhanPodMiu/feature/intersection
+| | | |       
+| | | |       Feature/intersection
+| | | | 
+* | | | commit df6ac82b1c6ae605cc3ebae4fcf200f89b78aec3
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Sun Jun 7 23:26:04 2026 +0700
+| | | | 
+| | | |     fix : remove remove function, very insecurity, may be cause dangling pointer
+| | | | 
+| | | |  include/graph/Graph.hpp |  2 --
+| | | |  src/graph/Graph.cpp     | 65 -----------------------------------------
+| | | |  2 files changed, 67 deletions(-)
+| | | |   
+* | | |   commit bd4f5981debb4510d1ce36726ad222f13db83f23
+|\ \ \ \  Merge: 44fba06 189861f
+| | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | Date:   Sun Jun 7 22:35:25 2026 +0700
+| | | | | 
+| | | | |     Merge pull request #6 from KhanPodMiu/Adjacency-List-Design-+-Graph-Class
+| | | | |     
+| | | | |     feat: Graph.cpp & Graph.hpp initial commit
+| | | | |   
+| * | | |   commit 189861ffdf2dbc9928d08d87ddc825b3b9fbe134
+| |\ \ \ \  Merge: 98b8b94 44fba06
+| |/ / / /  Author: Anndy Vo <miupod.3006@gmail.com>
+|/| | | |   Date:   Sun Jun 7 22:35:13 2026 +0700
+| | | | |   
+| | | | |       Merge branch 'main' into Adjacency-List-Design-+-Graph-Class
+| | | | | 
+* | | | | commit 44fba06bfb10c9000898816873484654c0a30f9e
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Sun Jun 7 19:54:20 2026 +0700
+| | | | | 
+| | | | |     fix : dangling reference in yp's intersection
+| | | | | 
+| | | | |  include/graph/Intersection.hpp | 2 +-
+| | | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | |   
+* | | | |   commit d6e38dc1d7ca4fa4457119f7f231abb3af1e3a4e
+|\ \ \ \ \  Merge: 780ee61 8cb3dad
+| | |_|/ /  Author: Anndy Vo <miupod.3006@gmail.com>
+| |/| | |   Date:   Sun Jun 7 19:49:33 2026 +0700
+| | | | |   
+| | | | |       Merge pull request #5 from KhanPodMiu/feature/intersection
+| | | | |       
+| | | | |       Feature/intersection
+| | | | |   
+| * | | |   commit 8cb3dadcfabcc0edf95537856278b71ff1791b08
+| |\ \ \ \  Merge: 6209640 780ee61
+| |/ / / /  Author: Anndy Vo <miupod.3006@gmail.com>
+|/| | | |   Date:   Sun Jun 7 19:49:21 2026 +0700
+| | | | |   
+| | | | |       Merge branch 'main' into feature/intersection
+| | | | |   
+* | | | |   commit 780ee61083958e530a13af11375675411c1d635f
+|\ \ \ \ \  Merge: d259616 81c7dfa
+| | | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | | Date:   Fri Jun 5 19:57:55 2026 +0700
+| | | | | | 
+| | | | | |     Merge pull request #4 from KhanPodMiu/feature/renderWindow
+| | | | | |     
+| | | | | |     Feature/render window
+| | | | | |   
+| * | | | |   commit 81c7dfaedcd97fa2a7ddfb040134b80a42c7cf75
+| |\ \ \ \ \  Merge: 72e0ee0 d259616
+| |/ / / / /  Author: Anndy Vo <miupod.3006@gmail.com>
+|/| | | | |   Date:   Fri Jun 5 19:56:47 2026 +0700
+| | | | | |   
+| | | | | |       Merge branch 'main' into feature/renderWindow
+| | | | | | 
+* | | | | | commit d259616e9dbe0c3c74390453ca179820b1b194f0
+| | | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | | Date:   Fri Jun 5 11:53:51 2026 +0700
+| | | | | | 
+| | | | | |     fix : optimize env for mac and window
+| | | | | | 
+| | | | | |  CMakeLists.txt                | 1 +
+| | | | | |  include/core/renderWindow.hpp | 2 +-
+| | | | | |  src/core/renderWindow.cpp     | 4 ++--
+| | | | | |  src/main.cpp                  | 4 ++--
+| | | | | |  4 files changed, 6 insertions(+), 5 deletions(-)
+| | | | | | 
+* | | | | | commit 31bb5634e88bb26fd63d9eb9e3ffffa5ef27dd1b
+| | | | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | | | Date:   Fri Jun 5 11:38:26 2026 +0700
+| | | | | | 
+| | | | | |     update evn for win
+| | | | | | 
+| | | | | |  .gitignore                    | 168 ++++----
+| | | | | |  CMakeLists.txt                | 222 +++++-----
+| | | | | |  README.md                     | 692 +++++++++++++++---------------
+| | | | | |  include/core/renderWindow.hpp |  32 +-
+| | | | | |  src/core/renderWindow.cpp     |  90 ++--
+| | | | | |  src/main.cpp                  |  96 ++---
+| | | | | |  tests/Sth/test.cpp            |  82 ++--
+| | | | | |  tests/main.cpp                |  14 +-
+| | | | | |  8 files changed, 698 insertions(+), 698 deletions(-)
+| | | | | | 
+* | | | | | commit f3d09526e503965bec9c2b033264007a7d5e61a1
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Thu Jun 4 14:50:21 2026 +0700
+| | | | | | 
+| | | | | |     fix : update remove pointer to avoid memory leak
+| | | | | | 
+| | | | | |  src/main.cpp | 2 +-
+| | | | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | | |   
+* | | | | |   commit 16b3bacfafc03ee42fc3079c58e72b464f3bbc85
+|\ \ \ \ \ \  Merge: 9be437b bd33ecc
+| | | | | | | Author: Anndy Vo <miupod.3006@gmail.com>
+| | | | | | | Date:   Thu Jun 4 14:47:35 2026 +0700
+| | | | | | | 
+| | | | | | |     Merge pull request #2 from KhanPodMiu/feature/renderWindow
+| | | | | | |     
+| | | | | | |     Feature/render window
+| | | | | | | 
+| | * | | | | commit 72e0ee0d2caee1c0c0b4112fb6e7c672e2a714d9
+| | | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | | Date:   Fri Jun 5 19:54:36 2026 +0700
+| | | | | | | 
+| | | | | | |     refactor : update cmake and initialize window
+| | | | | | | 
+| | | | | | |  CMakeLists.txt                | 2 ++
+| | | | | | |  include/core/renderWindow.hpp | 2 +-
+| | | | | | |  src/core/renderWindow.cpp     | 4 ++--
+| | | | | | |  src/main.cpp                  | 4 ++--
+| | | | | | |  4 files changed, 7 insertions(+), 5 deletions(-)
+| | | | | | | 
+| | * | | | | commit a0e1fc6ad0dfc7944438ce6abda01ef5783ead34
+| |/ / / / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | |   Date:   Fri Jun 5 10:52:29 2026 +0700
+| | | | | |   
+| | | | | |       refactor : simplify code
+| | | | | |   
+| | | | | |    include/core/renderWindow.hpp |  1 +
+| | | | | |    src/core/renderWindow.cpp     |  6 +++++-
+| | | | | |    src/main.cpp                  | 13 +++----------
+| | | | | |    3 files changed, 9 insertions(+), 11 deletions(-)
+| | | | | | 
+| * | | | | commit bd33eccaa7682361dea8ed9ee17077cf02b1694d
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Thu Jun 4 14:46:27 2026 +0700
+| | | | | | 
+| | | | | |     ready to merge
+| | | | | | 
+| | | | | |  src/main.cpp | 1 +
+| | | | | |  1 file changed, 1 insertion(+)
+| | | | | | 
+| * | | | | commit a42c18bb48efa1241c328bfe30274abbb3388da7
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Wed Jun 3 18:20:44 2026 +0700
+| | | | | | 
+| | | | | |     fix : remove deleting daling pointer
+| | | | | | 
+| | | | | |  src/main.cpp | 2 --
+| | | | | |  1 file changed, 2 deletions(-)
+| | | | | | 
+| * | | | | commit 4180d78d1402fbd6c8b0f41c4aa624289aa7b98d
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Tue Jun 2 21:45:03 2026 +0700
+| | | | | | 
+| | | | | |     feat : render first img to window and upload temporary background img
+| | | | | | 
+| | | | | |  assets/maps/background.png    | Bin 0 -> 2850684 bytes
+| | | | | |  include/core/renderWindow.hpp |   5 ++++-
+| | | | | |  src/core/renderWindow.cpp     |  24 ++++++++++++++++++++++++
+| | | | | |  src/main.cpp                  |  13 +++++++++++++
+| | | | | |  4 files changed, 41 insertions(+), 1 deletion(-)
+| | | | | | 
+| * | | | | commit 4c4161f91645292ea2686044d28aaffc2b55d9ba
+| | | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | | Date:   Tue Jun 2 20:40:24 2026 +0700
+| | | | | | 
+| | | | | |     Init window and renderer - can render a black window
+| | | | | | 
+| | | | | |  CMakeLists.txt                | 12 ++++++++-
+| | | | | |  include/core/renderWindow.hpp | 14 +++++++++++
+| | | | | |  src/core/renderWindow.cpp     | 22 +++++++++++++++++
+| | | | | |  src/main.cpp                  | 34 ++++++++++++++++++++++---
+| | | | | |  tests/Sth/test.cpp            | 41 +++++++++++++++++++++++++++++--
+| | | | | |  5 files changed, 117 insertions(+), 6 deletions(-)
+| | | | | | 
+| * | | | | commit 427a276010384400cacf25a5c8a5b98012a7d901
+| | |_|_|/  Author: KhanPodMiu <miupod.3006@gmail.com>
+| |/| | |   Date:   Tue Jun 2 19:26:23 2026 +0700
+| | | | |   
+| | | | |       refresh main
+| | | | |   
+| | | | |    assets/maps/data.json | 11 -----------
+| | | | |    src/main.cpp          | 23 -----------------------
+| | | | |    2 files changed, 34 deletions(-)
+| | | | | 
+| * | | | commit 7cfd5b7b0544f3b61385f84da4f7f95c20d47f9c
+| | | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | | Date:   Mon Jun 1 19:58:57 2026 +0700
+| | | | | 
+| | | | |     review json
+| | | | | 
+| | | | |  src/main.cpp | 29 +++++++++++------------------
+| | | | |  1 file changed, 11 insertions(+), 18 deletions(-)
+| | | | | 
+| * | | | commit 94012cf9724473ac98982b8eade0b964c1daba1e
+|/ / / /  Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | |   Date:   Sun May 31 21:58:13 2026 +0700
+| | | |   
+| | | |       Q&A about json
+| | | |   
+| | | |    CMakeLists.txt        | 23 ++++++++++++-------
+| | | |    assets/maps/data.json | 11 +++++++++
+| | | |    src/main.cpp          | 51 ++++++++++++++++++++---------------------
+| | | |    3 files changed, 51 insertions(+), 34 deletions(-)
+| | | | 
+| * | | commit 6209640e9cfc2f46c43d56fb827827e73d7a591b
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Sat Jun 6 15:54:00 2026 +0700
+| | | | 
+| | | |     refactor(intersection): derive type from degree and enforce road constness
+| | | | 
+| | | |  include/graph/Intersection.hpp  |  29 +-
+| | | |  tests/Sth/test_Road.cpp         | 102 +++----
+| | | |  tests/Sth/test_intersection.cpp | 477 +++++++++++---------------------
+| | | |  3 files changed, 224 insertions(+), 384 deletions(-)
+| | | | 
+| * | | commit e45ad4e1a68919582a658c9186ed687548d219a0
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Sat Jun 6 15:51:52 2026 +0700
+| | | | 
+| | | |     refactor(intersection): derive type from degree and enforce road constness
+| | | | 
+| | | |  src/graph/Intersection.cpp | 59 ++++++++++++++++++++++----------------
+| | | |  1 file changed, 35 insertions(+), 24 deletions(-)
+| | | | 
+| * | | commit 9b9c0c66276286eaee3ac000ae1e0297c56c3cf5
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Fri Jun 5 21:34:20 2026 +0700
+| | | | 
+| | | |     Add exception handling for invalid intersection data
+| | | | 
+| | | |  include/graph/Intersection.hpp  |  11 +-
+| | | |  src/graph/Intersection.cpp      |  71 +++--
+| | | |  tests/Sth/test_intersection.cpp | 485 ++++++++++++++++++++++++--------
+| | | |  3 files changed, 431 insertions(+), 136 deletions(-)
+| | | | 
+| * | | commit c7db11e8d2fc9a9314826ee98f57081f83b540c9
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Fri Jun 5 12:02:11 2026 +0700
+| | | | 
+| | | |     fix : temp evn using without sdl2
+| | | | 
+| | | |  CMakeLists.txt | 13 +++++++------
+| | | |  1 file changed, 7 insertions(+), 6 deletions(-)
+| | | | 
+| * | | commit dd28d2b2d1d3a23fc6d1bd9a78650e81fea8e7f0
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Fri Jun 5 11:44:58 2026 +0700
+| | | | 
+| | | |     update cmake for window
+| | | | 
+| | | |  CMakeLists.txt | 18 ++++++++----------
+| | | |  1 file changed, 8 insertions(+), 10 deletions(-)
+| | | | 
+| * | | commit 58223d7a61d7342d4c7befb9bc9f1eae051a54fa
+| | | | Author: itsyippie <dnyp222@gmail.com>
+| | | | Date:   Fri Jun 5 11:42:57 2026 +0700
+| | | | 
+| | | |     test
+| | | | 
+| | | |  src/main.cpp | 2 +-
+| | | |  1 file changed, 1 insertion(+), 1 deletion(-)
+| | | | 
+| * | | commit 8e9f8a69a8e9159be64a8c35b11658bacdd75c44
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jun 5 07:48:15 2026 +0700
+| | | | 
+| | | |     fix : fix bug cmake ver 2
+| | | | 
+| | | |  CMakeLists.txt | 18 ++++++++++--------
+| | | |  src/main.cpp   |  2 +-
+| | | |  2 files changed, 11 insertions(+), 9 deletions(-)
+| | | | 
+| * | | commit 4128eb5610465576de3801734fdf7ced6efd4d84
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Fri Jun 5 07:41:13 2026 +0700
+| | | | 
+| | | |     fix : update cmake bug
+| | | | 
+| | | |  CMakeLists.txt | 35 ++++++++++++++++++++++++++---------
+| | | |  src/main.cpp   | 10 ++++++++++
+| | | |  2 files changed, 36 insertions(+), 9 deletions(-)
+| | | |   
+| * | |   commit 941785d0a96a91fdecce5e86bb8ce3a6acb41f8d
+| |\ \ \  Merge: 39b8f6f 4599449
+| | | |/  Author: YEN PHUONG <dnyp222@gmail.com>
+| | |/|   Date:   Thu Jun 4 17:14:07 2026 +0700
+| | | |   
+| | | |       Merge pull request #3 from KhanPodMiu/Road_Kevin
+| | | |       
+| | | |       Merge road implement into intersection implement
+| | | | 
+| | * | commit 459944954478e0e931cf55d8a5859b2dc0bd8705
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Thu Jun 4 14:51:07 2026 +0700
+| | | | 
+| | | |     refactor : remove main
+| | | | 
+| | | |  src/main.cpp | 40 ----------------------------------------
+| | | |  1 file changed, 40 deletions(-)
+| | | | 
+| | * | commit 50984eac7a31f0ba9bf6c1a62223c8e13dcf87fa
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Thu Jun 4 12:10:18 2026 +0700
+| | | | 
+| | | |     feat:Added tests suiting for threshold in road.cpp
+| | | | 
+| | | |  tests/Sth/test_Road.cpp | 1010 ++++++++++++++++++++++++++-------------
+| | | |  1 file changed, 680 insertions(+), 330 deletions(-)
+| | | | 
+| | * | commit 68e04c88b822b83a1f7b63d9dc08c6405f2b4274
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Thu Jun 4 12:09:01 2026 +0700
+| | | | 
+| | | |     feat: added const in get, set function for testing
+| | | | 
+| | | |  include/graph/Road.hpp | 4 ++--
+| | | |  1 file changed, 2 insertions(+), 2 deletions(-)
+| | | | 
+| | * | commit 694ba7833376bccc376921f082f4b21379cb1c32
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Thu Jun 4 12:08:07 2026 +0700
+| | | | 
+| | | |     fix: threshold for road in distance function
+| | | | 
+| | | |  src/graph/Road.cpp | 26 ++++++++++++++++++++++----
+| | | |  1 file changed, 22 insertions(+), 4 deletions(-)
+| | | | 
+| * | | commit 39b8f6f5a3a7ae7cecbe41a71ef84a1f84a7d617
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Thu Jun 4 14:51:37 2026 +0700
+| | | | 
+| | | |     refactor : remove main in Yen Phuong branch
+| | | | 
+| | | |  src/main.cpp | 8 --------
+| | | |  1 file changed, 8 deletions(-)
+| | | | 
+| * | | commit ebbed6d29d27487ef8245cf1685436af0e953a08
+| | | | Author: KhanPodMiu <miupod.3006@gmail.com>
+| | | | Date:   Wed Jun 3 18:25:04 2026 +0700
+| | | | 
+| | | |     fix : remove all temporary sdl2 in main
+| | | | 
+| | | |  src/main.cpp | 35 +----------------------------------
+| | | |  1 file changed, 1 insertion(+), 34 deletions(-)
+| | | | 
+| * | | commit b063883308ac1bd9231a85d3f574089dda488877
+| |\| | Merge: c608c77 9329ca8
+| | | | Author: YEN PHUONG <dnyp222@gmail.com>
+| | | | Date:   Wed Jun 3 16:59:31 2026 +0700
+| | | | 
+| | | |     Merge pull request #1 from KhanPodMiu/Road_Kevin
+| | | |     
+| | | |     Road kevin
+| | | | 
+| | * | commit 9329ca8b3491187f94a6cc6ba4ec930e9426e37c
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Wed Jun 3 16:18:50 2026 +0700
+| | | | 
+| | | |     fix: Add test for Road class
+| | | | 
+| | | |  tests/Sth/test_Road.cpp | 452 ++++++++++++++++++++++++++++++++++++++++
+| | | |  1 file changed, 452 insertions(+)
+| | | | 
+| | * | commit e8923fa8f6de4e8b38ab272882364db8d0977f7d
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Wed Jun 3 16:18:14 2026 +0700
+| | | | 
+| | | |     feat: Added Intersection class to compile
+| | | | 
+| | | |  include/graph/Intersection.hpp |  66 +++++++++++++
+| | | |  src/graph/Intersection.cpp     | 164 +++++++++++++++++++++++++++++++++
+| | | |  2 files changed, 230 insertions(+)
+| | | | 
+| | * | commit 18cfb710f247bbac3be6476982baf9cc6c832051
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Wed Jun 3 16:17:02 2026 +0700
+| | | | 
+| | | |     fix: the bug of road's function getRoadType()
+| | | | 
+| | | |  include/graph/Road.hpp | 244 +++++++++++------------------------------
+| | | |  1 file changed, 65 insertions(+), 179 deletions(-)
+| | | | 
+| | * | commit be2fed99ef21af048953e01ce2d2d83f9da8bd22
+| | | | Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+| | | | Date:   Wed Jun 3 16:12:43 2026 +0700
+| | | | 
+| | | |     fix: Road.cpp - add getRoadType() function.
+| | | | 
+| | | |  src/graph/Road.cpp | 255 +++++++++++++++++++++++----------------------
+| | | |  1 file changed, 131 insertions(+), 124 deletions(-)
+| | | | 
+| | * | commit 56f1db2f1f3219f6e73bbeab60646c15ff286702
+| |/ /  Author: Kevincrazy678 <gnguyenphuc9@gmail.com>
+|/| |   Date:   Tue Jun 2 14:02:38 2026 +0700
+| | |   
+| | |       Implemented Road Class involves hpp and cpp files.
+| | |   
+| | |    include/graph/Road.hpp | 187 +++++++++++++++++++++++++++++++++++++++++
+| | |    src/graph/Road.cpp     | 160 +++++++++++++++++++++++++++++++++++
+| | |    2 files changed, 347 insertions(+)
+| | | 
+| * | commit c608c7711e9f4431c0dd0b79b8206afa80be1132
+| | | Author: dnyp222-crypto <dnyp222@gmail.com>
+| | | Date:   Wed Jun 3 08:35:55 2026 +0700
+| | | 
+| | |     Improve intersection feature
+| | | 
+| | |  include/graph/Intersection.hpp  |  52 ++++----
+| | |  src/graph/Intersection.cpp      | 151 +++++++++++++++--------
+| | |  tests/Sth/test_intersection.cpp | 221 ++++++++++++++++++++++++++++++----
+| | |  3 files changed, 328 insertions(+), 96 deletions(-)
+| | | 
+| * | commit 97da0eb5eaa24b7452d8bc38636740138411ad7c
+|/ /  Author: dnyp222-crypto <dnyp222@gmail.com>
+| |   Date:   Tue Jun 2 16:16:38 2026 +0700
+| |   
+| |       feat: implement Intersection class
+| |   
+| |    include/graph/Intersection.hpp  |  64 +++++++++++++++++++
+| |    src/graph/Intersection.cpp      | 113 ++++++++++++++++++++++++++++++++++
+| |    src/main.cpp                    |   1 +
+| |    tests/Sth/test_intersection.cpp |  57 +++++++++++++++++
+| |    4 files changed, 235 insertions(+)
+| | 
+| * commit 98b8b9491f9eb479e90d6a3b3a2f616941a14849
+|/  Author: hchinhan <cucmo845@gmail.com>
+|   Date:   Sat Jun 6 09:05:11 2026 +0700
+|   
+|       feat: Graph.cpp & Graph.hpp initial commit
+|   
+|    include/graph/Graph.hpp        |  27 ++++++
+|    include/graph/Intersection.hpp |  66 +++++++++++++
+|    include/graph/Road.hpp         |  73 +++++++++++++++
+|    src/graph/Graph.cpp            | 186 +++++++++++++++++++++++++++++++++++++
+|    src/graph/Intersection.cpp     | 164 ++++++++++++++++++++++++++++++++
+|    src/graph/Road.cpp             | 185 ++++++++++++++++++++++++++++++++++++
+|    src/main.cpp                   |   1 +
+|    tests/Sth/test.cpp             |   5 -
+|    tests/Sth/test_graph.cpp       | 145 +++++++++++++++++++++++++++++
+|    9 files changed, 847 insertions(+), 5 deletions(-)
+| 
+* commit 9be437b22831972a960323a3990729d6f2df120c
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sun May 31 20:34:04 2026 +0700
+| 
+|     window size
+| 
+|  README.md | 136 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+|  1 file changed, 135 insertions(+), 1 deletion(-)
+| 
+* commit 1c8a8e0c34611896863a93c2eedadea4904d3c48
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sun May 31 20:21:44 2026 +0700
+| 
+|     update context of the pj
+| 
+|  README.md | 236 ++++++++++++++++++++++++++----------------------------------
+|  1 file changed, 101 insertions(+), 135 deletions(-)
+| 
+* commit 6295f9fd0973017c93b1640768631461736c95d7
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sat May 30 17:35:53 2026 +0700
+| 
+|     debug
+| 
+|  CMakeLists.txt | 10 ++++++++++
+|  src/main.cpp   | 41 ++++++++++++++++++++++++++++++++++++-----
+|  2 files changed, 46 insertions(+), 5 deletions(-)
+| 
+* commit c0e429c0637b705124ccf9e2bb8f4a8316bf4a00
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sat May 30 17:28:35 2026 +0700
+| 
+|     using cmake instead of make
+| 
+|  CMakeLists.txt     |  85 ++++++++++++++++++++++++++
+|  Makefile           | 167 ---------------------------------------------------
+|  src/main.cpp       |  10 +--
+|  tests/Sth/test.cpp |   5 ++
+|  4 files changed, 91 insertions(+), 176 deletions(-)
+| 
+* commit 39cd32fc46f9c47b0610612d53134fbe197137cf
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Sat May 30 17:15:49 2026 +0700
+| 
+|     end training
+| 
+|  .gitignore                     |   2 +-
+|  assets/textures/Background.png | Bin 0 -> 2850684 bytes
+|  src/main.cpp                   |  15 +++++++++++++--
+|  3 files changed, 14 insertions(+), 3 deletions(-)
+| 
+* commit d17390409d5e0d9ec2c02b421a01ca1ee405e795
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Fri May 29 20:15:43 2026 +0700
+| 
+|     update
+| 
+|  README.md | 11 ++++++++---
+|  1 file changed, 8 insertions(+), 3 deletions(-)
+| 
+* commit c7e596ab233138ba34c4ddede75fe9068b8dd265
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Fri May 29 20:12:49 2026 +0700
+| 
+|     attribute
+| 
+|  README.md                            | 41 ++++++++++++++++++++++++++++++++++
+|  src/{core => graph}/Graph.cpp        |  0
+|  src/{core => graph}/Intersection.cpp |  0
+|  src/{core => graph}/Road.cpp         |  0
+|  src/main.cpp                         |  2 +-
+|  5 files changed, 42 insertions(+), 1 deletion(-)
+| 
+* commit 2143d161c0d220f40c08d0f38bdc7ef536ae9cec
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Thu May 28 20:20:55 2026 +0700
+| 
+|     example folder architecture
+| 
+|  README.md | 166 ++++++++++++++++++++++++++++++------------------------------
+|  1 file changed, 83 insertions(+), 83 deletions(-)
+| 
+* commit fd5f7689e29d5e8b27ee36bb3b52f0ebb3a8b2ab
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Thu May 28 20:19:21 2026 +0700
+| 
+|     sdl2
+| 
+|  .gitignore                               |  63 +++++----
+|  Makefile                                 | 105 ++++++++++-----
+|  README.md                                | 201 ++++++++++++++++++++++++++++-
+|  include/{core => graph}/Graph.hpp        |   0
+|  include/{core => graph}/Intersection.hpp |   0
+|  include/{core => graph}/Road.hpp         |   0
+|  6 files changed, 314 insertions(+), 55 deletions(-)
+| 
+* commit 385e89a3a77f3741f5dff303c510c06612ba3cbe
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Wed May 27 00:42:57 2026 +0700
+| 
+|     Update Folder
+| 
+|  assets/fonts/.gitkeep          | 0
+|  assets/icons/.gitkeep          | 0
+|  assets/maps/.gitkeep           | 0
+|  assets/shaders/.gitkeep        | 0
+|  assets/textures/.gitkeep       | 0
+|  config/simulation.json         | 0
+|  docs/diagrams/.gitkeep         | 0
+|  docs/screenshots/.gitkeep      | 0
+|  include/algorithms/.gitkeep    | 0
+|  include/simulation/.gitkeep    | 0
+|  include/utils/.gitkeep         | 0
+|  include/vehicles/.gitkeep      | 0
+|  include/visualization/.gitkeep | 0
+|  src/algorithms/.gitkeep        | 0
+|  src/simulation/.gitkeep        | 0
+|  src/utils/.gitkeep             | 0
+|  src/vehicles/.gitkeep          | 0
+|  src/visualization/.gitkeep     | 0
+|  18 files changed, 0 insertions(+), 0 deletions(-)
+| 
+* commit ebf5ab3a0357b6a1c45e5bc85526a1c2444399b1
+| Author: KhanPodMiu <miupod.3006@gmail.com>
+| Date:   Wed May 27 00:34:40 2026 +0700
+| 
+|     first commit
+| 
+|  README.md | 1 +
+|  1 file changed, 1 insertion(+)
+| 
+* commit c430928341399b83c931f1277c2b7e48baee70ff
+  Author: KhanPodMiu <miupod.3006@gmail.com>
+  Date:   Wed May 27 00:28:43 2026 +0700
+  
+      Project Architecture
+  
+   .gitignore                    |  66 +++++++++++++++++++++
+   Makefile                      | 126 ++++++++++++++++++++++++++++++++++++++++
+   include/core/Graph.hpp        |   0
+   include/core/Intersection.hpp |   0
+   include/core/Road.hpp         |   0
+   src/core/Graph.cpp            |   0
+   src/core/Intersection.cpp     |   0
+   src/core/Road.cpp             |   0
+   src/main.cpp                  |   6 ++
+   tests/main.cpp                |   8 +++
+   10 files changed, 206 insertions(+)

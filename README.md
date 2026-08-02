@@ -12,6 +12,11 @@
 
 ---
 
+> [!NOTE]
+> Before building the project, ensure that SDL2, SDL2_image, SDL2_ttf, and JsonCpp are installed and can be found by CMake. On Windows, using **vcpkg** is recommended.
+
+---
+
 # 📖 Overview
 
 Urban Traffic Simulator is an Object-Oriented Programming project developed in **C++** using **SDL2**.
@@ -39,15 +44,6 @@ brew install sdl2
 - CMake
 - SDL2 Development Library
 
----
-
-# 🚀 Installation
-
-```bash
-git clone https://github.com/KhanPodMiu/UrbanTrafficSimulator.git
-
-cd UrbanTrafficSimulator
-```
 
 ---
 
