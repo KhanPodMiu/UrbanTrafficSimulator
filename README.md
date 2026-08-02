@@ -19,16 +19,6 @@ The project demonstrates the application of **Object-Oriented Programming**, **g
 
 ---
 
-## Team Members
-
-| No. | Student ID | Full Name | GitHub |
-|:---:|:----------:|-----------|--------|
-| 1 | 25127274 | Võ Lê Nam Khánh Ann | KhanPodMiu |
-| 2 | 25127230 | Đặng Nguyễn Yến Phương | itsyippie |
-| 3 | 25127440 | Huỳnh Chí Nhân | hchinhan |
-| 4 | 25127018 | Nguyễn Phúc Gia Bảo | Kevincrazy678 |
-
----
 
 # 🛠️ Technologies
 
@@ -42,40 +32,13 @@ The project demonstrates the application of **Object-Oriented Programming**, **g
 
 ---
 
-# 🏗️ Software Architecture
+# 📸 Screenshots
 
-The simulator is divided into several independent modules following a layered architecture.
-
-```text
-                 User Interface
-                        │
-                        ▼
-             Visualization Engine
-                        │
-                        ▼
-             Simulation Engine
-                        │
-      ┌─────────────────┴─────────────────┐
-      ▼                                   ▼
- Vehicle Management               Traffic Management
-      │                                   │
-      ▼                                   ▼
- Routing System                  Collision & Traffic Lights
-      │
-      ▼
- Graph Representation
-      │
-      ▼
-Roads & Intersections
-```
-
-This modular architecture improves maintainability, scalability, and separation of responsibilities.
+<p align="center">
+  <img src="docs/screenshots/Screen.png">
+</p>
 
 ---
-
-# 🎨 Design Patterns
-
-The project applies several classic Object-Oriented Design Patterns.
 
 ## Strategy Pattern
 
@@ -181,14 +144,14 @@ During this event:
 
 ## Interactive Controls
 
-Users can interact with the simulation through several features.
+Users can interact with the simulation in real time.
 
 * Switch routing algorithms
-* Increase simulation speed
-* Spawn vehicles by clicking any intersection
-* Move the camera freely
-* Zoom in
-* Zoom out
+* Adjust simulation speed
+* Spawn vehicles at intersections
+* Inspect vehicles and intersections
+* Move the camera
+* Zoom in / Zoom out
 
 ---
 
@@ -333,26 +296,40 @@ Once the simulator starts, users can:
 
 ## 🎮 Controls
 
-| Key | Action |
-|-----|--------|
-| **W / A / S / D** | Move the camera around the map |
-| **Q** | Zoom out |
-| **E** | Zoom in |
-| **H** | Toggle the traffic heat map |
+| Key / Mouse | Action |
+|-------------|--------|
+| W / A / S / D | Move the camera |
+| Mouse Drag | Pan the map |
+| Mouse Wheel | Zoom in/out |
+| Q / E | Zoom out / Zoom in |
+| H | Toggle traffic heat map |
+| Hover + V | Spawn a vehicle at the selected intersection |
+| Left Click | Display information about a vehicle or intersection |
 
 ---
 
-# 📸 Screenshots
+### Entity Information Panel
 
-<p align="center">
-  <img src="docs/screenshots/Screen.png">
-</p>
+Users can inspect simulation entities interactively.
+
+Selecting a vehicle displays:
+
+- Vehicle ID
+- Vehicle type
+- Current speed
+- Destination
+- Current road
+
+Selecting an intersection displays:
+
+- Intersection ID
+- Connected roads
+- Number of vehicles nearby
 
 ---
 
 
 ## UML Class Diagram
 
-<p align="center">
-  <img src="docs/diagrams/uml_class_diagram.svg">
-</p>
+📄 **View the UML Class Diagram on Lucidchart:**  
+https://lucid.app/lucidchart/621ff6fe-6c69-467e-9886-c0219d5e9a98/edit?invitationId=inv_f5f53f59-8181-4c40-bcf0-7c06040d4c17&page=0_0#
