@@ -75,7 +75,7 @@ public:
     PanelCommand handleEvent(const SDL_Event& event);
     double getSelectedSpeedMultiplier() const;
     RoutingAlgorithm getSelectedAlgorithm() const;
-    void render(RenderWindow& window, double simulationTime);
+    void render(RenderWindow& window, double simulationTime, int vehicleCount);
     void cleanUp(RenderWindow& window);
 };
 

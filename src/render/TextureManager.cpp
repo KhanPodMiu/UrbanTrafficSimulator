@@ -75,36 +75,19 @@ bool TextureManager::loadAssets(RenderWindow& window)
         return false;
     }
 
-    heatMapFont_ = TTF_OpenFont(
-        "assets/textures/fonts/Octarine-Bold.otf",
-        14);
-    if (heatMapFont_ == nullptr) {
-        std::cerr << "\n[ERROR] Cannot load traffic heat-map font: "
-                  << TTF_GetError();
+    heatMapOnButtonTexture_ = window.loadTexture(
+        "assets/textures/Panel/heatmap_button/heatmap_on.png");
+    if (heatMapOnButtonTexture_ == nullptr) {
+        std::cerr << "\n[ERROR] Cannot load heat-map ON button: "
+                  << SDL_GetError();
         return false;
     }
 
-    const SDL_Color primaryText{238, 246, 248, 255};
-    const SDL_Color secondaryText{190, 207, 212, 255};
-    heatMapButtonLabelTexture_ = RenderHelpers::createTextTexture(
-        renderer, heatMapFont_, "HEAT MAP", primaryText);
-    heatMapLegendTitleTexture_ = RenderHelpers::createTextTexture(
-        renderer, heatMapFont_, "TRAFFIC LEVEL", primaryText);
-    heatMapLowLabelTexture_ = RenderHelpers::createTextTexture(
-        renderer, heatMapFont_, "LOW       0 - 39%", secondaryText);
-    heatMapModerateLabelTexture_ = RenderHelpers::createTextTexture(
-        renderer, heatMapFont_, "MEDIUM  40 - 69%", secondaryText);
-    heatMapHeavyLabelTexture_ = RenderHelpers::createTextTexture(
-        renderer, heatMapFont_, "HIGH     70 - 100%", secondaryText);
-
-    if (heatMapButtonLabelTexture_ == nullptr ||
-        heatMapLegendTitleTexture_ == nullptr ||
-        heatMapLowLabelTexture_ == nullptr ||
-        heatMapModerateLabelTexture_ == nullptr ||
-        heatMapHeavyLabelTexture_ == nullptr)
-    {
-        std::cerr << "\n[ERROR] Cannot create traffic heat-map labels: "
-                  << TTF_GetError();
+    heatMapOffButtonTexture_ = window.loadTexture(
+        "assets/textures/Panel/heatmap_button/heatmap_off.png");
+    if (heatMapOffButtonTexture_ == nullptr) {
+        std::cerr << "\n[ERROR] Cannot load heat-map OFF button: "
+                  << SDL_GetError();
         return false;
     }
 
@@ -147,15 +130,6 @@ void TextureManager::cleanUp(RenderWindow& window)
     window.cleanUpTexture(emergencyTexture_);
 
     window.cleanUpTexture(heatMapOverlayTexture_);
-    window.cleanUpTexture(heatMapButtonLabelTexture_);
-    window.cleanUpTexture(heatMapLegendTitleTexture_);
-    window.cleanUpTexture(heatMapLowLabelTexture_);
-    window.cleanUpTexture(heatMapModerateLabelTexture_);
-    window.cleanUpTexture(heatMapHeavyLabelTexture_);
-
-    if (heatMapFont_ != nullptr)
-    {
-        TTF_CloseFont(heatMapFont_);
-        heatMapFont_ = nullptr;
-    }
+    window.cleanUpTexture(heatMapOnButtonTexture_);
+    window.cleanUpTexture(heatMapOffButtonTexture_);
 }
