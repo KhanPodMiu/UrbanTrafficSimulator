@@ -417,9 +417,28 @@ bool Road::needsTrafficLightAtDestination() const
 }
 
 void Road::setVIPExclusive(bool exclusive) {
-    isTrumpRoute = exclusive; 
+    isTrumpRoute = exclusive;
+    if (exclusive)
+        isTrumpRoutePending = false;
 }
 
 bool Road::isVIPExclusive() const { 
     return isTrumpRoute; 
+}
+
+void Road::setVIPClosurePending(bool pending)
+{
+    isTrumpRoutePending = pending;
+    if (pending)
+        isTrumpRoute = false;
+}
+
+bool Road::isVIPClosurePending() const
+{
+    return isTrumpRoutePending;
+}
+
+bool Road::isUnavailableForRouting() const
+{
+    return isTrumpRoute || isTrumpRoutePending;
 }

@@ -52,7 +52,8 @@ RouteResult Dijkstra::calculateRoute(const Graph& graph, const RouteRequest& req
         std::vector <std::shared_ptr <Road>> connectedRoads = graph.getConnectedRoads(currentID);
         for (const auto &road : connectedRoads) {
 
-            if (!road || road->isVIPExclusive()) continue;
+            // if (!road || road->isVIPExclusive()) continue; // Legacy: active-only closure.
+            if (!road || road->isUnavailableForRouting()) continue;
             const Intersection* neighborIntersection = road->getDestinationIntersection();
 
             if (!neighborIntersection) continue;
