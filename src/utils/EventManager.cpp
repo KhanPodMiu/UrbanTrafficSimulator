@@ -11,6 +11,11 @@
 #include "render/EntityInfoPanel.hpp"
 #include "render/StatisticsPanel.hpp"
 #include "graph/Intersection.hpp"
+#include "algorithms/RoutingManager.hpp"
+
+#include "algorithms/AStarStrategy.hpp"
+#include "algorithms/BFS.hpp"
+#include "algorithms/Dijkstra.hpp"
 
 void EventManager::processEvents(
     AppContext& context,
@@ -19,12 +24,12 @@ void EventManager::processEvents(
     EntityInfoPanel& entityInfoPanel,
     VehicleManager& vehicleManager,
     Camera& camera,
-    VisualizationEngine& visualizationEngine)
+    VisualizationEngine& visualizationEngine,
+    RoutingManager& routingManager)
 {
     SDL_Event event;
 
-    while (SDL_PollEvent(&event))
-    {
+    while (SDL_PollEvent(&event)) {
         const bool heatMapControlHandled =
             visualizationEngine.handleTrafficHeatMapEvent(event);
 
@@ -58,6 +63,22 @@ void EventManager::processEvents(
                 break;
 
             case PanelCommand::AlgorithmChanged:
+                switch (statisticsPanel.getSelectedAlgorithm())
+                {
+                    case RoutingAlgorithm::BFS:
+                        routingManager.setStrategy(std::make_unique<BFS>());
+                        break;
+
+                    case RoutingAlgorithm::Dijkstra:
+                        routingManager.setStrategy(std::make_unique<Dijkstra>());
+                        break;
+
+                    case RoutingAlgorithm::AStar:
+                        routingManager.setStrategy(std::make_unique<AStarStrategy>());
+                        break;
+                }
+                break;
+
             case PanelCommand::None:
                 break;
         }

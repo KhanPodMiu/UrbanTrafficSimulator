@@ -7,6 +7,10 @@ class StatisticsPanel;
 class VehicleManager;
 class VisualizationEngine;
 class WorldClock;
+class RoutingManager;
+class Dijkstra;
+class BFS;
+class AStarStrategy;
 
 class EventManager {
 public:
@@ -17,5 +21,6 @@ public:
         EntityInfoPanel& entityInfoPanel,
         VehicleManager& vehicleManager,
         Camera& camera,
-        VisualizationEngine& visualizationEngine);
+        VisualizationEngine& visualizationEngine,
+        RoutingManager& routingManager);
 };
