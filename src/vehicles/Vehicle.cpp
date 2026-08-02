@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <utility>
+#include "core/Constants.hpp"
 
 #include "graph/Intersection.hpp"
 #include "graph/Graph.hpp"
@@ -226,10 +227,13 @@ bool Vehicle::tryAdvanceToNextRoad()
 
     std::shared_ptr<Road> next = getNextRoad();
 
-    // Never enter a restricted road from an unrestricted one. Normally the
-    // ban event has already installed a detour; this guard safely handles the
-    // case where no valid detour exists.
-    // if (next && next->isVIPExclusive()) // Legacy: active-only closure.
+    //Avoid overlap phenominom of vehicles when moved to the next high-congestion-level road
+    if(next && m_distanceOnRoad > m_currentRoad->getDistance() && !ignoresTrafficLights() && next -> getCongestionLevel() >= Config::CONGESTION_THRESHOLD){
+        m_distanceOnRoad = m_currentRoad->getDistance();
+        m_currentSpeed = 0.0;
+        return false;
+    }
+
     if (next && next->isUnavailableForRouting())
     {
         m_distanceOnRoad = m_currentRoad->getDistance();

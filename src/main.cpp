@@ -184,7 +184,10 @@ int main(int argc, char* argv[]) {
 
     auto routeOptimizer = std::make_shared<RouteOptimizer>(&routingManager);
 
-    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, /*maxVehicles=*/300, /*spawnIntervalSeconds=*/0.5);
+    const int MAX_VEHICLE = 1000;
+    const float SPAWN_INTERVAL = 0.5;
+
+    VehicleManager vehicleManager(graph, routingManager, routeOptimizer, MAX_VEHICLE, SPAWN_INTERVAL);
     PresidentialRouteManager presidentialRouteManager(
         graph,
         vehicleManager);

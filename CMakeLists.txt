@@ -73,11 +73,12 @@ target_link_libraries(traffic_lib PUBLIC
 # Main Executable
 # --------------------------------
 
-add_executable(main src/main.cpp)
+add_executable(main
+    src/main.cpp
+)
 
 target_link_libraries(main PRIVATE 
     traffic_lib
-    SDL2::SDL2main
 )
 
 # --------------------------------

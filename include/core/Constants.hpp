@@ -28,4 +28,6 @@ namespace Config
     constexpr double TARGET_FRAME_TIME = 1.0 / TARGET_FPS;
 
     constexpr int TRAFFIC_LIGHT_MARKER_SIZE = 100;
+
+    constexpr int CONGESTION_THRESHOLD = 70;
 }
