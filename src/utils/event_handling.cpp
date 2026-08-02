@@ -82,214 +82,22 @@ bool switchBannedRoute(int routeID, AppContext &Game)
     return false;
 }
 
-// Minimum pixel distance between press and release to count as a drag
-// rather than a click.
-static constexpr int DRAG_THRESHOLD = 5;
-
-// State shared between handleInput() and wasDragAction().
-static bool isDragging = false;
-static int  lastMouseX = 0;
-static int  lastMouseY = 0;
-static int  dragStartX = 0;
-static int  dragStartY = 0;
-static bool mouseMoved_ = false;   // true when distance > DRAG_THRESHOLD
+void handleInput(SDL_Event& event, AppContext &Game)
+{
+    g_inputHandler.handleInput(event, Game);
+}
 
 bool wasDragAction()
 {
-    return mouseMoved_;
+    return g_inputHandler.wasDragAction();
 }
 
-void handleInput(SDL_Event& event, AppContext &Game)
+void spawnVehicleAt(const Vector2& clickPos, Graph& graph, VehicleManager& vehicleManager)
 {
-    if (event.type == SDL_QUIT)
-    {
-        Game.isRunning = false;
-        return;
-    }
-
-    if (event.type == SDL_MOUSEWHEEL)
-    {
-        int mouseX, mouseY;
-        SDL_GetMouseState(&mouseX, &mouseY);
-
-        const float viewportX = static_cast<float>(mouseX) - Config::PANEL_WIDTH;
-        const float viewportY = static_cast<float>(mouseY);
-
-        if (viewportX >= 0)
-        {
-            if (event.wheel.y > 0)
-                Game.camera.zoomIn(viewportX, viewportY);
-            else if (event.wheel.y < 0)
-                Game.camera.zoomOut(viewportX, viewportY);
-        }
-
-        return;
-    }
-
-    if (event.type == SDL_MOUSEBUTTONDOWN)
-    {
-        if (event.button.button == SDL_BUTTON_LEFT)
-        {
-            const float screenX = static_cast<float>(event.button.x) - Config::PANEL_WIDTH;
-            const float screenY = static_cast<float>(event.button.y);
-
-            if (screenX >= 0)
-            {
-                Vector2 worldPos;
-                worldPos.x = Game.camera.getX() + screenX / Game.camera.getZoom();
-                worldPos.y = Game.camera.getY() + screenY / Game.camera.getZoom();
-                //spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
-
-                isDragging = true;
-                lastMouseX = event.button.x;
-                lastMouseY = event.button.y;
-                dragStartX = event.button.x;
-                dragStartY = event.button.y;
-                mouseMoved_ = false;
-            }
-        }
-        else if (event.button.button == SDL_BUTTON_MIDDLE)
-        {
-            isDragging = true;
-            lastMouseX = event.button.x;
-            lastMouseY = event.button.y;
-            dragStartX = event.button.x;
-            dragStartY = event.button.y;
-            mouseMoved_ = false;
-        }
-
-        return;
-    }
-
-    if (event.type == SDL_MOUSEBUTTONUP)
-    {
-        if (event.button.button == SDL_BUTTON_LEFT ||
-            event.button.button == SDL_BUTTON_MIDDLE)
-        {
-            isDragging = false;
-        }
-
-        return;
-    }
-
-    if (event.type == SDL_MOUSEMOTION)
-    {
-        if (isDragging)
-        {
-            int dx = event.motion.x - lastMouseX;
-            int dy = event.motion.y - lastMouseY;
-
-            Game.camera.offsetPosition(
-                -static_cast<float>(dx) / Game.camera.getZoom(),
-                -static_cast<float>(dy) / Game.camera.getZoom());
-
-            lastMouseX = event.motion.x;
-            lastMouseY = event.motion.y;
-
-            // Check if the cumulative distance from the press origin
-            // exceeds the threshold => treat as drag, not click.
-            if (!mouseMoved_)
-            {
-                int totalDx = event.motion.x - dragStartX;
-                int totalDy = event.motion.y - dragStartY;
-                if (totalDx * totalDx + totalDy * totalDy >
-                    DRAG_THRESHOLD * DRAG_THRESHOLD)
-                {
-                    mouseMoved_ = true;
-                }
-            }
-        }
-
-        return;
-    }
-
-    if (event.type != SDL_KEYDOWN)
-        return;
-
-    switch (event.key.keysym.sym)
-    {
-        case SDLK_ESCAPE:
-            Game.isRunning = false;
-            break;
-
-        case SDLK_v: {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-
-            float screenX = static_cast<float>(mouseX) - Config::PANEL_WIDTH;
-            float screenY = static_cast<float>(mouseY);
-            if (screenX >= 0) {
-                Vector2 worldPos;
-                worldPos.x = Game.camera.getX() + (screenX / Game.camera.getZoom());
-                worldPos.y = Game.camera.getY() + (screenY / Game.camera.getZoom());
-
-                spawnVehicleAt(worldPos, Game.graph, Game.vehicleManager);
-            }
-            break;
-        }
-
-        case SDLK_1: switchBannedRoute(1, Game); break;
-        case SDLK_2: switchBannedRoute(2, Game); break;
-        case SDLK_3: switchBannedRoute(3, Game); break;
-        case SDLK_4: switchBannedRoute(4, Game); break;
-        case SDLK_5: switchBannedRoute(5, Game); break;
-        case SDLK_6: switchBannedRoute(6, Game); break;
-
-        case SDLK_0: switchBannedRoute(0, Game); break;
-
-        case SDLK_b: {
-            int nextRoute = Game.isBannedState ? 0 : 6;
-            switchBannedRoute(nextRoute, Game);
-            break;
-        }
-
-        case SDLK_w:
-            Game.camera.subY();
-            break;
-
-        case SDLK_a:
-            Game.camera.subX();
-            break;
-
-        case SDLK_s:
-            Game.camera.addY();
-            break;
-
-        case SDLK_d:
-            Game.camera.addX();
-            break;
-
-        case SDLK_q:
-            Game.camera.zoomOut();
-            break;
-
-        case SDLK_e:
-            Game.camera.zoomIn();
-            break;
-    }
+    g_inputHandler.spawnVehicleAt(clickPos, graph, vehicleManager);
 }
 
-void spawnVehicleAt(const Vector2& clickPos, 
-                    Graph& graph, 
-                    VehicleManager& vehicleManager)
-
+bool switchBannedRoute(int routeID, AppContext &Game)
 {
-    Vector2 mousePos(static_cast<float>(clickPos.x), static_cast<float>(clickPos.y));
-
-    auto startNode = graph.findNearestIntersection(mousePos, 300.0f);
-    if (startNode) 
-    {
-        vehicleManager.spawnVehicleAtIntersection(startNode->getIntersectionID());
-        return;
-    }
-
-    auto clickedRoad = graph.findNearestRoad(mousePos, 100.0f);
-    if (clickedRoad)
-    {
-        const Intersection* nextIntersection = clickedRoad->getDestinationIntersection();
-        if (nextIntersection) 
-        {
-            vehicleManager.spawnVehicleAtIntersection(nextIntersection->getIntersectionID());
-        }
-    }
+    return g_inputHandler.switchBannedRoute(routeID, Game);
 }

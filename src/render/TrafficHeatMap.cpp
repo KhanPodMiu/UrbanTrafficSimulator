@@ -1,21 +1,13 @@
 #include "render/TrafficHeatMap.hpp"
 
-TrafficFlowLevel TrafficHeatMapScale::classify(
-    int congestionPercentage) noexcept
+SDL_Color TrafficHeatMapScale::colorFor(int congestionPercentage) noexcept
 {
-    if (congestionPercentage >= HEAVY_THRESHOLD)
-        return TrafficFlowLevel::Heavy;
-
-    if (congestionPercentage >= MODERATE_THRESHOLD)
-        return TrafficFlowLevel::Moderate;
-
-    return TrafficFlowLevel::Low;
+    return colorFor(classify(congestionPercentage));
 }
 
-SDL_Color TrafficHeatMapScale::colorFor(
-    int congestionPercentage) noexcept
+SDL_Color TrafficHeatMapScale::colorFor(TrafficFlowLevel level) noexcept
 {
-    switch (classify(congestionPercentage))
+    switch (level)
     {
         case TrafficFlowLevel::Heavy:
             return SDL_Color{239, 68, 68, 255};
