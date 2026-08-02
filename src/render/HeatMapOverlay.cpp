@@ -86,7 +86,7 @@ void HeatMapOverlay::renderRoads(
 
     for (const auto& road : roads)
     {
-        if (!road.road || road.road->isVIPExclusive())
+        if (!road.road || road.road->isUnavailableForRouting())
             continue;
 
         const SDL_Color color = TrafficHeatMapScale::colorFor(
