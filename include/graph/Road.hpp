@@ -20,6 +20,7 @@ enum class TrafficLightState {
 
 class Road {
     friend class TrafficLightManager;
+    friend class Graph;
 public:
     // ── validation bounds (public so tests can reference them) ────────────────
     static constexpr int MIN_SPEED_LIMIT = 5;     // km/h
@@ -35,9 +36,11 @@ public:
     static constexpr int DEFAULT_RED_DURATION    = 3;  // seconds
     static constexpr int MIN_DURATION            = 1;   // seconds
     static constexpr int MAX_DURATION            = 120; // seconds
+    // Shared by simulation and rendering so the visible light matches the stop line.
+    static constexpr double TRAFFIC_LIGHT_STOP_OFFSET = 80.0;
 
     //ADDED ── For BPR Funtion and CongestionLevel ──────────────────────────
-    static constexpr double VEHICLE_HITBOX_SIZE = 5.0; // Length of vehicle hitbox in map units can change after
+    static constexpr double VEHICLE_HITBOX_SIZE = 100.0; // Length of vehicle hitbox in map units can change after
     static constexpr double BPR_ALPHA = 0.15;         
     static constexpr double BPR_BETA = 4.0;          
 
@@ -68,6 +71,7 @@ public:
     TrafficLightState getTrafficLightState()  const;
     bool              isTrafficLightEnabled() const;
     bool              isGreen()              const;
+    double            getStopLineDistance()  const;
     int               getTimeRemaining()     const;
     int               getGreenDuration()     const;
     int               getYellowDuration()    const;
@@ -128,8 +132,12 @@ public:
     // yield-style right-of-way instead of signals, so they are excluded.
     bool needsTrafficLightAtDestination() const;
 
+    void setVIPExclusive(bool exclusive);
+    bool isVIPExclusive() const;
 
 private:
+    void detachEndpoints() noexcept;
+    
     std::string   roadId;
 
     const Intersection* sourceIntersection;
@@ -139,7 +147,8 @@ private:
     int speedLimit;      // km/h           [MIN_SPEED_LIMIT, MAX_SPEED_LIMIT]
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
-    
+    bool isTrumpRoute = false; 
+
     std::vector<Vehicle*> m_vehicles;
     
     // ── traffic light state ──────────────────────────────────────────────────

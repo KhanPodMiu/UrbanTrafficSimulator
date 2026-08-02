@@ -12,7 +12,15 @@
 
 #include <stdexcept>
 
+#include <random>
 
+#include <cmath>
+
+#include <unordered_set>
+
+#include <utility>
+
+#include <algorithm>
 
 
 Graph::Graph() = default;
@@ -90,8 +98,6 @@ bool Graph::addRoad(std::shared_ptr <Road> nRoad) {
         return false;
 
     }
-
-    
 
     srcIt->second->addOutgoingRoad(nRoad.get());
 
@@ -232,6 +238,8 @@ bool Graph::removeRoad(const std::string& roadID) {
     }
 
 
+    //Detach endpoint when deleting a road.
+    r->detachEndpoints();
 
     Roads.erase(itRoad);
 
@@ -307,7 +315,8 @@ bool Graph::isValid() const {
 
     }
 
-
+    //Check the correct Intersection object.
+    std::unordered_set<std::string> directedEdges;
 
     for (const auto& pair : Roads) {
 
@@ -332,6 +341,8 @@ bool Graph::isValid() const {
         std::string destID = dest->getIntersectionID();
 
 
+        const auto sourceIt = Intersections.find(sourceID);
+        const auto destinationIt = Intersections.find(destID);
 
         if (Intersections.find(sourceID) == Intersections.end() || 
 
@@ -341,6 +352,12 @@ bool Graph::isValid() const {
 
         }
 
+        if (!directedEdges.insert(
+                sourceID + '\x1f' + destID).second) {
+
+            return false;
+
+        }
 
 
         const auto& connectedRoads = adjacencyList.at(sourceID);
@@ -410,4 +427,86 @@ Road* Graph::getRoadBetween(
     }
 
     return nullptr;
+}
+
+
+//New Added:
+float Graph::pointToSegmentDistance(Vector2 P, Vector2 A, Vector2 B) const {
+    float l2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
+    if (l2 == 0.0f) {
+        float dx = P.x - A.x;
+        float dy = P.y - A.y;
+        return std::sqrt(dx * dx + dy * dy);
+    }
+    
+    float t = ((P.x - A.x) * (B.x - A.x) + (P.y - A.y) * (B.y - A.y)) / l2;
+    t = std::max(0.0f, std::min(1.0f, t));
+    
+    Vector2 projection = { A.x + t * (B.x - A.x), A.y + t * (B.y - A.y) };
+    float dx = P.x - projection.x;
+    float dy = P.y - projection.y;
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+
+std::shared_ptr<Intersection> Graph::findNearestIntersection(const Vector2& clickPos, float maxDistance) const {
+    std::shared_ptr<Intersection> nearest = nullptr;
+    float minDist = maxDistance;
+
+    for (const auto& [id, intersection] : Intersections) {
+        if (!intersection) continue;
+
+        Vector2 pos(static_cast<float>(intersection->getX()), static_cast<float>(intersection->getY()));
+        
+        float dx = pos.x - clickPos.x;
+        float dy = pos.y - clickPos.y;
+        float dist = std::sqrt(dx * dx + dy * dy);
+
+        if (dist < minDist) {
+            minDist = dist;
+            nearest = intersection;
+        }
+    }
+    return nearest;
+}
+
+
+std::shared_ptr<Road> Graph::findNearestRoad(const Vector2& clickPos, float maxDistance) const {
+    std::shared_ptr<Road> nearestRoad = nullptr;
+    float minDist = maxDistance;
+
+    for (const auto& [id, road] : Roads) {
+        if (!road) continue;
+
+        const Intersection* startNode = road->getSourceIntersection();
+        const Intersection* endNode = road->getDestinationIntersection();
+        
+        if (!startNode || !endNode) continue;
+
+        Vector2 A(static_cast<float>(startNode->getX()), static_cast<float>(startNode->getY()));
+        Vector2 B(static_cast<float>(endNode->getX()), static_cast<float>(endNode->getY()));
+
+        float dist = pointToSegmentDistance(clickPos, A, B);
+
+        if (dist < minDist) {
+            minDist = dist;
+            nearestRoad = road;
+        }
+    }
+    return nearestRoad;
+}
+
+std::shared_ptr<Intersection> Graph::getRandomIntersectionExcept(const std::string& startID) const {
+    std::vector<std::shared_ptr<Intersection>> candidates;
+    for (const auto& [id, intersection] : Intersections) {
+        if (intersection && intersection->getIntersectionID() != startID) {
+            candidates.push_back(intersection);
+        }
+    }
+
+    if (candidates.empty()) return nullptr;
+
+    static std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
+    return candidates[dist(gen)];
 }

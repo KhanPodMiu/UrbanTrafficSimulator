@@ -9,6 +9,8 @@
 class Road;
 class Intersection;
 class RouteOptimizer;
+class Graph;
+class RoutingManager;
 
 enum class VehicleType {
     CAR,
@@ -63,6 +65,10 @@ public:
 
     bool tryAdvanceToNextRoad();
 
+    bool rerouteAroundBannedRoads(
+        const Graph& graph,
+        const RoutingManager& routingManager);
+
     virtual bool ignoresTrafficLights() const { return false; }
 
     // Whether this vehicle is allowed to pull out around a slower vehicle
@@ -102,6 +108,12 @@ public:
     const std::vector<std::shared_ptr<Road>>& getRoute() const;
 
     size_t getRouteIndex() const;
+
+    std::string getSourceIntersectionId() const;
+
+    std::string getDestinationIntersectionId() const;
+
+    std::string getCurrentRoadId() const;
 
     void setCurrentRoad(const std::shared_ptr<Road>& road);
 

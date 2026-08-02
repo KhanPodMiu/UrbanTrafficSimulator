@@ -1,46 +1,26 @@
 #include "utils/event_handling.hpp"
+#include "utils/InputHandler.hpp"
 
-void handleInput(SDL_Event& event,bool& isRunning, Camera& camera)
+namespace {
+    InputHandler g_inputHandler;
+}
+
+void handleInput(SDL_Event& event, AppContext &Game)
 {
-    if (event.type == SDL_QUIT)
-    {
-        isRunning = false;
-        return;
-    }
+    g_inputHandler.handleInput(event, Game);
+}
 
-    if (event.type != SDL_KEYDOWN)
-    {
-        return;
-    }
+bool wasDragAction()
+{
+    return g_inputHandler.wasDragAction();
+}
 
-    switch(event.key.keysym.sym)
-    {
-        case SDLK_ESCAPE:
-            isRunning = false;
-            break;
+void spawnVehicleAt(const Vector2& clickPos, Graph& graph, VehicleManager& vehicleManager)
+{
+    g_inputHandler.spawnVehicleAt(clickPos, graph, vehicleManager);
+}
 
-        case SDLK_w:
-            camera.subY();
-            break;
-
-        case SDLK_a:
-            camera.subX();
-            break;
-
-        case SDLK_s:
-            camera.addY();
-            break;
-
-        case SDLK_d:
-            camera.addX();
-            break;
-
-        case SDLK_q:
-            camera.zoomOut();
-            break;
-
-        case SDLK_e:
-            camera.zoomIn();
-            break;
-    }
+bool switchBannedRoute(int routeID, AppContext &Game)
+{
+    return g_inputHandler.switchBannedRoute(routeID, Game);
 }

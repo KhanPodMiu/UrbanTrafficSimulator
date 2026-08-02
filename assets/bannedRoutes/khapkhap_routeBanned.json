@@ -1,0 +1,23 @@
+{
+  "map_id": "khapkhap",
+  "intersections": [],
+  "roads": [
+    { "id": "R52",  "source": "I15",  "destination": "I25",  "distance": 1753, "isVIPExclusive": true},
+
+    { "id": "R76",  "source": "I25",  "destination": "I194", "distance": 2538, "isVIPExclusive": true },
+    { "id": "R77",  "source": "I25",  "destination": "I194", "distance": 2665, "isVIPExclusive": true },
+
+    { "id": "R474", "source": "I194", "destination": "I274", "distance": 1741, "isVIPExclusive": true },
+    { "id": "R475", "source": "I194", "destination": "I274", "distance": 1753, "isVIPExclusive": true },
+
+    { "id": "R686", "source": "I274", "destination": "I106", "distance": 1352, "isVIPExclusive": true },
+
+    { "id": "R466", "source": "I106", "destination": "I190", "distance": 1701, "isVIPExclusive": true },
+
+    { "id": "R467", "source": "I190", "destination": "I191", "distance": 1416, "isVIPExclusive": true },
+
+    { "id": "R468", "source": "I191", "destination": "I192", "distance": 1985, "isVIPExclusive": true },
+
+    { "id": "R471", "source": "I192", "destination": "I318", "distance": 1719, "isVIPExclusive": true }
+  ]
+}

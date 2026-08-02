@@ -66,20 +66,21 @@ void CollisionManager::updateRoad(const std::shared_ptr<Road>& road) const
             }
         }
 
+        const bool signalized = road->isTrafficLightEnabled();
+
         if (!vehicle->isInPassingLane() && !seenMainLaneFront &&
-            !green && !vehicle->ignoresTrafficLights() && !vehicle->isCommittedToIntersection())
+            signalized && !vehicle->isCommittedToIntersection())
         {
-            double distanceToStopLine =
+            const double distanceToStopLine =
                 roadLength - vehicle->getDistanceOnRoad() - 200.0;
 
-            double currentSpeed = vehicle->getCurrentSpeed();
-            double stoppingDistance = (currentSpeed * currentSpeed) / (2.0 * EMERGENCY_DECELERATION);
+            constexpr double COMMIT_DISTANCE = 50.0;
 
-            if (currentSpeed > 20.0 && (distanceToStopLine <= 0.0 || distanceToStopLine < stoppingDistance))
+            if (green && distanceToStopLine <= COMMIT_DISTANCE && !vehicle->ignoresTrafficLights())
             {
                 vehicle->setCommittedToIntersection(true);
             }
-            else if (distanceToStopLine <= STOP_REACTION_DISTANCE)
+            else if (!green && !vehicle->ignoresTrafficLights() && distanceToStopLine <= STOP_REACTION_DISTANCE)
             {
                 desiredSpeed = std::min(
                     desiredSpeed,
@@ -104,7 +105,7 @@ double CollisionManager::computeCarFollowingSpeed(const Vehicle* vehicle, const 
     if (bumperGap <= MIN_GAP)
         return 0.0;
 
-    double desiredGap = MIN_GAP + vehicle->getCurrentSpeed() * TIME_HEADWAY;
+    const double desiredGap = MIN_GAP + vehicle->getCurrentSpeed() * TIME_HEADWAY;
 
     if (bumperGap >= desiredGap)
         return vehicle->getMaxSpeed();

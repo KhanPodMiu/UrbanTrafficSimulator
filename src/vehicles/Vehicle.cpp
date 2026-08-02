@@ -2,9 +2,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 #include "graph/Intersection.hpp"
+#include "graph/Graph.hpp"
 #include "graph/Road.hpp"
+#include "algorithms/RoutingManager.hpp"
+// #include "core/Constants.hpp" // Legacy roundabout-arc implementation only.
+#include "simulation/RouteRequest.hpp"
 
 namespace {
     constexpr double COMFORT_ACCEL = 35.0; 
@@ -41,6 +46,16 @@ void Vehicle::update(double dt)
     if (m_finished)
         return;
 
+    // A vehicle must never continue driving on a road reserved for the VIP
+    // convoy. Normally it is moved to a detour as soon as the ban appears;
+    // if no detour exists, keep it stopped instead of crossing the closure.
+    if (m_currentRoad && m_currentRoad->isVIPExclusive())
+    {
+        m_currentSpeed = 0.0;
+        m_targetSpeed = 0.0;
+        return;
+    }
+
     if (m_currentSpeed < m_targetSpeed)
     {
         m_currentSpeed = std::min(m_targetSpeed, m_currentSpeed + COMFORT_ACCEL * dt);
@@ -75,7 +90,87 @@ void Vehicle::updateWorldPosition()
         return;
 
     double roadLength = m_currentRoad->getDistance();
-    double t = (roadLength > 0.0) ? (m_distanceOnRoad / roadLength) : 0.0;
+    double dist = m_distanceOnRoad;
+
+    /*
+     * Legacy roundabout-arc implementation (disabled).
+     * Kept here for reference in case curved movement is needed again later.
+     *
+    auto calculateRoundaboutArc = [&](const Intersection* r_center, const Intersection* in_src, const Intersection* out_dst, double t_arc) {
+        double R = Config::ROUNDABOUT_RADIUS;
+        
+        double dx0 = r_center->getX() - in_src->getX();
+        double dy0 = r_center->getY() - in_src->getY();
+        double len0 = std::sqrt(dx0*dx0 + dy0*dy0);
+        
+        double dx1 = out_dst->getX() - r_center->getX();
+        double dy1 = out_dst->getY() - r_center->getY();
+        double len1 = std::sqrt(dx1*dx1 + dy1*dy1);
+        
+        if (len0 < 1e-5 || len1 < 1e-5) return false;
+        
+        double p0_x = r_center->getX() - (dx0/len0)*R - (dy0/len0)*LANE_OFFSET;
+        double p0_y = r_center->getY() - (dy0/len0)*R + (dx0/len0)*LANE_OFFSET;
+        
+        double p3_x = r_center->getX() + (dx1/len1)*R - (dy1/len1)*LANE_OFFSET;
+        double p3_y = r_center->getY() + (dy1/len1)*R + (dx1/len1)*LANE_OFFSET;
+        
+        double theta_start = std::atan2(p0_y - r_center->getY(), p0_x - r_center->getX());
+        double theta_end = std::atan2(p3_y - r_center->getY(), p3_x - r_center->getX());
+        
+        if (theta_end >= theta_start) {
+            theta_end -= 2.0 * M_PI;
+        }
+        
+        double theta = theta_start + (theta_end - theta_start) * t_arc;
+        double radius = std::sqrt(R*R + LANE_OFFSET*LANE_OFFSET);
+        
+        m_position = Vector2(static_cast<float>(r_center->getX() + radius * std::cos(theta)),
+                             static_cast<float>(r_center->getY() + radius * std::sin(theta)));
+        return true;
+    };
+
+    double R = Config::ROUNDABOUT_RADIUS;
+    
+    // Check if we are approaching a roundabout
+    if (dst->getType() == IntersectionType::ROUNDABOUT && (roadLength - dist) < R)
+    {
+        std::shared_ptr<Road> nextRoad = getNextRoad();
+        if (nextRoad)
+        {
+            const Intersection* next_dst = nextRoad->getDestinationIntersection();
+            if (next_dst)
+            {
+                double d_arc = R - (roadLength - dist);
+                double t_arc = std::clamp(d_arc / (2.0 * R), 0.0, 0.5);
+                if (calculateRoundaboutArc(dst, src, next_dst, t_arc))
+                    return;
+            }
+        }
+    }
+    // Check if we are leaving a roundabout
+    else if (src->getType() == IntersectionType::ROUNDABOUT && dist < R)
+    {
+        if (m_routeIndex > 0)
+        {
+            std::shared_ptr<Road> prevRoad = m_route[m_routeIndex - 1];
+            const Intersection* prev_src = prevRoad->getSourceIntersection();
+            if (prev_src)
+            {
+                double d_arc = R + dist;
+                double t_arc = std::clamp(d_arc / (2.0 * R), 0.5, 1.0);
+                if (calculateRoundaboutArc(src, prev_src, dst, t_arc))
+                    return;
+            }
+        }
+    }
+    */
+
+    // Roundabouts intentionally use the same straight road interpolation as
+    // every other intersection. The active road changes only in
+    // tryAdvanceToNextRoad(), so the vehicle heads directly into the junction
+    // and continues along the next road without a synthetic circular arc.
+    double t = (roadLength > 0.0) ? (dist / roadLength) : 0.0;
     t = std::clamp(t, 0.0, 1.0);
 
     double x0 = src->getX();
@@ -144,6 +239,105 @@ bool Vehicle::tryAdvanceToNextRoad()
     updateWorldPosition();
     m_committedToIntersection = false;
     m_isPassing = false; // fresh road, fresh lane
+    return true;
+}
+
+bool Vehicle::rerouteAroundBannedRoads(
+    const Graph& graph,
+    const RoutingManager& routingManager)
+{
+    if (m_finished || !m_currentRoad || !m_destination)
+        return false;
+
+    const bool currentRoadIsBanned = m_currentRoad->isVIPExclusive();
+    const double currentRoadProgress = m_currentRoad->getDistance() > 0.0
+        ? std::clamp(
+              m_distanceOnRoad / m_currentRoad->getDistance(),
+              0.0,
+              1.0)
+        : 0.0;
+    bool remainingRouteContainsBannedRoad = false;
+    for (size_t i = m_routeIndex; i < m_route.size(); ++i)
+    {
+        if (m_route[i] && m_route[i]->isVIPExclusive())
+        {
+            remainingRouteContainsBannedRoad = true;
+            break;
+        }
+    }
+
+    if (!remainingRouteContainsBannedRoad)
+        return false;
+
+    const Intersection* rerouteStart = currentRoadIsBanned
+        ? m_currentRoad->getSourceIntersection()
+        : m_currentRoad->getDestinationIntersection();
+    if (!rerouteStart)
+        return false;
+
+    const std::string destinationID =
+        m_destination->getIntersectionID();
+    if (rerouteStart->getIntersectionID() == destinationID)
+    {
+        if (currentRoadIsBanned)
+        {
+            m_currentRoad->vehicleExits(this);
+            m_currentRoad.reset();
+            m_route.clear();
+            m_routeIndex = 0;
+            m_finished = true;
+        }
+        else
+        {
+            m_route = {m_currentRoad};
+            m_routeIndex = 0;
+        }
+        return true;
+    }
+
+    const RouteResult routeResult = routingManager.calculateRoute(
+        graph,
+        RouteRequest(rerouteStart->getIntersectionID(), destinationID));
+    if (!routeResult.isSuccess || routeResult.intersectionIDs.size() < 2)
+        return false;
+
+    std::vector<std::shared_ptr<Road>> replacementRoute;
+    replacementRoute.reserve(routeResult.intersectionIDs.size());
+    if (!currentRoadIsBanned)
+        replacementRoute.push_back(m_currentRoad);
+
+    for (size_t i = 0; i + 1 < routeResult.intersectionIDs.size(); ++i)
+    {
+        Road* road = graph.getRoadBetween(
+            routeResult.intersectionIDs[i],
+            routeResult.intersectionIDs[i + 1]);
+        if (!road || road->isVIPExclusive())
+            return false;
+
+        std::shared_ptr<Road> roadPtr = graph.getRoad(road->getRoadId());
+        if (!roadPtr)
+            return false;
+
+        replacementRoute.push_back(roadPtr);
+    }
+
+    if (replacementRoute.empty())
+        return false;
+
+    if (currentRoadIsBanned)
+    {
+        m_currentRoad->vehicleExits(this);
+        m_currentRoad = replacementRoute.front();
+        m_distanceOnRoad =
+            currentRoadProgress * m_currentRoad->getDistance();
+        m_committedToIntersection = false;
+        m_isPassing = false;
+        m_currentRoad->vehicleEnters(this);
+    }
+
+    m_route = std::move(replacementRoute);
+    m_routeIndex = 0;
+    updateWorldPosition();
     return true;
 }
 
@@ -218,6 +412,25 @@ const std::vector<std::shared_ptr<Road>>& Vehicle::getRoute() const
 size_t Vehicle::getRouteIndex() const
 {
     return m_routeIndex;
+}
+
+std::string Vehicle::getSourceIntersectionId() const
+{
+    if (m_route.empty() || !m_route.front())
+        return "";
+
+    const Intersection* source = m_route.front()->getSourceIntersection();
+    return source != nullptr ? source->getIntersectionID() : "";
+}
+
+std::string Vehicle::getDestinationIntersectionId() const
+{
+    return m_destination != nullptr ? m_destination->getIntersectionID() : "";
+}
+
+std::string Vehicle::getCurrentRoadId() const
+{
+    return m_currentRoad != nullptr ? m_currentRoad->getRoadId() : "";
 }
 
 void Vehicle::setCurrentRoad(const std::shared_ptr<Road>& road)

@@ -127,6 +127,9 @@ RouteResult AStarStrategy::calculateRoute(
         const auto& roads = graph.getConnectedRoads(current.intersectionID);
 
         for(const auto& road : roads) {
+            if (!road || road->isVIPExclusive())
+                continue;
+
             const Intersection* neighbor = road->getDestinationIntersection();
             if(neighbor == nullptr)
                 continue;

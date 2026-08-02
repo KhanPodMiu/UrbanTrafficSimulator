@@ -139,3 +139,21 @@ void TrafficLightManager::update(double dt) {
         }
     }
 }
+
+void TrafficLightManager::reset() {
+    for (auto& control : m_signalizedIntersections) {
+        control.currentPhaseIndex = 0;
+        control.currentLightState = TrafficLightState::GREEN;
+        control.timer = 0.0;
+
+        for (auto& phase : control.phases) {
+            for (auto& road : phase.roads) {
+                if (road) {
+                    road->resetTrafficLight();
+                }
+            }
+        }
+
+        applyPhaseStates(control);
+    }
+}

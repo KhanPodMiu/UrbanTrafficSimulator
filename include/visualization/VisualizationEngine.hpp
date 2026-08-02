@@ -1,7 +1,11 @@
 #pragma once
 
 #include "SDL2/SDL.h"
-#include "utils/vector2i.hpp"
+#include "render/TextureManager.hpp"
+#include "render/MapRenderer.hpp"
+#include "render/VehicleRenderer.hpp"
+#include "render/EntityPicker.hpp"
+#include "render/HeatMapOverlay.hpp"
 #include "vehicles/Vehicle.hpp"
 #include <vector>
 #include <memory>
@@ -9,8 +13,7 @@
 class Graph;
 class RenderWindow;
 class Camera;
-class Road;
-class Vehicle;
+class Intersection;
 
 class VisualizationEngine
 {
@@ -18,48 +21,73 @@ public:
     VisualizationEngine();
     ~VisualizationEngine();
 
+    /// Loads all texture assets. Delegates to TextureManager.
     bool loadAssets(RenderWindow& window);
 
+    /// Pre-computes render data for roads and intersections. Delegates to MapRenderer.
     void buildRenderCache(const Graph& graph);
 
+    /// Renders static map elements, traffic lights, and heat-map overlay if active.
     void render(RenderWindow& window, const Camera& camera);
 
-    // Draws the current dynamic vehicle list. Kept separate from render()
-    // since vehicle positions change every frame while roads/intersections
-    // are cached once in buildRenderCache().
-    void renderVehicles(RenderWindow& window, const Camera& camera, const std::vector<std::shared_ptr<Vehicle>>& vehicles);
+    /// Handles heat-map events. Delegates to HeatMapOverlay.
+    bool handleTrafficHeatMapEvent(const SDL_Event& event);
 
+    /// Draws heat-map UI controls. Delegates to HeatMapOverlay.
+    void renderTrafficHeatMapUi(RenderWindow& window) const;
+
+    /// Returns true if traffic heat-map overlay is enabled.
+    bool isTrafficHeatMapEnabled() const noexcept;
+
+    /// Draws dynamic vehicle list. Delegates to VehicleRenderer.
+    void renderVehicles(
+        RenderWindow& window,
+        const Camera& camera,
+        const std::vector<std::shared_ptr<Vehicle>>& vehicles);
+
+    /// Returns vehicle under mouse cursor. Delegates to EntityPicker.
+    std::shared_ptr<Vehicle> pickVehicle(
+        const Camera& camera,
+        const std::vector<std::shared_ptr<Vehicle>>& vehicles,
+        int mouseX,
+        int mouseY) const;
+
+    /// Returns intersection under mouse cursor. Delegates to EntityPicker.
+    std::shared_ptr<Intersection> pickIntersection(
+        const Camera& camera,
+        int mouseX,
+        int mouseY) const;
+
+    /// Draws selection highlight around selected vehicle or intersection. Delegates to EntityPicker.
+    void renderSelectionHighlight(
+        RenderWindow& window,
+        const Camera& camera,
+        const std::shared_ptr<Vehicle>& selectedVehicle,
+        const std::shared_ptr<Intersection>& selectedIntersection) const;
+
+    /// Releases all loaded assets. Delegates to TextureManager.
     void cleanUp(RenderWindow& window);
 
+    // Sub-component getters for direct access if needed
+    TextureManager& getTextureManager() noexcept { return textureManager_; }
+    const TextureManager& getTextureManager() const noexcept { return textureManager_; }
+
+    MapRenderer& getMapRenderer() noexcept { return mapRenderer_; }
+    const MapRenderer& getMapRenderer() const noexcept { return mapRenderer_; }
+
+    VehicleRenderer& getVehicleRenderer() noexcept { return vehicleRenderer_; }
+    const VehicleRenderer& getVehicleRenderer() const noexcept { return vehicleRenderer_; }
+
+    EntityPicker& getEntityPicker() noexcept { return entityPicker_; }
+    const EntityPicker& getEntityPicker() const noexcept { return entityPicker_; }
+
+    HeatMapOverlay& getHeatMapOverlay() noexcept { return heatMapOverlay_; }
+    const HeatMapOverlay& getHeatMapOverlay() const noexcept { return heatMapOverlay_; }
+
 private:
-    struct RoadRenderData
-    {
-        Vector2 start;
-        Vector2 end;
-        float length;
-        float angle;
-        float offsetX;
-        float offsetY;
-
-        std::shared_ptr<Road> road;
-
-        Vector2 lightPos;
-    };
-
-    Vector2 applyCamera(const Vector2& worldPos, const Camera& camera) const;
-
-    SDL_Texture* mapBackground_ = nullptr;
-    SDL_Texture* intersectionTexture_ = nullptr;
-    SDL_Texture* roadTexture_ = nullptr;
-
-    SDL_Texture* greenLightTexture_ = nullptr;
-    SDL_Texture* redLightTexture_ = nullptr;
-    SDL_Texture* yellowLightTexture_ = nullptr;
-
-    SDL_Texture* carTexture_ = nullptr;
-    SDL_Texture* busTexture_ = nullptr;
-    SDL_Texture* emergencyTexture_ = nullptr;
-
-    std::vector<Vector2> intersectionsLocation_;
-    std::vector<RoadRenderData> roadsLocation_;
+    TextureManager textureManager_;
+    MapRenderer mapRenderer_;
+    VehicleRenderer vehicleRenderer_;
+    EntityPicker entityPicker_;
+    HeatMapOverlay heatMapOverlay_;
 };
