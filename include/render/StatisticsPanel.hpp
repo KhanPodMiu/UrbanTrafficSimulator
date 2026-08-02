@@ -21,8 +21,8 @@ enum class PanelCommand
 
 enum class RoutingAlgorithm
 {
-    Dijkstra,
     BFS,
+    Dijkstra,
     AStar
 };
 
