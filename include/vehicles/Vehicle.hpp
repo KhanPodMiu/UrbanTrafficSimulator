@@ -65,6 +65,9 @@ public:
 
     bool tryAdvanceToNextRoad();
 
+    /// Rebuilds the remaining route without restricted roads. If this vehicle
+    /// is already on a newly restricted road, it keeps that road as the first
+    /// route segment and evacuates through its forward endpoint.
     bool rerouteAroundBannedRoads(
         const Graph& graph,
         const RoutingManager& routingManager);

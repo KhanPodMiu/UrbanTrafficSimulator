@@ -1,5 +1,6 @@
 #include "simulation/BannedRouteManager.hpp"
 #include "graph/Graph.hpp"
+#include "simulation/PresidentialRouteManager.hpp"
 #include "simulation/VehicleManager.hpp"
 #include "visualization/VisualizationEngine.hpp"
 #include "utils/MapLoader.hpp"
@@ -10,6 +11,7 @@ bool BannedRouteManager::switchBannedRoute(
     int routeID,
     Graph& graph,
     VehicleManager& vehicleManager,
+    PresidentialRouteManager& presidentialRouteManager,
     VisualizationEngine& visualizationEngine,
     bool& isBannedState)
 {
@@ -43,12 +45,20 @@ bool BannedRouteManager::switchBannedRoute(
 
     if (MapLoader::loadFromJson(mapPath.string(), graph)) {
         isBannedState = (routeID != 0);
-        const int reroutedVehicles =
-            vehicleManager.rerouteVehiclesAroundBannedRoads();
+        const int reroutedVehicles = routeID != 0
+            ? presidentialRouteManager.beginPreparation()
+            : (presidentialRouteManager.cancel(), 0);
         visualizationEngine.buildRenderCache(graph);
         std::cout << "[INFO] Successfully loaded route ID: " << routeID 
                   << " (" << filePath << "), rerouted vehicles: "
-                  << reroutedVehicles << "\n";
+                  << reroutedVehicles;
+        if (routeID != 0)
+        {
+            std::cout
+                << ", waiting until the corridor is empty and no vehicle "
+                << "route points into it";
+        }
+        std::cout << "\n";
         return true;
     }
 

@@ -11,6 +11,7 @@
 #include <filesystem>
 
 class VisualizationEngine;
+class PresidentialRouteManager;
 
 struct AppContext {
     bool& isRunning;
@@ -19,6 +20,7 @@ struct AppContext {
     VehicleManager& vehicleManager;
     VisualizationEngine& visualizationEngine;
     bool& isBannedState;
+    PresidentialRouteManager& presidentialRouteManager;
 };
 
 std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath);
@@ -26,4 +28,6 @@ std::filesystem::path resolveAssetPath(const std::filesystem::path& relativePath
 void handleInput(SDL_Event& event, AppContext &Game);
 void spawnVehicleAt(const Vector2& clickPos, Graph& graph, VehicleManager& vehicleManager);
 bool wasDragAction();
+
+//helper function
 bool switchBannedRoute(int routeID, AppContext &Game);

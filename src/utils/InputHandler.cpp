@@ -174,6 +174,7 @@ bool InputHandler::switchBannedRoute(int routeID, AppContext& Game)
         routeID,
         Game.graph,
         Game.vehicleManager,
+        Game.presidentialRouteManager,
         Game.visualizationEngine,
         Game.isBannedState);
 }
