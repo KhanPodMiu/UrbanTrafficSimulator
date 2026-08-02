@@ -311,7 +311,8 @@ int main(int argc, char* argv[]) {
         // SDL_Rect panel = {0, 0, Config::PANEL_WIDTH, Config::WINDOW_HEIGHT};
         // SDL_RenderFillRect(window.getRenderer(), &panel);
 
-        statisticsPanel.render(window,clock.getSimulationTime());
+        statisticsPanel.render(window, clock.getSimulationTime(),
+            static_cast<int>(vehicleManager.getVehicles().size()));
         visualizationEngine.renderTrafficHeatMapUi(window);
 
         window.display();

@@ -200,7 +200,7 @@ bool StatisticsPanel::loadAssets(RenderWindow& window)
         }
     }
 
-    timeFont_ = TTF_OpenFont("assets/textures/fonts/Octarine-Bold.otf", 30);
+    timeFont_ = TTF_OpenFont("assets/textures/fonts/Octarine-Bold.otf", 20);
 
     if (timeFont_ == nullptr)
     {
@@ -367,7 +367,7 @@ RoutingAlgorithm StatisticsPanel::getSelectedAlgorithm() const
     return selectedAlgorithm_;
 }
 
-void StatisticsPanel::render(RenderWindow& window, double simulationTime)
+void StatisticsPanel::render(RenderWindow& window,double simulationTime,int vehicleCount)
 {
     if (backgroundTexture_ == nullptr)
     {
@@ -449,7 +449,8 @@ void StatisticsPanel::render(RenderWindow& window, double simulationTime)
         Change x and y depending on the empty time box
         in your panel background.
     */
-    renderText(window, timeFont_, timeText, 220, 218);
+    renderText(window, timeFont_, timeText, 280, 218);
+    renderText(window, timeFont_, std::to_string(vehicleCount), 300, 570);
 }
 
 void StatisticsPanel::renderText(

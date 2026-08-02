@@ -67,8 +67,8 @@ TEST(TrafficHeatMapInteractionTest, ButtonClickIsConsumedAndTogglesOverlay)
     SDL_Event mouseDown{};
     mouseDown.type = SDL_MOUSEBUTTONDOWN;
     mouseDown.button.button = SDL_BUTTON_LEFT;
-    mouseDown.button.x = Config::PANEL_WIDTH + 20;
-    mouseDown.button.y = 20;
+    mouseDown.button.x = 350;
+    mouseDown.button.y = 630;
 
     SDL_Event mouseUp = mouseDown;
     mouseUp.type = SDL_MOUSEBUTTONUP;

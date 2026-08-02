@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_ttf.h"
 #include "vehicles/Vehicle.hpp"
 #include "graph/Road.hpp"
 
@@ -36,12 +35,8 @@ public:
     SDL_Texture* getVehicleTexture(VehicleType type) const noexcept;
 
     SDL_Texture* getHeatMapOverlayTexture() const noexcept { return heatMapOverlayTexture_; }
-    SDL_Texture* getHeatMapButtonLabelTexture() const noexcept { return heatMapButtonLabelTexture_; }
-    SDL_Texture* getHeatMapLegendTitleTexture() const noexcept { return heatMapLegendTitleTexture_; }
-    SDL_Texture* getHeatMapLowLabelTexture() const noexcept { return heatMapLowLabelTexture_; }
-    SDL_Texture* getHeatMapModerateLabelTexture() const noexcept { return heatMapModerateLabelTexture_; }
-    SDL_Texture* getHeatMapHeavyLabelTexture() const noexcept { return heatMapHeavyLabelTexture_; }
-    TTF_Font* getHeatMapFont() const noexcept { return heatMapFont_; }
+    SDL_Texture* getHeatMapOnButtonTexture() const noexcept { return heatMapOnButtonTexture_; }
+    SDL_Texture* getHeatMapOffButtonTexture() const noexcept { return heatMapOffButtonTexture_; }
 
 private:
     SDL_Texture* mapBackground_ = nullptr;
@@ -58,10 +53,6 @@ private:
     SDL_Texture* emergencyTexture_ = nullptr;
 
     SDL_Texture* heatMapOverlayTexture_ = nullptr;
-    SDL_Texture* heatMapButtonLabelTexture_ = nullptr;
-    SDL_Texture* heatMapLegendTitleTexture_ = nullptr;
-    SDL_Texture* heatMapLowLabelTexture_ = nullptr;
-    SDL_Texture* heatMapModerateLabelTexture_ = nullptr;
-    SDL_Texture* heatMapHeavyLabelTexture_ = nullptr;
-    TTF_Font* heatMapFont_ = nullptr;
+    SDL_Texture* heatMapOnButtonTexture_ = nullptr;
+    SDL_Texture* heatMapOffButtonTexture_ = nullptr;
 };
