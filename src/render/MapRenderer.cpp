@@ -95,7 +95,15 @@ void MapRenderer::render(
                                        ? textureManager.getBannedRoadTexture() 
                                        : textureManager.getRoadTexture();
 
+        const bool closurePending =
+            road.road && road.road->isVIPClosurePending();
+        if (closurePending)
+            SDL_SetTextureColorMod(currentRoadTex, 255, 185, 70);
+
         window.renderRoad(currentRoadTex, renderPos, road.length * zoom, Config::ROAD_WIDTH * zoom, road.angle);
+
+        if (closurePending)
+            SDL_SetTextureColorMod(currentRoadTex, 255, 255, 255);
     }
 
     // Intersections

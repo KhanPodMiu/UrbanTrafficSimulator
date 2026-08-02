@@ -4,6 +4,7 @@
 #include <string>
 
 class Graph;
+class PresidentialRouteManager;
 class VehicleManager;
 class VisualizationEngine;
 
@@ -17,6 +18,7 @@ public:
         int routeID,
         Graph& graph,
         VehicleManager& vehicleManager,
+        PresidentialRouteManager& presidentialRouteManager,
         VisualizationEngine& visualizationEngine,
         bool& isBannedState);
 };
