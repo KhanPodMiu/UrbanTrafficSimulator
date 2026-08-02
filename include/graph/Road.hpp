@@ -134,6 +134,9 @@ public:
 
     void setVIPExclusive(bool exclusive);
     bool isVIPExclusive() const;
+    void setVIPClosurePending(bool pending);
+    bool isVIPClosurePending() const;
+    bool isUnavailableForRouting() const;
 
 private:
     void detachEndpoints() noexcept;
@@ -148,6 +151,7 @@ private:
     int congestionLevel; // dimensionless  [MIN_CONGESTION,  MAX_CONGESTION ]
     double travelCost;      // dimensionless weight, kept in sync by setters
     bool isTrumpRoute = false; 
+    bool isTrumpRoutePending = false;
 
     std::vector<Vehicle*> m_vehicles;
     
