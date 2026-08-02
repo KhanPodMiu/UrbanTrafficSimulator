@@ -1,3 +1,25 @@
+## 📦 Download Assets
+
+Due to the submission platform's **20 MB file size limit**, large asset files are hosted separately.
+
+1. Download the asset package from Google Drive:
+   https://drive.google.com/drive/folders/1CQbJjuW34emZOPZTr5rSRfgFvRLjUHFo?usp=sharing
+
+2. Extract the downloaded archive.
+
+3. Copy the extracted `assets/` folder into the project root.
+
+The project structure should look like:
+
+```text
+UrbanTrafficSimulator/
+├── assets/
+├── src/
+├── include/
+├── CMakeLists.txt
+└── README.md
+```
+
 # 🚦 Urban Traffic Simulator
 
 An interactive **Urban Traffic Simulator** developed in **C++** as an Object-Oriented Programming project. The simulator models a modern city's transportation system using graph-based road networks, dynamic vehicle routing, intelligent traffic management, and real-time visualization.
