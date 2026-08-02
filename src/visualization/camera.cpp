@@ -12,6 +12,22 @@ float Camera::getX() const { return x; }
 float Camera::getY() const { return y; }
 float Camera::getZoom() const { return zoom; }
 
+void Camera::setX(float newX) {
+    x = newX;
+    clampPosition();
+}
+
+void Camera::setY(float newY) {
+    y = newY;
+    clampPosition();
+}
+
+void Camera::offsetPosition(float dx, float dy) {
+    x += dx;
+    y += dy;
+    clampPosition();
+}
+
 void Camera::addX() {
     float maxX = Config::MAP_WIDTH - Config::VIEW_PORT_WIDTH / zoom;
     if (x < maxX)
@@ -36,15 +52,33 @@ void Camera::subY() {
     if (y < 0) y = 0;
 }
 
-void Camera::zoomOut() {
+void Camera::zoomOut(float centerX, float centerY) {
+    float oldZoom = zoom;
     zoom -= zoom * 0.05f;
     if (zoom < MINZOOM) zoom = MINZOOM;
+    
+    if (centerX >= 0 && centerY >= 0) {
+        float worldX = x + centerX / oldZoom;
+        float worldY = y + centerY / oldZoom;
+        x = worldX - centerX / zoom;
+        y = worldY - centerY / zoom;
+    }
+    
     clampPosition();
 }
 
-void Camera::zoomIn() {
+void Camera::zoomIn(float centerX, float centerY) {
+    float oldZoom = zoom;
     zoom += zoom * 0.05f;
     if (zoom > 3.0f) zoom = 3.0f;
+    
+    if (centerX >= 0 && centerY >= 0) {
+        float worldX = x + centerX / oldZoom;
+        float worldY = y + centerY / oldZoom;
+        x = worldX - centerX / zoom;
+        y = worldY - centerY / zoom;
+    }
+    
     clampPosition();
 }
 

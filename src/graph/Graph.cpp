@@ -12,7 +12,11 @@
 
 #include <stdexcept>
 
+#include <random>
 
+#include <cmath>
+
+#include <algorithm>
 
 
 Graph::Graph() = default;
@@ -410,4 +414,86 @@ Road* Graph::getRoadBetween(
     }
 
     return nullptr;
+}
+
+
+//New Added:
+float Graph::pointToSegmentDistance(Vector2 P, Vector2 A, Vector2 B) const {
+    float l2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
+    if (l2 == 0.0f) {
+        float dx = P.x - A.x;
+        float dy = P.y - A.y;
+        return std::sqrt(dx * dx + dy * dy);
+    }
+    
+    float t = ((P.x - A.x) * (B.x - A.x) + (P.y - A.y) * (B.y - A.y)) / l2;
+    t = std::max(0.0f, std::min(1.0f, t));
+    
+    Vector2 projection = { A.x + t * (B.x - A.x), A.y + t * (B.y - A.y) };
+    float dx = P.x - projection.x;
+    float dy = P.y - projection.y;
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+
+std::shared_ptr<Intersection> Graph::findNearestIntersection(const Vector2& clickPos, float maxDistance) const {
+    std::shared_ptr<Intersection> nearest = nullptr;
+    float minDist = maxDistance;
+
+    for (const auto& [id, intersection] : Intersections) {
+        if (!intersection) continue;
+
+        Vector2 pos(static_cast<float>(intersection->getX()), static_cast<float>(intersection->getY()));
+        
+        float dx = pos.x - clickPos.x;
+        float dy = pos.y - clickPos.y;
+        float dist = std::sqrt(dx * dx + dy * dy);
+
+        if (dist < minDist) {
+            minDist = dist;
+            nearest = intersection;
+        }
+    }
+    return nearest;
+}
+
+
+std::shared_ptr<Road> Graph::findNearestRoad(const Vector2& clickPos, float maxDistance) const {
+    std::shared_ptr<Road> nearestRoad = nullptr;
+    float minDist = maxDistance;
+
+    for (const auto& [id, road] : Roads) {
+        if (!road) continue;
+
+        const Intersection* startNode = road->getSourceIntersection();
+        const Intersection* endNode = road->getDestinationIntersection();
+        
+        if (!startNode || !endNode) continue;
+
+        Vector2 A(static_cast<float>(startNode->getX()), static_cast<float>(startNode->getY()));
+        Vector2 B(static_cast<float>(endNode->getX()), static_cast<float>(endNode->getY()));
+
+        float dist = pointToSegmentDistance(clickPos, A, B);
+
+        if (dist < minDist) {
+            minDist = dist;
+            nearestRoad = road;
+        }
+    }
+    return nearestRoad;
+}
+
+std::shared_ptr<Intersection> Graph::getRandomIntersectionExcept(const std::string& startID) const {
+    std::vector<std::shared_ptr<Intersection>> candidates;
+    for (const auto& [id, intersection] : Intersections) {
+        if (intersection && intersection->getIntersectionID() != startID) {
+            candidates.push_back(intersection);
+        }
+    }
+
+    if (candidates.empty()) return nullptr;
+
+    static std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
+    return candidates[dist(gen)];
 }

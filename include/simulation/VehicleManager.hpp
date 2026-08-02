@@ -24,6 +24,9 @@ public:
     void reset();
 
     const std::vector<std::shared_ptr<Vehicle>>& getVehicles() const;
+    
+    //Added: For click spawn
+    void spawnVehicleAtIntersection(const std::string& intersectionID);
 
 private:
     void trySpawnVehicle();
